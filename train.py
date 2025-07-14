@@ -34,4 +34,5 @@ for step in range(1000):
         print(f"Step {step} | Loss: {loss.item():.4f}")
 
 # Save model
-torch.save(model.state_dict(), 'iLLuMinator.pth')
+torch.save(model.state_dict(), 'illuminator.pth')
+print("Training complete. Model saved as 'illuminator.pth'.")

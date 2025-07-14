@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class iLLuMinator(nn.Module):
     def __init__(self, vocab_size, block_size=64, n_embd=128, n_head=4, n_layer=2):
@@ -18,7 +17,8 @@ class iLLuMinator(nn.Module):
 
     def forward(self, idx):
         B, T = idx.size()
-        tok_emb = self.token_embedding(idx)
+        tok_emb = self.token_embedding(idx[:, :self.position_embedding.num_embeddings])
+        T = tok_emb.size(1)
         pos_emb = self.position_embedding(torch.arange(T, device=idx.device))
         x = tok_emb + pos_emb
 
