@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-from model.transformer import GPTMini
+from model.transformer import iLLuMinator
 from model.tokenizer import build_tokenizer, encode
 from data.prepare import load_data
 
@@ -18,7 +18,7 @@ def get_batch():
     y = torch.stack([data[i+1:i+1+block_size] for i in ix])
     return x, y
 
-model = GPTMini(vocab_size)
+model = iLLuMinator(vocab_size)
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
 
 for step in range(1000):
@@ -34,4 +34,4 @@ for step in range(1000):
         print(f"Step {step} | Loss: {loss.item():.4f}")
 
 # Save model
-torch.save(model.state_dict(), 'gptmini.pth')
+torch.save(model.state_dict(), 'iLLuMinator.pth')

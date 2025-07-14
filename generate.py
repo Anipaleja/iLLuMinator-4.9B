@@ -1,5 +1,5 @@
 import torch
-from model.transformer import GPTMini
+from model.transformer import iLLuMinator
 from model.tokenizer import build_tokenizer, encode, decode
 from data.prepare import load_data
 
@@ -7,8 +7,8 @@ text = load_data()
 stoi, itos = build_tokenizer(text)
 vocab_size = len(stoi)
 
-model = GPTMini(vocab_size)
-model.load_state_dict(torch.load('gptmini.pth'))
+model = iLLuMinator(vocab_size)
+model.load_state_dict(torch.load('iLLuMinator.pth'))
 model.eval()
 
 def generate(start_text, max_new_tokens=100):

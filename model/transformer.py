@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class GPTMini(nn.Module):
+class iLLuMinator(nn.Module):
     def __init__(self, vocab_size, block_size=64, n_embd=128, n_head=4, n_layer=2):
         super().__init__()
         self.token_embedding = nn.Embedding(vocab_size, n_embd)

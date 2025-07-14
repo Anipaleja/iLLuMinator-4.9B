@@ -1,7 +1,7 @@
 from generate import generate
 
 def chat():
-    print("GPTMini Chatbot (type 'exit' to quit)")
+    print("iLLuMinator Chatbot (type 'exit' to quit)")
     context = ""
     while True:
         user_input = input("You: ")
