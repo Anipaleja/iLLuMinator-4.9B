@@ -90,6 +90,13 @@ class IntelligentRAGTransformer(nn.Module):
         
         # Add knowledge integration layer
         self.knowledge_integrator = KnowledgeIntegrator(self.n_embd)
+        
+        # Add embedding projection layer to match dimensions
+        retriever_dim = self.knowledge_retriever.get_embedding_dim()
+        if retriever_dim != self.n_embd:
+            self.embedding_projection = nn.Linear(retriever_dim, self.n_embd)
+        else:
+            self.embedding_projection = nn.Identity()
     
     def understand_query(self, query_tokens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         """
@@ -127,6 +134,11 @@ class IntelligentRAGTransformer(nn.Module):
         
         # Convert to embeddings and integrate
         context_embeddings = self.knowledge_retriever.docs_to_embeddings(relevant_docs)
+        
+        # Project embeddings to match model dimension
+        if hasattr(self, 'embedding_projection'):
+            context_embeddings = self.embedding_projection(context_embeddings)
+        
         integrated_context = self.knowledge_integrator(query_embedding, context_embeddings)
         
         return integrated_context
@@ -410,12 +422,17 @@ class IntelligentRetriever:
         
         # Initialize retriever
         self.retriever = SentenceTransformer(model_name)
+        self.retriever_embedding_dim = self.retriever.get_sentence_embedding_dimension()
         
         # Build search index
         self.doc_embeddings = self.retriever.encode(documents)
         self.index = faiss.IndexFlatIP(self.doc_embeddings.shape[1])
         faiss.normalize_L2(self.doc_embeddings)
         self.index.add(self.doc_embeddings.astype('float32'))
+    
+    def get_embedding_dim(self):
+        """Get the actual embedding dimension from the retriever"""
+        return self.retriever_embedding_dim
     
     def retrieve_smart(self, query_text: str, query_embedding: torch.Tensor, top_k: int = 5) -> List[str]:
         """Smart retrieval using both semantic and neural query understanding"""
@@ -429,7 +446,7 @@ class IntelligentRetriever:
         # Get relevant documents
         relevant_docs = []
         for score, idx in zip(scores[0], indices[0]):
-            if idx != -1 and score > 0.3:  # Threshold for relevance
+            if idx != -1 and score > 0.1:  # Lower threshold for more results
                 relevant_docs.append(self.documents[idx])
         
         return relevant_docs
@@ -437,10 +454,10 @@ class IntelligentRetriever:
     def docs_to_embeddings(self, docs: List[str]) -> torch.Tensor:
         """Convert documents to embeddings for integration"""
         if not docs:
-            return torch.zeros(1, 1, self.embedding_dim)
+            return torch.zeros(1, 1, self.retriever_embedding_dim)
         
         doc_embeddings = self.retriever.encode(docs)
-        return torch.tensor(doc_embeddings).unsqueeze(0)  # Add batch dimension
+        return torch.tensor(doc_embeddings, dtype=torch.float32).unsqueeze(0)  # Add batch dimension
 
 
 class KnowledgeIntegrator(nn.Module):
