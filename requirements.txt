@@ -1,7 +1,11 @@
 torch
+torchvision
+torchaudio
 numpy
 requests
 beautifulsoup4
 sentence-transformers
 faiss-cpu
 transformers
+accelerate
+datasets
