@@ -18,7 +18,13 @@ def get_batch():
     y = torch.stack([data[i+1:i+1+block_size] for i in ix])
     return x, y
 
-model = iLLuMinator(vocab_size)
+model = iLLuMinator(
+    vocab_size=vocab_size,
+    block_size=64,  # Keep smaller for initial training
+    n_embd=128,
+    n_head=4,
+    n_layer=2
+)
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
 
 for step in range(1000):
