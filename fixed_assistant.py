@@ -20,7 +20,7 @@ class FixedSmartAssistant:
     """
     
     def __init__(self, model_path: str = "intelligent_rag_model.pth"):
-        print("🤖 Initializing Fixed Smart Assistant...")
+        print("Initializing Fixed Smart Assistant...")
         
         # Load tokenizer
         self.setup_tokenizer()
@@ -34,8 +34,8 @@ class FixedSmartAssistant:
         # Conversation history
         self.conversation_history = []
         
-        print("✅ Smart Assistant ready!")
-        print("💡 Ask me anything!")
+        print("Smart Assistant ready!")
+        print("Ask me anything!")
     
     def setup_tokenizer(self):
         """Setup tokenizer from your existing data"""
@@ -43,15 +43,15 @@ class FixedSmartAssistant:
             text = load_data()
             self.stoi, self.itos = build_tokenizer(text)
             self.vocab_size = len(self.stoi)
-            print(f"🔤 Loaded tokenizer with vocab size: {self.vocab_size}")
+            print(f"Loaded tokenizer with vocab size: {self.vocab_size}")
         except Exception as e:
-            print(f"⚠️  Tokenizer error: {e}")
+            print(f"Tokenizer error: {e}")
             # Create a simple fallback tokenizer
             self.create_simple_tokenizer()
     
     def create_simple_tokenizer(self):
         """Create a simple word-based tokenizer"""
-        print("🔤 Creating simple tokenizer...")
+        print("Creating simple tokenizer...")
         
         # Basic vocabulary
         words = [
@@ -80,11 +80,11 @@ class FixedSmartAssistant:
         self.itos = {i: word for i, word in enumerate(words)}
         self.vocab_size = len(words)
         
-        print(f"✅ Simple tokenizer created with {self.vocab_size} tokens")
+        print(f"Simple tokenizer created with {self.vocab_size} tokens")
     
     def setup_model(self, model_path: str):
         """Setup the transformer model"""
-        print("🧠 Loading model...")
+        print("Loading model...")
         
         # Create model with correct vocab size
         self.model = iLLuMinator(
@@ -95,31 +95,60 @@ class FixedSmartAssistant:
             n_layer=6
         )
         
-        # Load pre-trained weights if available
-        if os.path.exists(model_path):
+        # Try to load basic model weights first
+        basic_model_path = "illuminator.pth"
+        loaded_weights = False
+        
+        if os.path.exists(basic_model_path):
             try:
-                state_dict = torch.load(model_path, map_location='cpu')
-                # Filter out incompatible weights
+                state_dict = torch.load(basic_model_path, map_location='cpu')
+                # Only load core transformer weights
                 model_dict = self.model.state_dict()
                 filtered_dict = {}
                 
                 for k, v in state_dict.items():
                     if k in model_dict and v.shape == model_dict[k].shape:
                         filtered_dict[k] = v
-                    else:
-                        print(f"⚠️  Skipping incompatible weight: {k}")
                 
-                model_dict.update(filtered_dict)
-                self.model.load_state_dict(model_dict)
-                print(f"✅ Loaded compatible weights from {model_path}")
+                if filtered_dict:
+                    model_dict.update(filtered_dict)
+                    self.model.load_state_dict(model_dict)
+                    print(f"Loaded weights from {basic_model_path}")
+                    loaded_weights = True
             except Exception as e:
-                print(f"⚠️  Could not load model: {e}")
+                print(f"Could not load basic model: {e}")
+        
+        # If no basic model, try the intelligent model but filter aggressively
+        if not loaded_weights and os.path.exists(model_path):
+            try:
+                state_dict = torch.load(model_path, map_location='cpu')
+                model_dict = self.model.state_dict()
+                filtered_dict = {}
+                
+                # Only load core transformer components
+                core_prefixes = ['token_embedding', 'position_embedding', 'layers', 'ln_f', 'head']
+                
+                for k, v in state_dict.items():
+                    if any(k.startswith(prefix) for prefix in core_prefixes):
+                        if k in model_dict and v.shape == model_dict[k].shape:
+                            filtered_dict[k] = v
+                
+                if filtered_dict:
+                    model_dict.update(filtered_dict)
+                    self.model.load_state_dict(model_dict)
+                    print(f"Loaded core weights from {model_path}")
+                    loaded_weights = True
+            except Exception as e:
+                print(f"Could not load intelligent model: {e}")
+        
+        if not loaded_weights:
+            print("Using randomly initialized weights")
         
         self.model.eval()
     
     def setup_knowledge_base(self):
         """Setup simple knowledge base with vector search"""
-        print("📚 Setting up knowledge base...")
+        print("Setting up knowledge base...")
         
         # Load knowledge from demo file or create default
         try:
@@ -137,7 +166,7 @@ class FixedSmartAssistant:
                 "Algorithms are step-by-step procedures for solving problems or performing tasks."
             ]
         
-        print(f"📖 Loaded {len(self.knowledge)} knowledge entries")
+        print(f"Loaded {len(self.knowledge)} knowledge entries")
     
     def simple_tokenize(self, text: str) -> List[int]:
         """Simple tokenization"""
@@ -189,80 +218,91 @@ class FixedSmartAssistant:
         scored_knowledge.sort(key=lambda x: x[1], reverse=True)
         return [item[0] for item in scored_knowledge[:top_k]]
     
-    def generate_response(self, query: str, max_tokens: int = 100) -> str:
+    def generate_response(self, query: str, max_tokens: int = 50) -> str:
         """Generate response using the transformer model"""
         try:
             # Find relevant knowledge
             relevant_knowledge = self.find_relevant_knowledge(query)
             
-            # Prepare context
-            context_parts = []
+            # Create a simple prompt format
             if relevant_knowledge:
-                context_parts.append("Context:")
-                for i, knowledge in enumerate(relevant_knowledge, 1):
-                    context_parts.append(f"{i}. {knowledge}")
+                context = f"Knowledge: {relevant_knowledge[0][:100]}... "
+            else:
+                context = ""
             
-            context_parts.append(f"Question: {query}")
-            context_parts.append("Answer:")
+            prompt = f"{context}Question: {query} Answer:"
             
-            full_context = " ".join(context_parts)
+            # Tokenize with length limit
+            input_tokens = self.simple_tokenize(prompt)
             
-            # Tokenize
-            input_tokens = self.simple_tokenize(full_context)
-            
-            # Limit context length
-            max_context = self.model.block_size - max_tokens
-            if len(input_tokens) > max_context:
-                input_tokens = input_tokens[-max_context:]
+            # Limit input length
+            max_input = self.model.block_size - max_tokens - 10
+            if len(input_tokens) > max_input:
+                input_tokens = input_tokens[-max_input:]
             
             # Convert to tensor
             input_tensor = torch.tensor([input_tokens], dtype=torch.long)
             
-            # Generate response
+            # Generate response tokens
             generated_tokens = input_tokens.copy()
+            answer_tokens = []
             
             with torch.no_grad():
-                for _ in range(max_tokens):
-                    if len(generated_tokens) >= self.model.block_size:
-                        # Sliding window
-                        generated_tokens = generated_tokens[-self.model.block_size:]
+                for i in range(max_tokens):
+                    # Prepare current sequence
+                    current_seq = generated_tokens[-self.model.block_size:]
+                    current_tensor = torch.tensor([current_seq], dtype=torch.long)
                     
                     # Forward pass
-                    current_tensor = torch.tensor([generated_tokens], dtype=torch.long)
                     logits = self.model(current_tensor)
                     
-                    # Get next token probabilities
-                    next_logits = logits[0, -1, :]
-                    next_probs = torch.softmax(next_logits / 0.8, dim=-1)  # Temperature = 0.8
+                    # Get next token probabilities with temperature
+                    next_logits = logits[0, -1, :] / 0.7  # Lower temperature for more focused responses
+                    
+                    # Apply top-k filtering
+                    top_k = 20
+                    if top_k > 0:
+                        v, _ = torch.topk(next_logits, min(top_k, next_logits.size(-1)))
+                        next_logits[next_logits < v[-1]] = float('-inf')
+                    
+                    next_probs = torch.softmax(next_logits, dim=-1)
                     
                     # Sample next token
                     next_token = torch.multinomial(next_probs, num_samples=1).item()
                     
-                    # Stop if we get padding or unknown tokens repeatedly
+                    # Add to sequences
+                    generated_tokens.append(next_token)
+                    answer_tokens.append(next_token)
+                    
+                    # Stop on padding or repeated tokens
                     if next_token == self.stoi.get("<PAD>", 0):
                         break
                     
-                    generated_tokens.append(next_token)
+                    # Stop if we're generating repetitive content
+                    if len(answer_tokens) >= 3 and all(t == answer_tokens[-1] for t in answer_tokens[-3:]):
+                        break
             
-            # Extract just the answer part
-            full_text = self.simple_detokenize(generated_tokens)
+            # Decode the answer
+            if answer_tokens:
+                answer = self.simple_detokenize(answer_tokens)
+                answer = answer.strip()
+                
+                # Clean up the response
+                answer = re.sub(r'\s+', ' ', answer)
+                answer = re.sub(r'<[^>]*>', '', answer)  # Remove special tokens
+                
+                # Ensure we have a meaningful response
+                if len(answer) > 2 and not answer.replace(' ', '').replace('.', '').replace(',', '') == '':
+                    # Make it a proper sentence
+                    if not answer.endswith(('.', '!', '?')):
+                        answer += '.'
+                    return answer.capitalize()
             
-            if "Answer:" in full_text:
-                answer = full_text.split("Answer:")[-1].strip()
-            else:
-                answer = full_text[len(self.simple_detokenize(input_tokens)):].strip()
-            
-            # Clean up the answer
-            answer = re.sub(r'\s+', ' ', answer)  # Remove extra whitespace
-            answer = answer.strip()
-            
-            if not answer or len(answer) < 3:
-                return self.fallback_response(query, relevant_knowledge)
-            
-            return answer
+            # Fall back to knowledge-based response
+            return self.fallback_response(query, relevant_knowledge)
             
         except Exception as e:
-            print(f"⚠️  Generation error: {e}")
+            print(f"Generation error: {e}")
             return self.fallback_response(query, self.find_relevant_knowledge(query))
     
     def fallback_response(self, query: str, relevant_knowledge: List[str] = None) -> str:
@@ -293,7 +333,7 @@ class FixedSmartAssistant:
         if not query.strip():
             return "Please ask me a question!"
         
-        print(f"🤔 Processing: {query}")
+        print(f"Processing: {query}")
         
         # Generate response
         response = self.generate_response(query)
@@ -313,7 +353,7 @@ class FixedSmartAssistant:
 
 def main():
     """Interactive chat with the fixed assistant"""
-    print("🌟 Fixed Smart Assistant")
+    print("Fixed Smart Assistant")
     print("=" * 50)
     print("Now with proper dimension handling!")
     print("Type 'quit' to exit")
@@ -324,24 +364,25 @@ def main():
     
     while True:
         try:
-            query = input("\n💬 You: ").strip()
+            query = input("\nYou: ").strip()
             
             if not query:
                 continue
             
             if query.lower() in ['quit', 'exit', 'bye']:
-                print("👋 Goodbye!")
+                print("Goodbye!")
                 break
             
             # Get response
+            print("Processing:", query)
             response = assistant.chat(query)
-            print(f"\n🤖 Assistant: {response}")
+            print(f"\nAssistant: {response}")
             
         except KeyboardInterrupt:
-            print("\n👋 Goodbye!")
+            print("\nGoodbye!")
             break
         except Exception as e:
-            print(f"\n❌ Error: {e}")
+            print(f"\nError: {e}")
 
 
 if __name__ == "__main__":
