@@ -129,11 +129,11 @@ python simple_demo.py
 ## Model Architecture
 
 ### iLLuMinator Transformer
-- **Vocabulary Size**: Configurable (default: varies by dataset)
-- **Context Length**: 512 tokens (expandable)
-- **Embedding Dimension**: 256
-- **Attention Heads**: 8
-- **Transformer Layers**: 6
+- **Vocabulary Size**: Configurable (31-1000+ tokens)
+- **Context Length**: 64-2048 tokens (configurable)
+- **Embedding Dimension**: 128-768 (configurable)
+- **Attention Heads**: 4-12 (configurable)
+- **Transformer Layers**: 2-12 (configurable)
 - **Activation**: GELU
 - **Normalization**: LayerNorm (pre-norm)
 
@@ -240,7 +240,10 @@ Assistant: Deep Learning is a subset of machine learning that uses artificial ne
 ## Performance
 
 ### Model Statistics
-- **Parameters**: ~10.6M (configurable)
+- **Basic iLLuMinator**: ~5.4M parameters (vocab: 1000, embd: 256, 6 layers)
+- **Enhanced iLLuMinator**: ~5.0M parameters (vocab: 300, embd: 256, 6 layers)  
+- **Advanced iLLuMinator**: ~87.4M parameters (vocab: 1000, embd: 768, 12 layers)
+- **Current Trained Model**: ~0.41M parameters (vocab: 31, embd: 128, 2 layers)
 - **Training Time**: ~10 minutes on CPU (basic model)
 - **Inference Speed**: Real-time on modern hardware
 - **Memory Usage**: ~100MB (model weights)
