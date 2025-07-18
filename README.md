@@ -13,11 +13,14 @@ iLLuMinator is a custom transformer architecture that combines the power of caus
 - **RAG Integration**: Embedded knowledge retrieval system using FAISS and SentenceTransformers
 - **Intelligent Query Understanding**: Intent classification and context processing
 - **Adaptive Response Generation**: Temperature-controlled sampling with top-k filtering
+- **Wikipedia Integration**: Real-time knowledge retrieval from Wikipedia for unknown queries
+- **Multi-Level Intelligence**: Built-in knowledge base + Wikipedia fallback for comprehensive coverage
 
 ### Key Components
 - **iLLuMinator Transformer**: The core language model with causal masking
 - **Knowledge Retrieval System**: Semantic search over document embeddings
-- **Smart Assistant Interface**: Natural language conversation system
+- **Wikipedia Searcher**: Automatic Wikipedia lookup for unknown topics
+- **Smart Assistant Interface**: Natural language conversation system with multiple intelligence levels
 - **Training Pipeline**: Custom training loop with conversation datasets
 
 ## Project Structure
@@ -34,6 +37,9 @@ Transformer/
 ├── intelligent_rag.py         # Advanced RAG system
 ├── smart_assistant.py         # Main assistant interface
 ├── fixed_assistant.py         # Simplified working assistant
+├── enhanced_assistant.py      # Enhanced assistant with better tokenization
+├── super_intelligent_assistant.py  # Advanced LLaMA-level architecture
+├── final_smart_assistant.py   # Ultimate assistant with Wikipedia integration
 ├── train_intelligent.py       # Training script for RAG model
 ├── train.py                   # Basic training script
 ├── generate.py               # Text generation utilities
@@ -80,8 +86,23 @@ python simple_demo.py
 # Train the model
 python train.py
 
-# Start the assistant
+# Start the enhanced assistant (recommended)
+python final_smart_assistant.py
+```
+
+### All Available Assistants
+```bash
+# Basic working assistant
 python fixed_assistant.py
+
+# Enhanced assistant with better tokenization
+python enhanced_assistant.py
+
+# Advanced assistant with LLaMA-level architecture
+python super_intelligent_assistant.py
+
+# Final assistant with Wikipedia integration (BEST)
+python final_smart_assistant.py
 ```
 
 ### Advanced Usage
@@ -189,22 +210,31 @@ generation_params = {
 
 ## Examples
 
-### Basic Conversation
+### Basic Conversation (Built-in Knowledge)
 ```
 You: What is artificial intelligence?
-Assistant: Artificial intelligence is the simulation of human intelligence by machines. It includes learning, reasoning, and self-correction capabilities that enable computers to perform tasks typically requiring human intelligence.
+Assistant: Artificial Intelligence (AI) is the simulation of human intelligence in machines that are programmed to think and learn like humans. It includes machine learning, natural language processing, computer vision, and robotics.
 
-You: How does machine learning work?
-Assistant: Machine learning works by training algorithms on data to recognize patterns and make predictions without explicit programming. The system learns from examples and improves its performance over time.
+You: What is PyTorch?
+Assistant: PyTorch is an open-source machine learning library developed by Facebook's AI Research lab. It provides dynamic computation graphs and automatic differentiation for deep learning.
+```
+
+### Wikipedia Integration (Unknown Topics)
+```
+You: Who founded Nvidia?
+Assistant: According to Wikipedia: Founded in 1993 by Jensen Huang (president and CEO), Chris Malachowsky, and Curtis Priem, it designs and supplies graphics processing units (GPUs), application programming interfaces (APIs) for data science and high-performance computing.
+
+You: What is GitHub?
+Assistant: According to Wikipedia: GitHub is a proprietary developer platform that allows developers to create, store, manage, and share their code.
 ```
 
 ### Technical Questions
 ```
-You: Explain neural networks
-Assistant: Neural networks are computing systems inspired by biological neural networks. They consist of interconnected nodes that process information through weighted connections and activation functions.
+You: How does machine learning work?
+Assistant: Machine Learning works by using algorithms to analyze data, identify patterns, and make predictions. It enables computers to learn and improve from experience without being explicitly programmed.
 
-You: What is Python programming?
-Assistant: Python is a high-level programming language known for its simplicity and versatility in web development, data science, and AI applications.
+You: What is deep learning?
+Assistant: Deep Learning is a subset of machine learning that uses artificial neural networks with multiple layers to model complex patterns in data. It excels at image recognition, natural language processing, and speech recognition.
 ```
 
 ## Performance
