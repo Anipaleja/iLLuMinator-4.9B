@@ -53,32 +53,57 @@ class FixedSmartAssistant:
         """Create a simple word-based tokenizer"""
         print("Creating simple tokenizer...")
         
-        # Basic vocabulary
-        words = [
-            "hello", "hi", "what", "is", "how", "why", "the", "a", "an", "and", "or", "but",
-            "artificial", "intelligence", "machine", "learning", "deep", "neural", "network",
-            "computer", "science", "technology", "programming", "python", "data", "algorithm",
-            "question", "answer", "help", "explain", "understand", "know", "think", "learn",
-            "work", "works", "working", "system", "model", "train", "training", "language",
-            "natural", "process", "processing", "information", "knowledge", "smart", "intelligent",
-            "thank", "thanks", "please", "yes", "no", "can", "could", "would", "should", "will"
+        # Comprehensive vocabulary for better coverage
+        base_words = [
+            # Common words
+            "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by",
+            "what", "how", "why", "when", "where", "who", "which", "can", "will", "would", "should",
+            "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did",
+            "I", "you", "he", "she", "it", "we", "they", "me", "him", "her", "us", "them", "my", "your",
+            "this", "that", "these", "those", "here", "there", "now", "then", "yes", "no", "not",
+            
+            # AI/Tech vocabulary
+            "artificial", "intelligence", "machine", "learning", "deep", "neural", "network", "algorithm",
+            "computer", "science", "technology", "programming", "python", "data", "model", "train",
+            "system", "process", "information", "knowledge", "smart", "intelligent", "code", "software",
+            "digital", "analyze", "pattern", "prediction", "automation", "robot", "brain", "think",
+            
+            # Action words
+            "work", "works", "working", "learn", "learning", "understand", "explain", "help", "create",
+            "build", "develop", "design", "solve", "find", "search", "recognize", "classify", "predict",
+            "analyze", "compute", "calculate", "process", "generate", "produce", "make", "use", "apply",
+            
+            # Descriptive words
+            "good", "better", "best", "new", "old", "big", "small", "fast", "slow", "easy", "hard",
+            "simple", "complex", "powerful", "useful", "important", "different", "similar", "same",
+            "many", "few", "more", "less", "most", "some", "all", "every", "each", "other", "another",
+            
+            # Response words
+            "answer", "question", "response", "reply", "solution", "result", "output", "input",
+            "example", "case", "way", "method", "approach", "technique", "strategy", "plan",
+            
+            # Common phrases parts
+            "hello", "hi", "hey", "thanks", "thank", "please", "welcome", "sorry", "excuse",
+            "help", "assist", "support", "guide", "teach", "show", "tell", "say", "speak",
         ]
         
-        # Add numbers and punctuation
+        # Add numbers
         for i in range(100):
-            words.append(str(i))
+            base_words.append(str(i))
         
-        for char in ".,!?;:()[]{}\"'-":
-            words.append(char)
+        # Add punctuation and special characters
+        punctuation = [".", ",", "!", "?", ";", ":", "(", ")", "[", "]", "{", "}", "\"", "'", "-", "_"]
+        base_words.extend(punctuation)
         
         # Add special tokens
-        special_tokens = ["<PAD>", "<UNK>", "<START>", "<END>"]
-        words.extend(special_tokens)
+        special_tokens = ["<PAD>", "<UNK>", "<START>", "<END>", "<SPACE>"]
+        base_words.extend(special_tokens)
         
-        # Create mappings
-        self.stoi = {word: i for i, word in enumerate(words)}
-        self.itos = {i: word for i, word in enumerate(words)}
-        self.vocab_size = len(words)
+        # Remove duplicates and create mappings
+        unique_words = list(set(base_words))
+        self.stoi = {word: i for i, word in enumerate(unique_words)}
+        self.itos = {i: word for i, word in enumerate(unique_words)}
+        self.vocab_size = len(unique_words)
         
         print(f"Simple tokenizer created with {self.vocab_size} tokens")
     
@@ -218,87 +243,86 @@ class FixedSmartAssistant:
         scored_knowledge.sort(key=lambda x: x[1], reverse=True)
         return [item[0] for item in scored_knowledge[:top_k]]
     
-    def generate_response(self, query: str, max_tokens: int = 50) -> str:
+    def generate_response(self, query: str, max_tokens: int = 30) -> str:
         """Generate response using the transformer model"""
         try:
-            # Find relevant knowledge
+            # Find relevant knowledge first
             relevant_knowledge = self.find_relevant_knowledge(query)
             
-            # Create a simple prompt format
+            # If model generation fails, use knowledge-based response
             if relevant_knowledge:
-                context = f"Knowledge: {relevant_knowledge[0][:100]}... "
-            else:
-                context = ""
+                # Try simple template-based response first
+                knowledge_text = relevant_knowledge[0]
+                
+                # Create a response based on the question type
+                query_lower = query.lower()
+                if 'what' in query_lower and 'is' in query_lower:
+                    return f"{knowledge_text.split('.')[0]}."
+                elif 'how' in query_lower and 'work' in query_lower:
+                    return f"It works by {knowledge_text.lower().split('by')[-1] if 'by' in knowledge_text else knowledge_text.split('.')[0].lower()}."
+                elif 'how' in query_lower:
+                    return f"Here's how: {knowledge_text.split('.')[0].lower()}."
+                else:
+                    return knowledge_text.split('.')[0] + "."
             
-            prompt = f"{context}Question: {query} Answer:"
-            
-            # Tokenize with length limit
+            # If no relevant knowledge, try model generation with very simple prompt
+            prompt = f"Q: {query[:20]} A:"  # Keep it very short
             input_tokens = self.simple_tokenize(prompt)
             
-            # Limit input length
-            max_input = self.model.block_size - max_tokens - 10
-            if len(input_tokens) > max_input:
-                input_tokens = input_tokens[-max_input:]
+            # Limit input length severely
+            if len(input_tokens) > 20:
+                input_tokens = input_tokens[-20:]
             
-            # Convert to tensor
-            input_tensor = torch.tensor([input_tokens], dtype=torch.long)
-            
-            # Generate response tokens
+            # Generate with the model
             generated_tokens = input_tokens.copy()
             answer_tokens = []
             
             with torch.no_grad():
                 for i in range(max_tokens):
-                    # Prepare current sequence
-                    current_seq = generated_tokens[-self.model.block_size:]
-                    current_tensor = torch.tensor([current_seq], dtype=torch.long)
+                    # Prepare sequence
+                    current_seq = generated_tokens[-50:]  # Very short context
+                    current_tensor = torch.tensor([current_seq + [0] * (50 - len(current_seq))], dtype=torch.long)
                     
                     # Forward pass
-                    logits = self.model(current_tensor)
-                    
-                    # Get next token probabilities with temperature
-                    next_logits = logits[0, -1, :] / 0.7  # Lower temperature for more focused responses
-                    
-                    # Apply top-k filtering
-                    top_k = 20
-                    if top_k > 0:
-                        v, _ = torch.topk(next_logits, min(top_k, next_logits.size(-1)))
-                        next_logits[next_logits < v[-1]] = float('-inf')
-                    
-                    next_probs = torch.softmax(next_logits, dim=-1)
-                    
-                    # Sample next token
-                    next_token = torch.multinomial(next_probs, num_samples=1).item()
-                    
-                    # Add to sequences
-                    generated_tokens.append(next_token)
-                    answer_tokens.append(next_token)
-                    
-                    # Stop on padding or repeated tokens
-                    if next_token == self.stoi.get("<PAD>", 0):
-                        break
-                    
-                    # Stop if we're generating repetitive content
-                    if len(answer_tokens) >= 3 and all(t == answer_tokens[-1] for t in answer_tokens[-3:]):
+                    try:
+                        logits = self.model(current_tensor)
+                        next_logits = logits[0, len(current_seq)-1, :] / 0.5  # Low temperature
+                        
+                        # Heavy filtering - only top 5 tokens
+                        top_k = 5
+                        v, indices = torch.topk(next_logits, min(top_k, next_logits.size(-1)))
+                        filtered_logits = torch.full_like(next_logits, float('-inf'))
+                        filtered_logits[indices] = v
+                        
+                        next_probs = torch.softmax(filtered_logits, dim=-1)
+                        next_token = torch.multinomial(next_probs, num_samples=1).item()
+                        
+                        # Stop on padding or repeated patterns
+                        if next_token == self.stoi.get("<PAD>", 0):
+                            break
+                        
+                        generated_tokens.append(next_token)
+                        answer_tokens.append(next_token)
+                        
+                        # Stop on reasonable punctuation
+                        if next_token in [self.stoi.get(".", -1), self.stoi.get("!", -1), self.stoi.get("?", -1)]:
+                            break
+                            
+                    except Exception as e:
+                        print(f"Generation step failed: {e}")
                         break
             
-            # Decode the answer
-            if answer_tokens:
+            # Try to decode the answer
+            if len(answer_tokens) > 2:
                 answer = self.simple_detokenize(answer_tokens)
-                answer = answer.strip()
+                answer = re.sub(r'\s+', ' ', answer).strip()
                 
-                # Clean up the response
-                answer = re.sub(r'\s+', ' ', answer)
-                answer = re.sub(r'<[^>]*>', '', answer)  # Remove special tokens
-                
-                # Ensure we have a meaningful response
-                if len(answer) > 2 and not answer.replace(' ', '').replace('.', '').replace(',', '') == '':
-                    # Make it a proper sentence
+                if len(answer) > 5 and not answer.replace(' ', '').replace('.', '') == '':
                     if not answer.endswith(('.', '!', '?')):
                         answer += '.'
                     return answer.capitalize()
             
-            # Fall back to knowledge-based response
+            # Final fallback to knowledge
             return self.fallback_response(query, relevant_knowledge)
             
         except Exception as e:
