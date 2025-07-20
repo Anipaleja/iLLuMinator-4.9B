@@ -320,7 +320,7 @@ If you use this work in your research, please cite:
   author={Anish Paleja},
   year={2025},
   publisher={GitHub},
-  howpublished={\url{https://github.com/Anipaleja/Generative_Transformer}}
+  howpublished={\url{https://github.com/Anipaleja/iLLuMinator}}
 }
 ```
 
