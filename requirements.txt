@@ -1,11 +1,74 @@
-torch
-torchvision
-torchaudio
-numpy
-requests
-beautifulsoup4
-sentence-transformers
-faiss-cpu
-transformers
-accelerate
-datasets
+# Core Deep Learning Framework
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Scientific Computing & Numerical Processing
+numpy>=1.21.0
+scipy>=1.9.0
+scikit-learn>=1.2.0
+
+# Transformers & NLP
+transformers>=4.21.0
+tokenizers>=0.13.0
+sentence-transformers>=2.2.0
+datasets>=2.8.0
+accelerate>=0.16.0
+
+# Vector Search & Similarity
+faiss-cpu>=1.7.0
+chromadb>=0.3.0
+
+# Database Integration
+pymongo>=4.3.0
+motor>=3.1.0  # Async MongoDB driver
+gridfs>=4.0.0
+
+# Web Scraping & APIs
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+aiohttp>=3.8.0
+
+# Quantum Computing Simulation
+qiskit>=0.39.0
+cirq>=1.1.0
+pennylane>=0.28.0
+
+# Advanced Analytics & Monitoring
+pandas>=1.5.0
+matplotlib>=3.6.0
+seaborn>=0.12.0
+plotly>=5.12.0
+streamlit>=1.16.0
+
+# Enterprise Features
+redis>=4.5.0
+celery>=5.2.0
+fastapi>=0.88.0
+uvicorn>=0.20.0
+
+# Security & Cryptography
+cryptography>=38.0.0
+pyjwt>=2.6.0
+bcrypt>=4.0.0
+
+# Development & Testing
+pytest>=7.2.0
+black>=22.12.0
+flake8>=6.0.0
+mypy>=0.991
+
+# Cloud & Deployment
+docker>=6.0.0
+kubernetes>=25.3.0
+boto3>=1.26.0
+
+# Performance & Monitoring
+psutil>=5.9.0
+prometheus-client>=0.15.0
+grafana-api>=1.0.0
+
+# Additional Scientific Libraries
+sympy>=1.11.0  # Symbolic mathematics
+networkx>=3.0.0  # Graph analysis
+pillow>=9.4.0  # Image processing

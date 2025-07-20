@@ -19,7 +19,7 @@ class WorkingWikipediaSearcher:
         self.session.headers.update({
             'User-Agent': 'iLLuMinator-Assistant/1.0 (Educational Research Project)'
         })
-        
+    
     def search_and_answer(self, query: str) -> Optional[str]:
         """Search Wikipedia and provide intelligent answer"""
         try:
