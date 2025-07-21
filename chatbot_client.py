@@ -22,7 +22,7 @@ class IlluminatorChatbotClient:
         for port in range(start_port, start_port + max_attempts):
             try:
                 url = f"http://localhost:{port}"
-                response = requests.get(f"{url}/health", timeout=2)
+                response = requests.get(f"{url}/health", timeout=10)
                 if response.status_code == 200:
                     print(f"Found API server on port {port}")
                     return url
@@ -74,7 +74,7 @@ class IlluminatorChatbotClient:
             }
             
             start_time = time.time()
-            response = self.session.post(f"{self.api_base_url}/chat", json=payload, timeout=30)
+            response = self.session.post(f"{self.api_base_url}/chat", json=payload, timeout=60)
             request_time = time.time() - start_time
             
             if response.status_code == 200:
@@ -112,7 +112,7 @@ class IlluminatorChatbotClient:
             }
             
             start_time = time.time()
-            response = self.session.post(f"{self.api_base_url}/code", json=payload, timeout=30)
+            response = self.session.post(f"{self.api_base_url}/code", json=payload, timeout=60)
             request_time = time.time() - start_time
             
             if response.status_code == 200:

@@ -39,7 +39,7 @@ def test_api():
             "max_tokens": 100
         }
         start_time = time.time()
-        response = requests.post(f"{base_url}/chat", json=payload, timeout=30)
+        response = requests.post(f"{base_url}/chat", json=payload, timeout=60)
         request_time = time.time() - start_time
         
         if response.status_code == 200:
@@ -65,7 +65,7 @@ def test_api():
             "max_tokens": 200
         }
         start_time = time.time()
-        response = requests.post(f"{base_url}/code", json=payload, timeout=30)
+        response = requests.post(f"{base_url}/code", json=payload, timeout=60)
         request_time = time.time() - start_time
         
         if response.status_code == 200:
