@@ -308,13 +308,13 @@ class IlluminatorAI:
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.tokenizer = ProfessionalTokenizer()
-        # Use smaller, faster model configuration
+        # Scale up to 4.7B parameters for professional performance
         self.model = ProfessionalIlluminatorModel(
             vocab_size=self.tokenizer.vocab_size,
-            d_model=256,  # Reduced from 512 for speed
-            n_layers=4,   # Reduced from 8 for speed
-            n_heads=4,    # Reduced from 8 for speed
-            max_seq_len=512  # Reduced from 1024 for speed
+            d_model=1536,  # Large model dimension
+            n_layers=32,   # Deep architecture
+            n_heads=24,    # Multi-head attention
+            max_seq_len=2048  # Long context
         ).to(self.device)
         
         # Initialize conversation context
