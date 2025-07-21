@@ -30,26 +30,43 @@ class QuantumChatbot:
     def initialize_assistant(self):
         """Initialize the AI assistant"""
         print("🚀 Initializing Quantum Enterprise AI Assistant...")
+        
+        # Try full features first
         try:
+            print("  • Attempting full initialization with quantum + MongoDB...")
             self.assistant = QuantumEnhancedAssistant(
                 enable_quantum=True,
                 enable_mongodb=True
             )
-            print("✅ Assistant initialized successfully!")
+            print("✅ Assistant initialized successfully with full features!")
             return True
         except Exception as e:
-            print(f"❌ Failed to initialize assistant: {e}")
-            print("🔄 Falling back to basic mode...")
-            try:
-                self.assistant = QuantumEnhancedAssistant(
-                    enable_quantum=False,
-                    enable_mongodb=False
-                )
-                print("✅ Assistant initialized in basic mode!")
-                return True
-            except Exception as e2:
-                print(f"❌ Failed to initialize in basic mode: {e2}")
-                return False
+            print(f"  ⚠️ Full initialization failed: {str(e)[:100]}...")
+        
+        # Try quantum only
+        try:
+            print("  • Attempting quantum-only initialization...")
+            self.assistant = QuantumEnhancedAssistant(
+                enable_quantum=True,
+                enable_mongodb=False
+            )
+            print("✅ Assistant initialized with quantum enhancement!")
+            return True
+        except Exception as e:
+            print(f"  ⚠️ Quantum initialization failed: {str(e)[:100]}...")
+        
+        # Try basic mode
+        try:
+            print("  • Attempting basic initialization...")
+            self.assistant = QuantumEnhancedAssistant(
+                enable_quantum=False,
+                enable_mongodb=False
+            )
+            print("✅ Assistant initialized in basic mode!")
+            return True
+        except Exception as e:
+            print(f"❌ All initialization attempts failed: {str(e)[:100]}...")
+            return False
     
     def print_welcome(self):
         """Print welcome message"""
