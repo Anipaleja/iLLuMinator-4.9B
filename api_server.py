@@ -3,13 +3,18 @@ iLLuMinator AI API Server
 Professional REST API for the iLLuMinator AI language model
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import asyncio
 import time
 import logging
+import hashlib
+import secrets
+import sqlite3
+from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 
 # Suppress warnings for cleaner output
