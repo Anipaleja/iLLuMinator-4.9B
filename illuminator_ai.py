@@ -311,10 +311,10 @@ class IlluminatorAI:
         # Scale up to 4.7B parameters for professional performance
         self.model = ProfessionalIlluminatorModel(
             vocab_size=self.tokenizer.vocab_size,
-            d_model=1536,  # Large model dimension
-            n_layers=32,   # Deep architecture
-            n_heads=24,    # Multi-head attention
-            max_seq_len=2048  # Long context
+            d_model=2816,  # Very large model dimension (4.7B+ parameters)
+            n_layers=48,   # Deep architecture
+            n_heads=44,    # Multi-head attention (divisible by d_model)
+            max_seq_len=1024  # Optimized context length
         ).to(self.device)
         
         # Initialize conversation context
@@ -455,7 +455,7 @@ Requirements:
 
 Code:"""
         
-        response = self.generate_response(code_prompt, max_tokens=400, temperature=0.3)
+        response = self.generate_response(code_prompt, max_tokens=300, temperature=0.3)
         
         # Extract code from response if it contains explanation
         code_blocks = re.findall(r'```[\w]*\n(.*?)\n```', response, re.DOTALL)
@@ -474,8 +474,8 @@ Code:"""
         if any(keyword in message.lower() for keyword in code_keywords):
             return self.generate_code(message)
         
-        # Regular chat response
-        return self.generate_response(message, max_tokens=200, temperature=0.8)
+        # Regular chat response with optimized parameters for faster generation
+        return self.generate_response(message, max_tokens=100, temperature=0.8)
     
     def clear_conversation(self):
         """Clear conversation history"""
