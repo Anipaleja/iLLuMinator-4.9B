@@ -1,0 +1,23 @@
+# iLLuMinator AI - Essential Dependencies
+# Professional Language Model with Code Generation Capabilities
+
+# Core Deep Learning Framework
+torch>=2.0.0
+numpy>=1.21.0
+
+# Optional Dependencies for Enhanced Features
+# Uncomment if needed for specific functionality:
+
+# For tokenization improvements:
+# transformers>=4.21.0
+# tokenizers>=0.13.0
+
+# For JSON handling and data processing:
+# python-dotenv>=1.0.0
+
+# For development and testing:
+# pytest>=7.4.0
+# black>=23.7.0
+
+# Note: This model is designed to work with minimal dependencies
+# The core functionality requires only PyTorch and NumPy
