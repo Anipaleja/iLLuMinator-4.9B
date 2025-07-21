@@ -1,4 +1,4 @@
-# Giant Transformer: 4.7 Billion Parameter AI with Comprehensive Knowledge
+# iLLuMinator: 4.7 Billion Parameter AI with Comprehensive Knowledge
 
 A massive 4.7 billion parameter transformer-based AI system with comprehensive built-in knowledge, organized multi-tier architecture, and minimal external dependencies for maximum accuracy and reliability.
 
