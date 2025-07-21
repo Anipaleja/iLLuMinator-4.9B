@@ -296,16 +296,40 @@ async def root():
         "status": "ready"
     }
 
+def find_available_port(start_port: int = 8000, max_attempts: int = 10) -> int:
+    """Find an available port starting from start_port"""
+    import socket
+    
+    for port in range(start_port, start_port + max_attempts):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind(('localhost', port))
+                return port
+        except OSError:
+            continue
+    
+    raise RuntimeError(f"No available port found in range {start_port}-{start_port + max_attempts - 1}")
+
 if __name__ == "__main__":
     import uvicorn
     
-    print("Starting iLLuMinator AI API Server...")
-    print("API Documentation will be available at: http://localhost:8000/docs")
-    
-    uvicorn.run(
-        "api_server:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=False,
-        log_level="info"
-    )
+    # Find available port
+    try:
+        port = find_available_port(8000)
+        print(f"Starting iLLuMinator AI API Server on port {port}...")
+        print(f"API Documentation will be available at: http://localhost:{port}/docs")
+        print(f"Health check: http://localhost:{port}/health")
+        print(f"Chat endpoint: http://localhost:{port}/chat")
+        print(f"Code generation: http://localhost:{port}/code")
+        print("-" * 60)
+        
+        uvicorn.run(
+            "api_server:app",
+            host="0.0.0.0",
+            port=port,
+            reload=False,
+            log_level="info"
+        )
+    except Exception as e:
+        print(f"Failed to start server: {e}")
+        print("Please check if another process is using the ports or try running again.")

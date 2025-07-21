@@ -12,10 +12,26 @@ from typing import Dict, Any, Optional
 class IlluminatorChatbotClient:
     """Professional chatbot client for iLLuMinator AI API"""
     
-    def __init__(self, api_base_url: str = "http://localhost:8000"):
-        self.api_base_url = api_base_url
+    def __init__(self, api_base_url: str = None):
+        self.api_base_url = api_base_url or self._find_api_server()
         self.conversation_history = []
         self.session = requests.Session()
+    
+    def _find_api_server(self, start_port: int = 8000, max_attempts: int = 10) -> str:
+        """Find running iLLuMinator AI API server"""
+        for port in range(start_port, start_port + max_attempts):
+            try:
+                url = f"http://localhost:{port}"
+                response = requests.get(f"{url}/health", timeout=2)
+                if response.status_code == 200:
+                    print(f"Found API server on port {port}")
+                    return url
+            except requests.exceptions.RequestException:
+                continue
+        
+        # Default to port 8000 if nothing found
+        print("No running API server found, defaulting to port 8000")
+        return "http://localhost:8000"
         
     def check_connection(self) -> bool:
         """Check if API server is running"""
