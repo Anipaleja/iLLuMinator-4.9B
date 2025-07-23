@@ -35,8 +35,9 @@ async def lifespan(app: FastAPI):
     logger.info("Loading iLLuMinator AI model...")
     try:
         from illuminator_ai import IlluminatorAI
-        ai_instance = IlluminatorAI()
-        logger.info("iLLuMinator AI model loaded successfully")
+        # Initialize with fast mode for better API performance
+        ai_instance = IlluminatorAI(fast_mode=True)
+        logger.info("iLLuMinator AI model loaded successfully (Fast Mode)")
     except Exception as e:
         logger.error(f"Failed to load AI model: {e}")
         raise

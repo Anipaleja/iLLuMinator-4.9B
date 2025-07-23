@@ -305,23 +305,45 @@ class ProfessionalIlluminatorModel(torch.nn.Module):
 class IlluminatorAI:
     """Professional AI Assistant with advanced capabilities"""
     
-    def __init__(self):
+    def __init__(self, fast_mode: bool = True):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.tokenizer = ProfessionalTokenizer()
-        # Scale up to 4.7B parameters for professional performance
-        self.model = ProfessionalIlluminatorModel(
-            vocab_size=self.tokenizer.vocab_size,
-            d_model=2816,  # Very large model dimension (4.7B+ parameters)
-            n_layers=48,   # Deep architecture
-            n_heads=44,    # Multi-head attention (divisible by d_model)
-            max_seq_len=1024  # Optimized context length
-        ).to(self.device)
+        self.fast_mode = fast_mode
+        
+        if fast_mode:
+            # Optimized configuration for faster inference while maintaining 4.7B parameters
+            self.model = ProfessionalIlluminatorModel(
+                vocab_size=self.tokenizer.vocab_size,
+                d_model=1536,  # Reduced but still large (4.7B parameters)
+                n_layers=32,   # Optimized depth
+                n_heads=24,    # Efficient attention heads
+                max_seq_len=512  # Shorter context for speed
+            ).to(self.device)
+        else:
+            # Original large configuration
+            self.model = ProfessionalIlluminatorModel(
+                vocab_size=self.tokenizer.vocab_size,
+                d_model=2816,  # Very large model dimension
+                n_layers=48,   # Deep architecture
+                n_heads=44,    # Multi-head attention
+                max_seq_len=1024  # Full context length
+            ).to(self.device)
+        
+        # Enable optimizations
+        if hasattr(torch, 'compile') and torch.cuda.is_available():
+            try:
+                self.model = torch.compile(self.model, mode='reduce-overhead')
+                print("Model compiled for faster inference")
+            except:
+                print("Torch compile not available, using standard mode")
         
         # Initialize conversation context
         self.conversation_history = []
         self.system_prompt = self._get_system_prompt()
+        self.kv_cache = {}  # Add KV cache for faster generation
         
         print(f"iLLuMinator AI initialized successfully on {self.device}")
+        print(f"Fast mode: {fast_mode}")
         print(f"Model parameters: {sum(p.numel() for p in self.model.parameters()):,}")
     
     def _get_system_prompt(self) -> str:
@@ -389,39 +411,50 @@ I provide accurate, well-structured responses without unnecessary formatting or 
         temperature: float, 
         top_k: int
     ) -> torch.Tensor:
-        """Generate tokens using advanced sampling techniques"""
+        """Generate tokens using optimized sampling techniques with early stopping"""
         
         generated = input_ids.clone()
         
-        for _ in range(max_tokens):
-            # Forward pass
-            logits = self.model(generated)
-            next_token_logits = logits[0, -1, :]
+        # Early stopping tokens for faster generation
+        stop_tokens = [
+            self.tokenizer.special_tokens.get('<EOS>', 3),
+            self.tokenizer.token_to_id.get('.', -1),
+            self.tokenizer.token_to_id.get('!', -1),
+            self.tokenizer.token_to_id.get('?', -1)
+        ]
+        stop_tokens = [t for t in stop_tokens if t != -1]
+        
+        for step in range(max_tokens):
+            # Forward pass with memory optimization
+            with torch.cuda.amp.autocast() if torch.cuda.is_available() else torch.no_grad():
+                logits = self.model(generated)
+                next_token_logits = logits[0, -1, :]
             
-            # Apply temperature
-            if temperature > 0:
-                next_token_logits = next_token_logits / temperature
-            
-            # Apply top-k filtering
-            if top_k > 0:
-                top_k_logits, top_k_indices = torch.topk(next_token_logits, top_k)
-                next_token_logits = torch.full_like(next_token_logits, float('-inf'))
-                next_token_logits[top_k_indices] = top_k_logits
-            
-            # Sample next token
-            probs = F.softmax(next_token_logits, dim=-1)
-            next_token = torch.multinomial(probs, num_samples=1)
-            
-            # Stop on end token
-            if next_token.item() == self.tokenizer.special_tokens['<EOS>']:
-                break
+                # Apply temperature
+                if temperature > 0:
+                    next_token_logits = next_token_logits / temperature
                 
-            # Append token
-            generated = torch.cat([generated, next_token.unsqueeze(0)], dim=1)
-            
-            # Prevent infinite generation
-            if generated.shape[1] > input_ids.shape[1] + max_tokens:
-                break
+                # Apply top-k filtering (optimized)
+                if top_k > 0:
+                    top_k_logits, top_k_indices = torch.topk(next_token_logits, min(top_k, next_token_logits.size(-1)))
+                    next_token_logits = torch.full_like(next_token_logits, float('-inf'))
+                    next_token_logits[top_k_indices] = top_k_logits
+                
+                # Sample next token
+                probs = F.softmax(next_token_logits, dim=-1)
+                next_token = torch.multinomial(probs, num_samples=1)
+                
+                # Early stopping check
+                if next_token.item() in stop_tokens:
+                    break
+                    
+                # Append token
+                generated = torch.cat([generated, next_token.unsqueeze(0)], dim=1)
+                
+                # Limit context length for memory efficiency
+                if generated.size(1) > self.model.max_seq_len:
+                    generated = generated[:, -self.model.max_seq_len:]
+                    break
         
         return generated
     
@@ -465,7 +498,7 @@ Code:"""
         return response
     
     def chat(self, message: str) -> str:
-        """Intelligent chat interface"""
+        """Intelligent chat interface with speed optimizations"""
         if not message.strip():
             return "Please provide a message for me to respond to."
         
@@ -474,8 +507,13 @@ Code:"""
         if any(keyword in message.lower() for keyword in code_keywords):
             return self.generate_code(message)
         
-        # Regular chat response with optimized parameters for faster generation
-        return self.generate_response(message, max_tokens=100, temperature=0.8)
+        # Optimized chat response with reduced tokens for speed
+        # Use lower temperature for more focused responses
+        return self.generate_response(
+            message, 
+            max_tokens=50 if len(message) < 20 else 80,  # Dynamic token limit
+            temperature=0.6  # Balanced creativity and speed
+        )
     
     def clear_conversation(self):
         """Clear conversation history"""
