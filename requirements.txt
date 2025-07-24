@@ -1,136 +1,20 @@
-# Core Deep Learning Framework
+# iLLuMinator AI 4.7B - Essential Requirements
+# Core AI and ML packages
 torch>=2.0.0
-torchvision>=0.15.0
-torchaudio>=2.0.0
-
-# Scientific Computing & Numerical Processing
 numpy>=1.21.0
-scipy>=1.9.0
-scikit-learn>=1.2.0
 
-# Transformers & NLP
-transformers>=4.21.0
-tokenizers>=0.13.0
-sentence-transformers>=2.2.0
-datasets>=2.8.0
-accelerate>=0.16.0
-
-# Vector Search & Similarity
-faiss-cpu>=1.7.0
-chromadb>=0.3.0
-
-# Enhanced MongoDB Integration for Gemini-level capabilities
-pymongo>=4.6.0
-motor>=3.3.0  # Async MongoDB driver for enterprise performance
-gridfs>=4.0.0
-pymongo[srv]>=4.6.0  # For MongoDB Atlas support
-
-# Advanced Web Framework & API
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
+# API and Web Server
+fastapi>=0.95.0
+uvicorn[standard]>=0.20.0
 pydantic>=2.0.0
+
+# Web scraping and requests
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+
+# System monitoring
+psutil>=5.9.0
+
+# Additional utilities
 python-multipart>=0.0.6
-
-# Redis for High-Performance Caching
-redis>=4.5.0
-hiredis>=2.2.0  # C parser for better performance
-
-# Authentication & Security
-python-jose[cryptography]>=3.3.0
-passlib[bcrypt]>=1.7.4
-cryptography>=41.0.0
-
-# Quantum Computing Advanced Libraries
-qiskit>=0.45.0
-cirq>=1.2.0
-pennylane>=0.32.0
-pennylane-lightning>=0.32.0  # High-performance simulator
-
-# Advanced Analytics & Data Processing
-pandas>=2.0.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-plotly>=5.15.0
-polars>=0.20.0  # Ultra-fast DataFrame operations
-
-# Enterprise Monitoring & Logging
-prometheus-client>=0.19.0
-structlog>=23.1.0
-loguru>=0.7.0
-
-# Background Task Processing
-celery>=5.3.0
-kombu>=5.3.0
-flower>=2.0.0
-
-# Advanced Text Generation & Processing
-spacy>=3.7.0
-nltk>=3.8.0
-textblob>=0.17.0
-gensim>=4.3.0
-
-# Code Generation Support
-ast-unparse>=1.6.0  # For advanced code generation
-autopep8>=2.0.0  # Code formatting
-rope>=1.9.0  # Code refactoring utilities
-
-# Vector Database & Embeddings
-pinecone-client>=2.2.0
-weaviate-client>=3.25.0
-qdrant-client>=1.6.0
-
-# Development & Testing
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-pytest-cov>=4.1.0
-black>=23.7.0
-flake8>=6.0.0
-mypy>=1.5.0
-
-# Cloud & Deployment
-docker>=6.0.0
-kubernetes>=27.2.0
-boto3>=1.29.0
-azure-storage-blob>=12.18.0
-google-cloud-storage>=2.10.0
-
-# Performance Optimization
-numba>=0.58.0  # JIT compilation
-cython>=3.0.0  # C extensions
-line-profiler>=4.1.0  # Performance profiling
-memory-profiler>=0.61.0  # Memory usage analysis
-
-# Configuration Management
-python-dotenv>=1.0.0
-pydantic-settings>=2.0.0
-typer>=0.9.0  # CLI framework
-rich>=13.5.0  # Rich text and beautiful formatting
-
-# Additional Scientific Libraries
-sympy>=1.12.0  # Symbolic mathematics
-networkx>=3.1.0  # Graph analysis
-pillow>=10.0.0  # Advanced image processing
-opencv-python>=4.8.0  # Computer vision
-
-# Documentation & API Generation
-sphinx>=7.1.0
-sphinx-rtd-theme>=1.3.0
-
-# Jupyter & Interactive Development
-jupyter>=1.0.0
-ipython>=8.15.0
-jupyterlab>=4.0.0
-
-# Time Series & Advanced Analytics
-prophet>=1.1.0  # Time series forecasting
-statsmodels>=0.14.0  # Statistical models
-
-# Async HTTP & Networking
-aiohttp>=3.8.0
-httpx>=0.25.0
-websockets>=11.0.0
-
-# Data Serialization & Processing
-orjson>=3.9.0  # Ultra-fast JSON processing
-msgpack>=1.0.0  # Binary serialization
-pyarrow>=13.0.0  # Columnar data processing
+aiofiles>=23.1.0

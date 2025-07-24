@@ -141,11 +141,27 @@ def is_search_query(query: str) -> bool:
     search_keywords = [
         'who is', 'what is', 'when did', 'where is', 'why do', 'how to',
         'search for', 'find information about', 'tell me about',
-        'latest news on', 'current status of'
+        'latest news on', 'current status of', 'what happened to',
+        'recent updates on', 'latest information about'
     ]
     
     # Check for questions or search commands
-    return any(query.lower().startswith(keyword) for keyword in search_keywords) or query.endswith('?')
+    query_lower = query.lower()
+    
+    # Check if it starts with search keywords
+    if any(query_lower.startswith(keyword) for keyword in search_keywords):
+        return True
+    
+    # Check if it's a question (ends with ?)
+    if query.endswith('?'):
+        return True
+    
+    # Check for other search indicators
+    search_indicators = ['news', 'latest', 'current', 'recent', 'update', 'today']
+    if any(indicator in query_lower for indicator in search_indicators):
+        return True
+    
+    return False
 
 if __name__ == '__main__':
     # Example usage (requires a mock AI instance)

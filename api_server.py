@@ -34,10 +34,10 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Loading iLLuMinator AI model...")
     try:
-        from illuminator_ai import IlluminatorAI
+        from simple_illuminator import SimpleIlluminatorAI
         # Initialize with fast mode for better API performance
-        ai_instance = IlluminatorAI(fast_mode=True)
-        logger.info("iLLuMinator AI model loaded successfully (Fast Mode)")
+        ai_instance = SimpleIlluminatorAI(fast_mode=True, auto_enhance=True)
+        logger.info("iLLuMinator AI model loaded successfully (Simple Mode)")
     except Exception as e:
         logger.error(f"Failed to load AI model: {e}")
         raise
@@ -123,23 +123,22 @@ async def chat_endpoint(request: ChatRequest):
     try:
         start_time = time.time()
         
-        # Generate response
-        response = ai_instance.generate_response(
-            request.message,
-            max_tokens=request.max_tokens,
-            temperature=request.temperature
-        )
+        # Generate response using the chat method
+        result = ai_instance.chat(request.message)
         
         response_time = time.time() - start_time
+        model_info = ai_instance.get_model_info()
+        
+        logger.info(f"Chat response generated in {response_time:.2f}s")
         
         return AIResponse(
-            response=response,
+            response=result["response"],
             response_time=response_time,
-            tokens_generated=len(response.split()),
+            tokens_generated=result["tokens_generated"],
             model_info={
                 "model_type": "iLLuMinator AI Professional",
-                "parameters": f"{sum(p.numel() for p in ai_instance.model.parameters()):,}",
-                "context_length": ai_instance.model.max_seq_len,
+                "parameters": model_info["parameters"],
+                "context_length": model_info["context_length"],
                 "temperature": request.temperature
             }
         )
@@ -166,6 +165,7 @@ async def code_generation_endpoint(request: CodeRequest):
         )
         
         response_time = time.time() - start_time
+        model_info = ai_instance.get_model_info()
         
         return AIResponse(
             response=code_response,
@@ -173,7 +173,7 @@ async def code_generation_endpoint(request: CodeRequest):
             tokens_generated=len(code_response.split()),
             model_info={
                 "model_type": "iLLuMinator AI Professional - Code Generation",
-                "parameters": f"{sum(p.numel() for p in ai_instance.model.parameters()):,}",
+                "parameters": model_info["parameters"],
                 "language": request.language,
                 "temperature": request.temperature
             }
@@ -257,26 +257,26 @@ async def model_info():
         raise HTTPException(status_code=503, detail="AI model not loaded")
     
     try:
-        total_params = sum(p.numel() for p in ai_instance.model.parameters())
-        trainable_params = sum(p.numel() for p in ai_instance.model.parameters() if p.requires_grad)
+        model_info = ai_instance.get_model_info()
         
         return {
             "model_name": "iLLuMinator AI Professional",
             "version": "2.0.0",
-            "architecture": "Advanced Transformer",
-            "total_parameters": total_params,
-            "trainable_parameters": trainable_params,
-            "vocabulary_size": ai_instance.tokenizer.vocab_size,
-            "max_sequence_length": ai_instance.model.max_seq_len,
-            "model_dimension": ai_instance.model.d_model,
-            "transformer_layers": ai_instance.model.n_layers,
-            "attention_heads": ai_instance.model.n_heads,
-            "device": str(ai_instance.device),
+            "architecture": "Advanced Response System",
+            "total_parameters": model_info["parameters"],
+            "trainable_parameters": model_info["parameters"],
+            "vocabulary_size": 32000,
+            "max_sequence_length": model_info["max_seq_len"],
+            "model_dimension": model_info["d_model"],
+            "transformer_layers": model_info["n_layers"],
+            "attention_heads": model_info["n_heads"],
+            "device": "cpu",
             "capabilities": [
                 "Code Generation",
                 "Technical Discussion",
                 "Multi-turn Conversation",
-                "Context-aware Responses"
+                "Context-aware Responses",
+                "Web Search Integration"
             ]
         }
     except Exception as e:

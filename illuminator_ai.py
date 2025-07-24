@@ -319,7 +319,7 @@ class IlluminatorAI:
                 d_model=1536,  # Reduced but still large (4.7B parameters)
                 n_layers=32,   # Optimized depth
                 n_heads=24,    # Efficient attention heads
-                max_seq_len=512  # Shorter context for speed
+                max_seq_len=1024  # Longer context to avoid position errors
             ).to(self.device)
         else:
             # Original large configuration
@@ -382,8 +382,9 @@ I provide accurate, well-structured responses without unnecessary formatting or 
         # Prepare input with conversation context
         full_prompt = self._prepare_prompt(prompt)
         
-        # Tokenize input
-        input_ids = self.tokenizer.encode(full_prompt, max_length=512)
+        # Tokenize input with proper context management
+        max_input_length = self.model.max_seq_len - max_tokens - 50  # Leave room for generation
+        input_ids = self.tokenizer.encode(full_prompt, max_length=max_input_length)
         input_tensor = torch.tensor([input_ids], device=self.device)
         
         # Generate response
@@ -461,6 +462,11 @@ I provide accurate, well-structured responses without unnecessary formatting or 
                 probs = F.softmax(next_token_logits, dim=-1)
                 next_token = torch.multinomial(probs, num_samples=1)
                 
+                # Validate token is in vocabulary range
+                if next_token.item() >= self.tokenizer.vocab_size:
+                    # If token is out of range, use a fallback token
+                    next_token = torch.tensor([self.tokenizer.special_tokens.get('<UNK>', 1)], device=next_token.device)
+                
                 # Early stopping check
                 if next_token.item() in stop_tokens:
                     break
@@ -485,9 +491,9 @@ I provide accurate, well-structured responses without unnecessary formatting or 
         if len(sentences) > 1 and len(sentences[-1].strip()) < 10:
             response = '.'.join(sentences[:-1]) + '.'
         
-        # Ensure response isn't too short
-        if len(response.strip()) < 10:
-            return "I understand your question. Let me provide a comprehensive response based on the context."
+        # Only return generic response if truly empty, not just short
+        if len(response.strip()) < 3:
+            return "I'm having trouble generating a response. Could you please rephrase your question?"
         
         return response.strip()
     
@@ -519,22 +525,30 @@ Code:"""
         if not message.strip():
             return "Please provide a message for me to respond to."
 
-        # Check if the query requires a web search
-        if is_search_query(message):
-            return self.web_search_enhancer.search_and_summarize(message)
-        
-        # Detect if this is a code request
-        code_keywords = ['code', 'function', 'program', 'script', 'implement', 'write', 'create']
-        if any(keyword in message.lower() for keyword in code_keywords):
-            return self.generate_code(message)
-        
-        # Optimized chat response with reduced tokens for speed
-        # Use lower temperature for more focused responses
-        return self.generate_response(
-            message, 
-            max_tokens=50 if len(message) < 20 else 80,  # Dynamic token limit
-            temperature=0.6  # Balanced creativity and speed
-        )
+        try:
+            # Check if the query requires a web search
+            if is_search_query(message):
+                print(f"🔍 Detected search query: {message}")
+                web_response = self.web_search_enhancer.search_and_summarize(message)
+                # Add to conversation history
+                self.conversation_history.append({"user": message, "assistant": web_response})
+                return web_response
+            
+            # Detect if this is a code request
+            code_keywords = ['code', 'function', 'program', 'script', 'implement', 'write', 'create']
+            if any(keyword in message.lower() for keyword in code_keywords):
+                code_response = self.generate_code(message)
+                return code_response
+            
+            # Regular chat response
+            return self.generate_response(
+                message, 
+                max_tokens=50 if len(message) < 20 else 80,  # Dynamic token limit
+                temperature=0.6  # Balanced creativity and speed
+            )
+        except Exception as e:
+            print(f"Chat error: {e}")
+            return f"I encountered an error: {e}. Please try rephrasing your question."
     
     def clear_conversation(self):
         """Clear conversation history"""
