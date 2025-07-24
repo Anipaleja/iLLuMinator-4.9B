@@ -12,6 +12,7 @@ import time
 import warnings
 from pathlib import Path
 import logging
+from web_search_enhancer import WebSearchEnhancer, is_search_query
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings("ignore")
@@ -347,6 +348,9 @@ class IlluminatorAI:
         self.web_knowledge_base = {}
         if auto_enhance:
             self._load_web_knowledge()
+
+        # Initialize Web Search Enhancer
+        self.web_search_enhancer = WebSearchEnhancer(ai_instance=self)
         
         print(f"iLLuMinator AI initialized successfully on {self.device}")
         print(f"Fast mode: {fast_mode}")
@@ -511,9 +515,13 @@ Code:"""
         return response
     
     def chat(self, message: str) -> str:
-        """Intelligent chat interface with speed optimizations"""
+        """Intelligent chat interface with web search capabilities"""
         if not message.strip():
             return "Please provide a message for me to respond to."
+
+        # Check if the query requires a web search
+        if is_search_query(message):
+            return self.web_search_enhancer.search_and_summarize(message)
         
         # Detect if this is a code request
         code_keywords = ['code', 'function', 'program', 'script', 'implement', 'write', 'create']
