@@ -111,33 +111,53 @@ class WebSearchEnhancer:
             return ""
             
     def _summarize_content(self, query: str, content: str) -> str:
-        """Summarize content using the iLLuMinator AI model"""
+        """Summarize content based on web search results"""
         print("Summarizing web content...")
         
-        summarization_prompt = f"""Based on the following web content, provide a comprehensive answer to the user's query.
-
-User Query: "{query}"
-
-Web Content:
----
-{content}
----
-
-Synthesize the information into a clear, concise, and helpful answer. If the content is irrelevant, state that you couldn't find a good answer.
-Answer:"""
+        # Simple extraction-based summarization instead of using AI generation
+        if not content or len(content) < 50:
+            return "I found some web pages, but they didn't contain enough relevant information to answer your question."
         
-        # Use the AI's generation capability to summarize
-        summary = self.ai_instance.generate_response(
-            summarization_prompt,
-            max_tokens=300,
-            temperature=0.5
-        )
+        # Extract key sentences that might be relevant to the query
+        query_words = set(query.lower().split())
+        sentences = content.replace('\n', ' ').split('.')
         
-        return summary
+        relevant_sentences = []
+        for sentence in sentences[:20]:  # Check first 20 sentences
+            sentence = sentence.strip()
+            if len(sentence) > 20:  # Skip very short sentences
+                sentence_words = set(sentence.lower().split())
+                # Check if sentence contains query keywords
+                if query_words.intersection(sentence_words) or any(word in sentence.lower() for word in query_words):
+                    relevant_sentences.append(sentence)
+        
+        if relevant_sentences:
+            # Return the most relevant sentences as a summary
+            summary = '. '.join(relevant_sentences[:3]) + '.'
+            return f"Based on web search results: {summary}"
+        else:
+            # Fallback to first part of content
+            first_part = content[:500].strip()
+            if first_part:
+                return f"Here's what I found online: {first_part}..."
+            else:
+                return "I searched the web but couldn't find relevant information to answer your question."
 
 def is_search_query(query: str) -> bool:
     """Check if a query is likely a web search request"""
-    # Keywords that suggest a web search
+    query_lower = query.lower().strip()
+    
+    # Skip very simple greetings and conversational phrases
+    simple_patterns = [
+        'hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening',
+        'how are you', 'thanks', 'thank you', 'bye', 'goodbye',
+        'yes', 'no', 'ok', 'okay', 'sure'
+    ]
+    
+    if any(query_lower == pattern or query_lower.startswith(pattern + ' ') for pattern in simple_patterns):
+        return False
+    
+    # Keywords that definitely suggest a web search
     search_keywords = [
         'who is', 'what is', 'when did', 'where is', 'why do', 'how to',
         'search for', 'find information about', 'tell me about',
@@ -145,19 +165,25 @@ def is_search_query(query: str) -> bool:
         'recent updates on', 'latest information about'
     ]
     
-    # Check for questions or search commands
-    query_lower = query.lower()
-    
     # Check if it starts with search keywords
     if any(query_lower.startswith(keyword) for keyword in search_keywords):
         return True
     
-    # Check if it's a question (ends with ?)
+    # More selective question detection - must have specific indicators
     if query.endswith('?'):
-        return True
+        # Check for current events, factual questions, or specific topics
+        current_indicators = ['latest', 'current', 'recent', 'today', 'now', 'news', 'update']
+        factual_indicators = ['what', 'when', 'where', 'who', 'which', 'price', 'cost', 'weather', 'temperature']
+        
+        if any(indicator in query_lower for indicator in current_indicators + factual_indicators):
+            # But skip programming-related questions unless they ask for current info
+            programming_terms = ['function', 'code', 'program', 'python', 'javascript', 'programming', 'algorithm']
+            if any(term in query_lower for term in programming_terms):
+                return any(indicator in query_lower for indicator in current_indicators)
+            return True
     
-    # Check for other search indicators
-    search_indicators = ['news', 'latest', 'current', 'recent', 'update', 'today']
+    # Check for other specific search indicators
+    search_indicators = ['news about', 'information on', 'details about', 'facts about']
     if any(indicator in query_lower for indicator in search_indicators):
         return True
     

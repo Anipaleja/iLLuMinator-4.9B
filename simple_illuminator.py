@@ -122,40 +122,9 @@ class SimpleIlluminatorAI:
     
     def _is_search_query(self, query: str) -> bool:
         """Determine if the query requires web search"""
-        search_indicators = [
-            # Current events and news
-            r'(latest|recent|current|today|news|update).*',
-            r'what.*happening.*',
-            r'.*2024.*',
-            
-            # Weather queries
-            r'weather.*',
-            r'temperature.*',
-            r'climate.*',
-            
-            # Real-time information
-            r'(price|cost|stock).*',
-            r'.*(now|currently|today).*',
-            
-            # Specific factual queries
-            r'who is.*',
-            r'what is.*',
-            r'where is.*',
-            r'when.*',
-            r'how.*work.*',
-            
-            # Technology and trends
-            r'.*(release|launch|announce).*',
-            r'.*version.*',
-        ]
-        
-        query_lower = query.lower().strip()
-        
-        for pattern in search_indicators:
-            if re.match(pattern, query_lower):
-                return True
-                
-        return False
+        # Use the improved query detection from web_search_enhancer
+        from web_search_enhancer import is_search_query
+        return is_search_query(query)
     
     def _generate_contextual_response(self, prompt: str) -> str:
         """Generate response based on context and patterns"""
