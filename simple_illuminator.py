@@ -9,7 +9,7 @@ import re
 import random
 from typing import List, Dict, Optional
 import time
-from web_search_enhancer import WebSearchEnhancer
+from web_search_enhancer_new import EnhancedWebSearcher, is_search_query
 
 class SimpleIlluminatorAI:
     """A functional AI assistant that can actually generate responses"""
@@ -22,13 +22,13 @@ class SimpleIlluminatorAI:
         # Initialize response templates and patterns
         self._init_response_system()
         
-        # Initialize web search if enabled
+                # Initialize web search enhancer for real-time information
         if auto_enhance:
             try:
-                self.web_search_enhancer = WebSearchEnhancer(ai_instance=self)
-                print("Web search enhancer initialized")
+                self.web_search_enhancer = EnhancedWebSearcher(ai_instance=self)
+                print("Enhanced web search initialized")
             except Exception as e:
-                print(f"Web search enhancer not available: {e}")
+                print(f"Warning: Could not initialize web search: {e}")
                 self.web_search_enhancer = None
         else:
             self.web_search_enhancer = None
@@ -122,8 +122,7 @@ class SimpleIlluminatorAI:
     
     def _is_search_query(self, query: str) -> bool:
         """Determine if the query requires web search"""
-        # Use the improved query detection from web_search_enhancer
-        from web_search_enhancer import is_search_query
+        # Use the enhanced query detection
         return is_search_query(query)
     
     def _generate_contextual_response(self, prompt: str) -> str:
@@ -164,17 +163,35 @@ class SimpleIlluminatorAI:
     
     def _handle_programming_query(self, prompt: str) -> str:
         """Handle programming-related queries"""
-        if 'python' in prompt:
-            if 'install' in prompt:
-                return "To install Python packages, use pip: `pip install package_name`. For example: `pip install requests` or `pip install numpy`."
-            elif 'function' in prompt:
-                return "In Python, functions are defined using the `def` keyword. Here's the basic syntax:\n\n```python\ndef function_name(parameters):\n    # Your code here\n    return value\n```"
-            elif 'loop' in prompt:
-                return "Python has several loop types. For loops: `for item in iterable:`, while loops: `while condition:`. For example: `for i in range(10):` or `while x < 10:`."
-            else:
-                return "Python is excellent for beginners and professionals alike. It's used in web development (Django, Flask), data science (pandas, numpy), AI (TensorFlow, PyTorch), and automation. What specific Python topic interests you?"
+        prompt_lower = prompt.lower()
         
-        return "I can help with various programming concepts including functions, classes, loops, data structures, algorithms, and best practices. What specific programming topic would you like to explore?"
+        # Python specific
+        if 'python' in prompt_lower:
+            if 'class' in prompt_lower:
+                return "To create a Python class:\n\n```python\nclass MyClass:\n    def __init__(self, name):\n        self.name = name\n    \n    def greet(self):\n        return f'Hello, {self.name}!'\n        \n# Usage:\nobj = MyClass('World')\nprint(obj.greet())\n```"
+            elif 'function' in prompt_lower:
+                return "In Python, functions are defined using the `def` keyword:\n\n```python\ndef function_name(parameters):\n    # Your code here\n    return value\n\n# Example:\ndef add_numbers(a, b):\n    return a + b\n\nresult = add_numbers(5, 3)\n```"
+            elif 'loop' in prompt_lower or 'for' in prompt_lower:
+                return "Python loop examples:\n\n```python\n# For loop\nfor i in range(5):\n    print(i)\n\n# While loop\ncount = 0\nwhile count < 5:\n    print(count)\n    count += 1\n\n# Loop through list\nfruits = ['apple', 'banana', 'orange']\nfor fruit in fruits:\n    print(fruit)\n```"
+            elif 'list' in prompt_lower or 'array' in prompt_lower:
+                return "Python lists are versatile data structures:\n\n```python\n# Create a list\nmy_list = [1, 2, 3, 'hello', True]\n\n# Access elements\nfirst_item = my_list[0]\n\n# Add items\nmy_list.append('new item')\n\n# Loop through\nfor item in my_list:\n    print(item)\n```"
+            elif 'dictionary' in prompt_lower or 'dict' in prompt_lower:
+                return "Python dictionaries store key-value pairs:\n\n```python\n# Create dictionary\nperson = {\n    'name': 'John',\n    'age': 30,\n    'city': 'New York'\n}\n\n# Access values\nname = person['name']\n\n# Add/update\nperson['email'] = 'john@email.com'\n```"
+            elif 'install' in prompt_lower:
+                return "To install Python packages, use pip:\n\n```bash\npip install package_name\n\n# Examples:\npip install requests\npip install pandas\npip install numpy\n\n# Install from requirements file:\npip install -r requirements.txt\n```"
+            else:
+                return "Python is a powerful, easy-to-learn programming language. I can help with functions, classes, loops, data structures, file handling, and more. What specific Python topic would you like to explore?"
+        
+        # JavaScript specific
+        elif 'javascript' in prompt_lower or 'js' in prompt_lower:
+            if 'function' in prompt_lower:
+                return "JavaScript function syntax:\n\n```javascript\n// Function declaration\nfunction myFunction(param1, param2) {\n    return param1 + param2;\n}\n\n// Arrow function\nconst myArrowFunc = (a, b) => a + b;\n\n// Usage\nconsole.log(myFunction(5, 3));\n```"
+            else:
+                return "JavaScript is the language of the web! I can help with functions, objects, DOM manipulation, async programming, and more. What JavaScript concept interests you?"
+        
+        # General programming
+        else:
+            return "I can help with various programming concepts including:\n• Functions and methods\n• Classes and objects\n• Loops and conditionals\n• Data structures (arrays, lists, dictionaries)\n• Algorithms and problem-solving\n• Best practices and debugging\n\nWhat specific programming topic would you like to explore?"
     
     def _handle_how_to_query(self, prompt: str) -> str:
         """Handle how-to questions"""
