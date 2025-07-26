@@ -2,16 +2,16 @@
 
 A comprehensive transformer-based AI assistant that combines a powerful language model with Retrieval-Augmented Generation (RAG) capabilities, Wikipedia integration, and extensive knowledge base for maximum accuracy and helpfulness.
 
-## 🌟 Key Features
+## Key Features
 
-- **🤖 Advanced 4.7B Parameter Transformer Model**: State-of-the-art architecture with 32 layers, 2560 hidden dimensions
-- **📚 Comprehensive Knowledge Base**: Built-in knowledge across science, technology, programming, and general topics
-- **🔍 RAG Integration**: Vector search with FAISS for enhanced information retrieval
-- **🌐 Wikipedia Integration**: Real-time access to Wikipedia knowledge
-- **🚀 Hugging Face Compatible**: Ready for deployment on Hugging Face Hub
-- **⚡ Production Ready**: Optimized for both training and inference
+- **Advanced 4.7B Parameter Transformer Model**: State-of-the-art architecture with 32 layers, 2560 hidden dimensions
+- **Comprehensive Knowledge Base**: Built-in knowledge across science, technology, programming, and general topics
+- **RAG Integration**: Vector search with FAISS for enhanced information retrieval
+- **Wikipedia Integration**: Real-time access to Wikipedia knowledge
+- **Hugging Face Compatible**: Ready for deployment on Hugging Face Hub
+- **Production Ready**: Optimized for both training and inference
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Transformer/
@@ -38,7 +38,7 @@ Transformer/
 └── requirements.txt             # Dependencies
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Installation
 
@@ -82,7 +82,7 @@ python train_enhanced.py
 python deploy_to_hub.py --repo-name your-username/illuminator-4b
 ```
 
-## 🧠 Model Architecture
+## Model Architecture
 
 ### Transformer Specifications
 - **Parameters**: 4.7 billion
@@ -99,42 +99,42 @@ python deploy_to_hub.py --repo-name your-username/illuminator-4b
 - **Label Smoothing**: Better generalization during training
 - **Gradient Checkpointing**: Memory-efficient training
 
-## 📚 Knowledge Base Coverage
+## Knowledge Base Coverage
 
 The assistant includes comprehensive knowledge across:
 
-### 🔬 **Science & Technology**
+### **Science & Technology**
 - Physics, Chemistry, Biology fundamentals
 - Environmental Science and Climate Change
 - Latest technological developments
 - Scientific methodology and research
 
-### 💻 **Programming & Software Development**
+### **Programming & Software Development**
 - Python, JavaScript, and major programming languages
 - Data structures and algorithms
 - Web development (HTML, CSS, JavaScript)
 - Software engineering best practices
 - AI/ML concepts and implementations
 
-### 📐 **Mathematics**
+### **Mathematics**
 - Calculus and advanced mathematics
 - Statistics and probability
 - Linear algebra and discrete mathematics
 - Applied mathematics in various fields
 
-### 🤖 **AI & Machine Learning**
+### **AI & Machine Learning**
 - Deep learning and neural networks
 - Natural Language Processing
 - Computer Vision and transformers
 - MLOps and model deployment
 
-### 💬 **Conversational Intelligence**
+### **Conversational Intelligence**
 - Natural dialogue capabilities
 - Educational explanations
 - Problem-solving assistance
 - Technical support and guidance
 
-## 🌐 RAG Integration
+## RAG Integration
 
 ### Vector Search with FAISS
 ```python
@@ -152,7 +152,7 @@ response = assistant.chat("Current information about Tesla Inc")
 # Automatically searches and incorporates Wikipedia data
 ```
 
-## 🎯 Training Data & Accuracy
+## Training Data & Accuracy
 
 ### Comprehensive Dataset Includes:
 - **Technical Documentation**: Programming, APIs, frameworks
@@ -169,7 +169,7 @@ response = assistant.chat("Current information about Tesla Inc")
 - **Validation Monitoring**: Early stopping and best model selection
 - **Mixed Precision**: FP16 for efficient training
 
-## 🚀 Deployment Options
+## Deployment Options
 
 ### 1. Hugging Face Hub Deployment
 ```bash
@@ -198,7 +198,7 @@ async def chat(message: str):
     return {"response": assistant.chat(message)}
 ```
 
-## 🔧 Configuration Options
+## Configuration Options
 
 ### Model Configuration
 ```json
@@ -224,7 +224,7 @@ training_args = {
 }
 ```
 
-## 📈 Performance Metrics
+## Performance Metrics
 
 ### Model Performance
 - **Training Convergence**: Stable loss reduction
@@ -239,7 +239,7 @@ training_args = {
 - **Scalability**: Supports batch processing and API deployment
 - **Reliability**: Robust error handling and fallback mechanisms
 
-## 🛠️ Development & Customization
+## Development & Customization
 
 ### Adding New Knowledge Domains
 1. Extend the knowledge base in `prepare_enhanced_data.py`
@@ -273,7 +273,7 @@ class CustomAssistant(FinalSmartAssistant):
         return self.chat(message)
 ```
 
-## 🎯 Use Cases
+## Use Cases
 
 ### 1. **Educational Assistant**
 - Explain complex concepts across multiple domains
@@ -295,7 +295,7 @@ class CustomAssistant(FinalSmartAssistant):
 - Technical documentation
 - Decision support systems
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please:
 
@@ -321,11 +321,11 @@ black .
 flake8 .
 ```
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Transformers Library**: Hugging Face team for the excellent framework
 - **PyTorch**: Meta AI for the deep learning framework
@@ -333,18 +333,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Wikipedia**: For providing comprehensive knowledge access
 - **Open Source Community**: For tools, libraries, and inspiration
 
-## 📞 Support & Contact
+## Support & Contact
 
-- **Issues**: [GitHub Issues](https://github.com/your-username/illuminator/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/illuminator/discussions)
+- **Issues**: [GitHub Issues](https://github.com/anipaleja/illuminator/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/anipaleja/illuminator/discussions)
 - **Documentation**: See individual module README files
-- **Model Hub**: [Hugging Face Model Page](https://huggingface.co/your-username/illuminator-4b)
+- **Model Hub**: [Hugging Face Model Page](https://huggingface.co/anipal/illuminator-4b)
 
 ---
 
 **Note**: This is a research/educational project. While the model is trained on comprehensive data, always verify critical information and use appropriate judgment in production environments.
 
-## 🎉 Getting Started Checklist
+## Getting Started Checklist
 
 - [ ] Install dependencies (`pip install -r requirements.txt`)
 - [ ] Test basic functionality (`python final_smart_assistant.py`)
@@ -355,4 +355,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Customize for your specific use case
 - [ ] Join the community and contribute!
 
-**Ready to illuminate your AI projects? Let's get started! 🚀**
