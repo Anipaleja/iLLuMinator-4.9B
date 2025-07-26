@@ -1,24 +1,24 @@
 # iLLuMinator 4.9B - Advanced Large Language Model
 
-## 🎯 Complete AI System Built From Scratch
+## Complete AI System Built From Scratch
 
 A comprehensive Large Language Model implementation featuring both a production-ready 4.9 billion parameter CUDA-optimized model and a practical 120 million parameter CPU model.
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
-### 🔥 CUDA Model (4.9B Parameters)
+### CUDA Model (4.9B Parameters)
 - **Target Hardware**: RTX 3070, RTX 3080, RTX 3090, A100
 - **Optimizations**: Mixed precision, Flash attention, CUDA kernels
 - **Performance**: 5-10 tokens/second on RTX 3070
 - **Memory**: ~6-7GB VRAM for inference
 
-### 💻 Practical Model (120M Parameters)  
+### Practical Model (120M Parameters)  
 - **Target Hardware**: CPU, laptops, edge devices
 - **Performance**: 10-12 tokens/second on CPU
 - **Memory**: ~500MB RAM
 - **Use Case**: Development, testing, resource-constrained environments
 
-## 🚀 Quick Start
+## Quick Start
 
 ### For RTX 3070/3080/3090 Users (Recommended)
 
@@ -52,31 +52,31 @@ python practical_api_server.py
 # Access: http://localhost:8001
 ```
 
-## 📊 Model Specifications
+## Model Specifications
 
 | Model | Parameters | Layers | Heads | Hidden | Context | Memory | Speed |
 |-------|------------|--------|-------|--------|---------|--------|-------|
 | CUDA  | 4.99B      | 30     | 28    | 3584   | 2048    | 6-7GB  | 5-10 tok/s |
 | Practical | 124M   | 12     | 12    | 768    | 1024    | 500MB  | 10-12 tok/s |
 
-## 🔧 Features
+## Features
 
 ### Core Capabilities
-- ✅ **Complete Transformer Architecture** - Built from scratch
-- ✅ **Custom Tokenizer** - GPT-2 compatible with 50,260 vocabulary
-- ✅ **CUDA Acceleration** - Optimized for NVIDIA RTX series
-- ✅ **Mixed Precision Training** - FP16/FP32 for faster training
-- ✅ **Production API** - FastAPI servers with streaming support
-- ✅ **Interactive Interface** - Command-line chat client
+- **Complete Transformer Architecture** - Built from scratch
+- **Custom Tokenizer** - GPT-2 compatible with 50,260 vocabulary
+- **CUDA Acceleration** - Optimized for NVIDIA RTX series
+- **Mixed Precision Training** - FP16/FP32 for faster training
+- **Production API** - FastAPI servers with streaming support
+- **Interactive Interface** - Command-line chat client
 
 ### Advanced Optimizations
-- 🔥 **Flash Attention** - Memory-efficient attention computation
-- 🔥 **Gradient Checkpointing** - Reduced memory usage during training
-- 🔥 **CUDA Kernels** - Low-level GPU optimizations
-- 🔥 **TensorFloat-32** - Automatic acceleration on RTX 30xx
-- 🔥 **Weight Tying** - Shared input/output embeddings
+- **Flash Attention** - Memory-efficient attention computation
+- **Gradient Checkpointing** - Reduced memory usage during training
+- **CUDA Kernels** - Low-level GPU optimizations
+- **TensorFloat-32** - Automatic acceleration on RTX 30xx
+- **Weight Tying** - Shared input/output embeddings
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 iLLuMinator-4.7B/
@@ -98,7 +98,7 @@ iLLuMinator-4.7B/
 └── SYSTEM_SUMMARY.md          # Complete documentation
 ```
 
-## 🎯 API Endpoints
+## API Endpoints
 
 ### CUDA API Server (Port 8002)
 ```bash
@@ -122,7 +122,7 @@ curl -X POST "http://localhost:8001/chat" \
   -d '{"message": "Hello!", "max_tokens": 50}'
 ```
 
-## 🔬 Technical Highlights
+## Technical Highlights
 
 ### Modern Transformer Architecture
 - **Multi-Head Attention** with rotary position embeddings
@@ -148,7 +148,7 @@ with torch.cuda.amp.autocast():
 - **Gradient Accumulation**: Simulate larger batch sizes
 - **KV Caching**: Faster inference with memory trade-off
 
-## 📈 Performance Benchmarks
+## Performance Benchmarks
 
 ### RTX 3070 (8GB VRAM)
 - **Training**: Stable with batch size 1, gradient accumulation 8
@@ -162,7 +162,7 @@ with torch.cuda.amp.autocast():
 - **Memory**: 500MB RAM usage
 - **Deployment**: Immediate deployment ready
 
-## 🎓 Educational Value
+## Educational Value
 
 This project demonstrates:
 - **Complete LLM Implementation** from scratch
@@ -171,23 +171,23 @@ This project demonstrates:
 - **Modern ML Practices** - mixed precision, checkpointing
 - **Scalable Architecture** from 120M to 4.9B parameters
 
-## 🔄 Development Workflow
+## Development Workflow
 
 1. **Prototype** with practical model (fast iteration)
 2. **Scale up** to CUDA model (production quality)
 3. **Deploy** appropriate model based on hardware
 4. **Monitor** performance and optimize
 
-## 🎉 Achievement Summary
+## Achievement Summary
 
-✅ **Removed all web scraping** - Clean LLM implementation  
-✅ **Built 4.9B parameter model** - Production-scale transformer  
-✅ **CUDA optimization** - RTX 3070 ready with all optimizations  
-✅ **Practical alternative** - 120M model for immediate use  
-✅ **Complete pipeline** - Training, inference, API, client  
-✅ **Production ready** - Error handling, monitoring, documentation  
+**Removed all web scraping** - Clean LLM implementation  
+**Built 4.9B parameter model** - Production-scale transformer  
+**CUDA optimization** - RTX 3070 ready with all optimizations  
+**Practical alternative** - 120M model for immediate use  
+**Complete pipeline** - Training, inference, API, client  
+**Production ready** - Error handling, monitoring, documentation  
 
-## 🚀 Ready for Your RTX 3070
+## Ready for Your RTX 3070
 
 The CUDA-optimized model is specifically tuned for RTX 3070:
 - **Mixed Precision**: Automatic FP16/FP32 optimization
@@ -195,11 +195,11 @@ The CUDA-optimized model is specifically tuned for RTX 3070:
 - **Thermal Optimization**: Efficient computation patterns
 - **Driver Support**: Compatible with latest NVIDIA drivers
 
-## 📞 Getting Started
+## Getting Started
 
 Choose your path:
 
-**🔥 High Performance (RTX 3070+)**
+**High Performance (RTX 3070+)**
 ```bash
 pip install -r requirements_cuda.txt
 python illuminator_cuda.py
@@ -207,7 +207,7 @@ python train_cuda.py
 python cuda_api_server.py
 ```
 
-**💻 Practical Development**
+**Practical Development**
 ```bash
 pip install -r requirements_clean.txt
 cd practical_model
