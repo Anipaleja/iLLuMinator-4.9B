@@ -1,0 +1,62 @@
+# iLLuMinator 4.9B CUDA Requirements
+# Optimized for RTX 3070 with CUDA support
+
+# Core PyTorch with CUDA support
+torch>=2.1.0
+torchvision>=0.16.0
+torchaudio>=2.1.0
+--index-url https://download.pytorch.org/whl/cu121
+
+# Transformer and tokenization
+transformers>=4.35.0
+tokenizers>=0.14.0
+datasets>=2.14.0
+
+# API and web framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.4.0
+
+# Data processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# HTTP and networking
+requests>=2.31.0
+aiofiles>=23.2.1
+httpx>=0.25.0
+
+# Text processing
+beautifulsoup4>=4.12.0
+nltk>=3.8.0
+
+# Performance and optimization
+accelerate>=0.24.0  # Hugging Face acceleration
+optimum>=1.14.0     # Model optimization
+bitsandbytes>=0.41.0  # 8-bit optimization
+
+# Memory and monitoring
+psutil>=5.9.0
+GPUtil>=1.4.0
+nvidia-ml-py>=12.535.0
+
+# Development and utilities
+tqdm>=4.66.0
+rich>=13.6.0
+tensorboard>=2.14.0
+wandb>=0.15.0  # Optional: experiment tracking
+
+# Data serialization
+msgpack>=1.0.0
+orjson>=3.9.0
+
+# Optional: Advanced optimizations
+# flash-attn>=2.3.0  # Requires specific CUDA setup
+# xformers>=0.0.22   # Facebook's transformer optimizations
+
+# Jupyter support (optional)
+jupyter>=1.0.0
+ipywidgets>=8.1.0
+
+# Git integration
+GitPython>=3.1.0
