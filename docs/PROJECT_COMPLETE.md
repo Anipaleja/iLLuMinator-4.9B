@@ -1,5 +1,3 @@
-"""
-
 PROJECT TRANSFORMATION SUMMARY
 ==============================
 
