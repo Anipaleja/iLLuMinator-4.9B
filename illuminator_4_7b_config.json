@@ -1,0 +1,12 @@
+{
+  "model_name": "iLLuMinator-4.7B",
+  "vocab_size": 50257,
+  "d_model": 4096,
+  "n_layers": 32,
+  "n_heads": 32,
+  "d_ff": 16384,
+  "max_seq_length": 2048,
+  "dropout": 0.1,
+  "activation": "gelu",
+  "architecture": "transformer-decoder"
+}
