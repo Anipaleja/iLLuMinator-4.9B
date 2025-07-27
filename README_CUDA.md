@@ -1,10 +1,10 @@
 # iLLuMinator 4.9B CUDA Setup Guide
 
-## 🔥 RTX 3070 Optimization
+## Nvidia RTX CUDA Optimization
 
 This setup is specifically optimized for NVIDIA RTX 3070 with 8GB VRAM.
 
-## 📋 Prerequisites
+## Prerequisites
 
 ### CUDA Installation
 1. **NVIDIA Driver**: Latest driver (>=525.60)
@@ -17,7 +17,7 @@ nvidia-smi
 nvcc --version
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install Dependencies
 ```bash
@@ -47,7 +47,7 @@ python train_cuda.py
 python cuda_api_server.py
 ```
 
-## 🧠 Model Architecture
+## Model Architecture
 
 ### CUDA Optimizations
 - **Mixed Precision Training**: FP16/FP32 for 2x speed, 50% memory reduction
@@ -62,7 +62,7 @@ python cuda_api_server.py
 - **Inference Memory**: ~5-6GB
 - **Batch Size**: 1-2 for training, 1-4 for inference
 
-## ⚡ Performance Targets
+## Performance Targets
 
 ### RTX 3070 (8GB VRAM)
 - **Training Speed**: ~0.5-1 tokens/second
@@ -85,7 +85,7 @@ with torch.cuda.amp.autocast():
 model.gradient_checkpointing_enable()
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Model Configuration
 ```python
@@ -113,7 +113,7 @@ training_config = {
 }
 ```
 
-## 📊 Memory Optimization Strategies
+## Memory Optimization Strategies
 
 ### 1. Gradient Checkpointing
 - Saves ~40% memory during training
@@ -134,7 +134,7 @@ training_config = {
 model = torch.nn.DataParallel(model)
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### CUDA Out of Memory
 ```bash
@@ -174,7 +174,7 @@ if step % 100 == 0:
     torch.cuda.empty_cache()
 ```
 
-## 📈 Monitoring
+## Monitoring
 
 ### GPU Utilization
 ```bash
@@ -195,7 +195,7 @@ def print_memory_usage():
         print(f"Max allocated: {torch.cuda.max_memory_allocated() / 1e9:.2f}GB")
 ```
 
-## 🎯 API Endpoints
+## API Endpoints
 
 ### Health Check
 ```bash
@@ -219,7 +219,7 @@ curl http://localhost:8002/model/memory
 curl -X POST http://localhost:8002/model/clear_cache
 ```
 
-## 🔬 Advanced Usage
+## Advanced Usage
 
 ### Custom Generation
 ```python
@@ -263,7 +263,7 @@ for prompt in prompts:
     responses.append(response)
 ```
 
-## 💡 Tips for RTX 3070
+## Tips for RTX cards
 
 1. **Start Conservative**: Begin with batch_size=1, sequence_length=512
 2. **Monitor Memory**: Use nvidia-smi to watch VRAM usage
@@ -272,16 +272,16 @@ for prompt in prompts:
 5. **Regular Cleanup**: Clear cache every 50-100 steps
 6. **Temperature Control**: Keep GPU cool for sustained performance
 
-## 🎉 Expected Results
+## Expected Results
 
 With proper setup on RTX 3070:
-- ✅ 4.9B parameter model fits in memory
-- ✅ ~5-10 tokens/second inference speed
-- ✅ Stable training without OOM errors
-- ✅ Professional-quality text generation
-- ✅ API response times under 10 seconds
+- 4.9B parameter model fits in memory
+- ~5-10 tokens/second inference speed
+- Stable training without OOM errors
+- Professional-quality text generation
+- API response times under 10 seconds
 
-## 📞 Support
+## Support
 
 If you encounter issues:
 1. Check CUDA installation: `nvidia-smi`
