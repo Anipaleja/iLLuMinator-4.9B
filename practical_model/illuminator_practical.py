@@ -278,5 +278,5 @@ if __name__ == "__main__":
         generated = model.generate(prompt_ids, max_length=20, temperature=0.8)
         print(f"Generated sequence length: {generated.shape[1]}")
     
-    print("\n✅ iLLuMinator Practical model created successfully!")
+    print("\n iLLuMinator Practical model created successfully!")
     print("This model is efficient enough for CPU inference and training.")
