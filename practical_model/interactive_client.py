@@ -18,9 +18,9 @@ class PracticaliLLuMinatorClient:
         
         # Test connection
         if self.check_health():
-            print("✅ Connected to iLLuMinator Practical API")
+            print("Connected to iLLuMinator Practical API")
         else:
-            print("❌ Failed to connect to API")
+            print("Failed to connect to API")
     
     def check_health(self) -> bool:
         """Check if the API is healthy"""
@@ -99,29 +99,29 @@ def main():
     client = PracticaliLLuMinatorClient()
     
     if not client.check_health():
-        print("❌ API server not available. Please start it with:")
+        print("API server not available. Please start it with:")
         print("   python practical_api_server.py")
         return
     
     # Show model info
     info = client.get_model_info()
     if "error" not in info:
-        print(f"🧠 Model: {info.get('model_type', 'Unknown')}")
-        print(f"📊 Parameters: {info.get('parameters', 'Unknown')}")
+        print(f"Model: {info.get('model_type', 'Unknown')}")
+        print(f"Parameters: {info.get('parameters', 'Unknown')}")
         print()
     
-    print("💬 Start chatting! (type /quit to exit)")
+    print("Start chatting! (type /quit to exit)")
     print("-" * 30)
     
     while True:
         try:
-            user_input = input("\n🤔 You: ").strip()
+            user_input = input("\n You: ").strip()
             
             if not user_input:
                 continue
             
             if user_input.lower() in ['/quit', '/exit', 'quit', 'exit']:
-                print("👋 Goodbye!")
+                print("Goodbye!")
                 break
             
             elif user_input.lower() in ['/help', 'help']:
@@ -134,24 +134,24 @@ def main():
             elif user_input.lower() == '/info':
                 info = client.get_model_info()
                 if "error" not in info:
-                    print("\n📊 Model Information:")
+                    print("\n Model Information:")
                     for key, value in info.items():
                         print(f"  {key}: {value}")
                 else:
-                    print(f"❌ Error: {info['error']}")
+                    print(f"Error: {info['error']}")
                 continue
             
             elif user_input.lower() == '/complete':
-                prompt = input("📝 Enter prompt for completion: ").strip()
+                prompt = input("Enter prompt for completion: ").strip()
                 if prompt:
-                    print("🤖 Completing...", end="", flush=True)
+                    print("Completing...", end="", flush=True)
                     result = client.get_completion(prompt)
                     
                     if "error" not in result:
-                        print(f"\r🤖 Completion: {result['completion']}")
-                        print(f"⏱️  Generated in {result['generation_time']}s")
+                        print(f"\r Completion: {result['completion']}")
+                        print(f"Generated in {result['generation_time']}s")
                     else:
-                        print(f"\r❌ Error: {result['error']}")
+                        print(f"\r Error: {result['error']}")
                 continue
             
             # Regular chat
@@ -163,16 +163,16 @@ def main():
             
             if "error" not in result:
                 print(f"{result['response']}")
-                print(f"⏱️  Response time: {result['generation_time']}s")
+                print(f"Response time: {result['generation_time']}s")
             else:
-                print(f"❌ Error: {result['error']}")
-                print(f"⏱️  Total time: {end_time - start_time:.3f}s")
+                print(f"Error: {result['error']}")
+                print(f"Total time: {end_time - start_time:.3f}s")
             
         except KeyboardInterrupt:
-            print("\n\n👋 Goodbye!")
+            print("\n\n Goodbye!")
             break
         except Exception as e:
-            print(f"\n❌ Unexpected error: {e}")
+            print(f"\n Unexpected error: {e}")
 
 if __name__ == "__main__":
     main()
