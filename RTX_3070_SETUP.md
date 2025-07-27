@@ -1,4 +1,4 @@
-# 🚀 RTX 3070 Deployment Guide
+# Nvidia CUDA Deployment Guide
 
 ## Quick Setup for Your Desktop
 
@@ -34,9 +34,9 @@ python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPU: {torch.
 python illuminator_cuda.py
 
 # Should show:
-# 🔥 GPU: NVIDIA GeForce RTX 3070
-# 📊 VRAM: 8.0GB
-# ✅ Model moved to GPU
+# GPU: NVIDIA GeForce RTX 3070
+# VRAM: 8.0GB
+# Model moved to GPU
 ```
 
 ### 5. Start Training (Optional)
@@ -74,7 +74,7 @@ curl -X POST "http://localhost:8002/chat" \
 curl http://localhost:8002/model/memory
 ```
 
-## 🔧 Optimization Tips for RTX 3070
+## Optimization Tips for RTX 3070
 
 ### Memory Management
 - **Training batch size**: Keep at 1
@@ -97,7 +97,7 @@ curl -X POST http://localhost:8002/model/clear_cache
 - **Training**: 0.5-1 tokens/second, ~7GB VRAM
 - **API response**: 5-15 seconds for complex queries
 
-## 🎯 Production Deployment
+## Production Deployment
 
 ### Run as Service (Ubuntu/Linux)
 ```bash
@@ -144,7 +144,7 @@ EXPOSE 8002
 CMD ["python3", "cuda_api_server.py"]
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### CUDA Out of Memory
 ```bash
@@ -178,7 +178,7 @@ sudo apt install nvidia-driver-525
 sudo reboot
 ```
 
-## 📊 Monitoring Dashboard
+## Monitoring Dashboard
 
 Create a simple monitoring script:
 
@@ -203,14 +203,4 @@ while True:
     time.sleep(30)
 ```
 
-## 🎉 You're Ready!
-
-Your RTX 3070 setup should now have:
-- ✅ 4.9B parameter model running on GPU
-- ✅ ~6-7GB VRAM usage (comfortable for 8GB card)
-- ✅ 5-10 tokens/second generation speed
-- ✅ Production API server with streaming
-- ✅ Mixed precision optimization enabled
-- ✅ Professional-quality text generation
-
-The model is specifically optimized for RTX 3070 and should run smoothly on your desktop!
+> The model is now specifically optimized for Nvidia RTX cards and should run smoothly on your device!
