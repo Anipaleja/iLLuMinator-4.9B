@@ -58,23 +58,41 @@ class iLLuMinatorTrainer:
         self.tokenizer = tokenizer
         self.device = device
         
-        # Training parameters
-        self.lr = 6e-4  # Learning rate for 4.7B model
-        self.weight_decay = 0.1
+        # Optimized hyperparameters for better training
+        self.lr = 4e-4  # Proven learning rate for stable training
+        self.weight_decay = 0.1  # Effective weight decay
         self.beta1 = 0.9
-        self.beta2 = 0.95
+        self.beta2 = 0.95  # Conservative beta2 for better convergence
         self.grad_clip = 1.0
         
-        # Initialize optimizer
+        # Initialize optimizer with proven configuration
         self.optimizer = optim.AdamW(
             self.model.parameters(),
             lr=self.lr,
             betas=(self.beta1, self.beta2),
-            weight_decay=self.weight_decay
+            weight_decay=self.weight_decay,
+            eps=1e-8  # Standard epsilon value
         )
         
-        self.criterion = nn.CrossEntropyLoss(ignore_index=tokenizer.tokenizer.pad_token_id)
+        # Add label smoothing for better generalization
+        self.criterion = nn.CrossEntropyLoss(
+            ignore_index=tokenizer.tokenizer.pad_token_id,
+            label_smoothing=0.1  # Prevents overconfident predictions
+        )
         
+    def get_cosine_schedule_with_warmup(self, num_training_steps: int, num_warmup_steps: int = 2000):
+        """Cosine learning rate schedule with warmup for stable training"""
+        def lr_lambda(current_step: int):
+            if current_step < num_warmup_steps:
+                # Linear warmup
+                return float(current_step) / float(max(1, num_warmup_steps))
+            
+            # Cosine annealing
+            progress = float(current_step - num_warmup_steps) / float(max(1, num_training_steps - num_warmup_steps))
+            return max(0.0, 0.5 * (1.0 + math.cos(math.pi * progress)))
+        
+        return optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda, -1)
+    
     def train_step(self, batch: Dict[str, torch.Tensor]) -> float:
         """Single training step"""
         self.model.train()
@@ -100,8 +118,8 @@ class iLLuMinatorTrainer:
         
         return loss.item()
     
-    def train_epoch(self, dataloader: DataLoader, epoch: int) -> float:
-        """Train for one epoch"""
+    def train_epoch(self, dataloader: DataLoader, epoch: int, scheduler=None) -> float:
+        """Train for one epoch with optional learning rate scheduling"""
         total_loss = 0
         num_batches = len(dataloader)
         
@@ -111,15 +129,24 @@ class iLLuMinatorTrainer:
             loss = self.train_step(batch)
             total_loss += loss
             
-            # Update progress bar
+            # Update learning rate if scheduler provided
+            if scheduler:
+                scheduler.step()
+            
+            # Update progress bar with current learning rate
+            current_lr = self.optimizer.param_groups[0]['lr']
             avg_loss = total_loss / (batch_idx + 1)
-            progress_bar.set_postfix({'loss': f'{loss:.4f}', 'avg_loss': f'{avg_loss:.4f}'})
+            progress_bar.set_postfix({
+                'loss': f'{loss:.4f}', 
+                'avg_loss': f'{avg_loss:.4f}',
+                'lr': f'{current_lr:.2e}'
+            })
             
             # Log to wandb if available
             if 'wandb' in globals() and wandb.run is not None:
                 wandb.log({
                     'train_loss': loss,
-                    'learning_rate': self.optimizer.param_groups[0]['lr'],
+                    'learning_rate': current_lr,
                     'epoch': epoch,
                     'step': epoch * num_batches + batch_idx
                 })
@@ -178,7 +205,7 @@ def prepare_sample_data() -> List[str]:
 
 def train_illuminator():
     """Main training function"""
-    print("Starting iLLuMinator 4.9B Training")
+    print("Starting iLLuMinator 4.7B Training")
     
     # Initialize tokenizer
     print("Loading tokenizer...")
@@ -200,20 +227,33 @@ def train_illuminator():
     # Initialize trainer
     trainer = iLLuMinatorTrainer(model, tokenizer)
     
+    # Setup cosine learning rate schedule
+    total_steps = len(dataloader) * num_epochs
+    scheduler = trainer.get_cosine_schedule_with_warmup(
+        num_training_steps=total_steps,
+        num_warmup_steps=2000  # Standard warmup steps
+    )
+    
     print(f"Training on device: {trainer.device}")
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"Training samples: {len(texts)}")
     print(f"Batch size: {batch_size}")
+    print(f"Total training steps: {total_steps}")
+    print(f"Learning rate: {trainer.lr} (optimized)")
+    print(f"Using cosine LR schedule with 2000 warmup steps")
     
-    # Training loop
+    # Training loop with advanced techniques
     num_epochs = 3  # Small number for demo
     
     for epoch in range(1, num_epochs + 1):
-        print(f"\n📚 Epoch {epoch}/{num_epochs}")
+        print(f"\nEpoch {epoch}/{num_epochs}")
         
-        avg_loss = trainer.train_epoch(dataloader, epoch)
+        # Train with cosine scheduling
+        avg_loss = trainer.train_epoch(dataloader, epoch, scheduler)
         
+        current_lr = trainer.optimizer.param_groups[0]['lr']
         print(f"Average loss for epoch {epoch}: {avg_loss:.4f}")
+        print(f"Current learning rate: {current_lr:.2e}")
         
         # Save checkpoint
         checkpoint_path = f"checkpoints/illuminator_epoch_{epoch}.pt"

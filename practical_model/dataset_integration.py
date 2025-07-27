@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Dataset Integration for iLLuMinator Training
-Based on high-quality datasets from LLMDataHub repository
+Enhanced Dataset Integration for iLLuMinator Training
+Based on top-tier datasets from LLMDataHub repository
 """
 
 import torch
@@ -12,6 +12,9 @@ from typing import List, Dict, Optional
 from urllib.parse import urlparse
 import gzip
 from pathlib import Path
+from datasets import load_dataset
+import random
+from transformers import AutoTokenizer
 
 class LLMDatasetDownloader:
     """Download and prepare datasets from LLMDataHub recommendations"""
