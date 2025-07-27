@@ -12,8 +12,8 @@ import os
 # Import the actual model class
 from illuminator_practical import iLLuMinatorPractical
 
-def test_tinyllama_model():
-    print("🎯 Testing TinyLlama-inspired iLLuMinator Model")
+def test_enhanced_model():
+    print("Testing Enhanced iLLuMinator Model")
     print("=" * 50)
     
     # Load tokenizer
@@ -153,4 +153,4 @@ def test_tinyllama_model():
     print(f"   Model size: {total_params/1e6:.1f}M parameters")
 
 if __name__ == "__main__":
-    test_tinyllama_model()
+    test_enhanced_model()

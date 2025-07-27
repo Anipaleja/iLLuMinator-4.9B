@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-TinyLlama-Inspired Training for iLLuMinator
-Incorporating TinyLlama's proven techniques and optimizations
+Enhanced Training for iLLuMinator
+Incorporating proven techniques and optimizations for better model performance
 """
 
 import torch
@@ -16,16 +16,16 @@ from tqdm import tqdm
 from illuminator_practical import iLLuMinatorPractical
 from tokenizer import iLLuMinatorTokenizer
 
-class TinyLlamaInspiredDataset(Dataset):
-    """Dataset inspired by TinyLlama's data preprocessing"""
+class EnhancedDataset(Dataset):
+    """Dataset with optimized data preprocessing"""
     
     def __init__(self, tokenizer, max_length: int = 512):  # Shorter than TinyLlama's 2048 for memory
         self.tokenizer = tokenizer
         self.max_length = max_length
-        self.data = self._create_tinyllama_style_data()
+        self.data = self._create_enhanced_training_data()
         
-    def _create_tinyllama_style_data(self) -> List[str]:
-        """Create data following TinyLlama's approach - mix of natural language and code"""
+    def _create_enhanced_training_data(self) -> List[str]:
+        """Create data following optimized approach - mix of natural language and code"""
         
         # Natural language examples (70% as per TinyLlama)
         natural_language = [
@@ -91,7 +91,7 @@ class TinyLlamaInspiredDataset(Dataset):
         
         training_data.extend(conversations)
         
-        print(f"Created {len(training_data)} TinyLlama-inspired training examples")
+        print(f"Created {len(training_data)} enhanced training examples")
         print(f"Natural Language: {len(natural_language)} examples")
         print(f"Code: {len(code_examples)} examples") 
         print(f"Conversations: {len(conversations)} examples")
@@ -179,7 +179,7 @@ class TinyLlamaInspiredTrainer:
         print(f"🚀 Starting TinyLlama-inspired training for {epochs} epochs...")
         
         # Create dataset
-        dataset = TinyLlamaInspiredDataset(self.tokenizer)
+        dataset = EnhancedDataset(self.tokenizer)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         
         # Setup learning rate schedule
@@ -300,8 +300,8 @@ class TinyLlamaInspiredTrainer:
         print(f"💾 Model saved to {save_path}")
 
 def main():
-    """Run TinyLlama-inspired training"""
-    print("🎯 iLLuMinator TinyLlama-Inspired Training")
+    """Run enhanced training"""
+    print("iLLuMinator Enhanced Training")
     print("=" * 60)
     
     # Set seeds for reproducibility
@@ -310,13 +310,13 @@ def main():
     trainer = TinyLlamaInspiredTrainer()
     
     try:
-        # Train with TinyLlama techniques
+        # Train with enhanced techniques
         trainer.train(epochs=10, batch_size=2)
         
-        print(f"\n🎉 TinyLlama-inspired training completed!")
-        print(f"📁 Best model: illuminator_tinyllama_inspired_best.pth")
-        print(f"📁 Final model: illuminator_tinyllama_inspired.pth")
-        print(f"🧪 Test with: python simple_test.py")
+        print(f"\nEnhanced training completed!")
+        print(f"Best model: illuminator_tinyllama_inspired_best.pth")
+        print(f"Final model: illuminator_tinyllama_inspired.pth")
+        print(f"Test with: python simple_test.py")
         
     except Exception as e:
         print(f"❌ Training failed: {e}")
