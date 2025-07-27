@@ -21,14 +21,14 @@ class EnhancedModelTester:
         self.model_path = model_path
         
         # Load tokenizer
-        print("📚 Loading tokenizer...")
+        print("Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
         # Load model
-        print(f"🧠 Loading enhanced model from {model_path}...")
+        print(f"Loading enhanced model from {model_path}...")
         self.model = self._load_model()
         
-        print(f"✅ Model loaded successfully on {self.device}")
+        print(f"Model loaded successfully on {self.device}")
     
     def _load_model(self):
         """Load the trained model"""
@@ -39,10 +39,10 @@ class EnhancedModelTester:
         if os.path.exists(self.model_path):
             checkpoint = torch.load(self.model_path, map_location=self.device)
             model.load_state_dict(checkpoint['model_state_dict'])
-            print(f"📊 Training history loaded: {len(checkpoint.get('train_losses', []))} epochs")
+            print(f"Training history loaded: {len(checkpoint.get('train_losses', []))} epochs")
         else:
-            print(f"⚠️ Model file not found: {self.model_path}")
-            print("🔄 Using untrained model for demonstration")
+            print(f"Model file not found: {self.model_path}")
+            print("Using untrained model for demonstration")
         
         model.to(self.device)
         model.eval()
@@ -111,7 +111,7 @@ class EnhancedModelTester:
             ]
         }
         
-        print("🧪 Running Comprehensive Test Suite")
+        print("Running Comprehensive Test Suite")
         print("=" * 60)
         
         results = {}
@@ -130,7 +130,7 @@ class EnhancedModelTester:
                     response = self.generate_response(prompt, temperature=temp)
                     
                     if temp == 0.7:  # Show main response
-                        print(f"   🤖: {response}")
+                        print(f"  iLLuMinator: {response}")
                     
                     category_results.append({
                         'prompt': prompt,
@@ -148,12 +148,12 @@ class EnhancedModelTester:
     
     def _analyze_results(self, results: Dict):
         """Analyze and display test results"""
-        print(f"\n📊 Test Analysis")
+        print(f"\n Test Analysis")
         print("=" * 40)
         
         total_tests = sum(len(category_results) for category_results in results.values())
         
-        print(f"📈 Total tests run: {total_tests}")
+        print(f"Total tests run: {total_tests}")
         
         # Response length analysis
         all_lengths = []
@@ -162,11 +162,11 @@ class EnhancedModelTester:
         
         if all_lengths:
             avg_length = sum(all_lengths) / len(all_lengths)
-            print(f"📏 Average response length: {avg_length:.1f} words")
-            print(f"📐 Response length range: {min(all_lengths)} - {max(all_lengths)} words")
+            print(f"Average response length: {avg_length:.1f} words")
+            print(f"Response length range: {min(all_lengths)} - {max(all_lengths)} words")
         
         # Category performance
-        print(f"\n📋 Category breakdown:")
+        print(f"\nCategory breakdown:")
         for category, category_results in results.items():
             temp_07_results = [r for r in category_results if r['temperature'] == 0.7]
             avg_cat_length = sum(r['response_length'] for r in temp_07_results) / len(temp_07_results)
@@ -174,7 +174,7 @@ class EnhancedModelTester:
     
     def interactive_chat(self):
         """Interactive chat mode"""
-        print(f"\n💬 Interactive Chat Mode")
+        print(f"\n Interactive Chat Mode")
         print("=" * 40)
         print("Type 'quit' or 'exit' to end the chat")
         print("Type 'help' for commands")
@@ -182,10 +182,10 @@ class EnhancedModelTester:
         conversation_history = []
         
         while True:
-            user_input = input("\n🧑 You: ").strip()
+            user_input = input("\n You: ").strip()
             
             if user_input.lower() in ['quit', 'exit', 'bye']:
-                print("👋 Goodbye!")
+                print("Goodbye!")
                 break
             
             if user_input.lower() == 'help':
@@ -200,14 +200,14 @@ class EnhancedModelTester:
                 try:
                     temp = float(user_input.split()[1])
                     self.current_temp = max(0.1, min(1.0, temp))
-                    print(f"🌡️ Temperature set to {self.current_temp}")
+                    print(f"Temperature set to {self.current_temp}")
                 except:
-                    print("❌ Invalid temperature. Use 0.1-1.0")
+                    print("Invalid temperature. Use 0.1-1.0")
                 continue
             
             if user_input.lower() == 'clear':
                 conversation_history = []
-                print("🧹 Conversation history cleared")
+                print("Conversation history cleared")
                 continue
             
             if user_input.lower() == 'save':
@@ -224,7 +224,7 @@ class EnhancedModelTester:
                 temperature=getattr(self, 'current_temp', 0.7)
             )
             
-            print(f"🤖 iLLuMinator: {response}")
+            print(f" iLLuMinator: {response}")
             
             # Save to history
             conversation_history.append({
@@ -236,7 +236,7 @@ class EnhancedModelTester:
     def _save_conversation(self, history: List[Dict]):
         """Save conversation history"""
         if not history:
-            print("📝 No conversation to save")
+            print("No conversation to save")
             return
         
         filename = f"conversation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
@@ -244,11 +244,11 @@ class EnhancedModelTester:
         with open(filename, 'w') as f:
             json.dump(history, f, indent=2)
         
-        print(f"💾 Conversation saved to {filename}")
+        print(f"Conversation saved to {filename}")
     
     def quick_test(self):
         """Quick functionality test"""
-        print(f"\n⚡ Quick Test")
+        print(f"\n Quick Test")
         print("=" * 30)
         
         quick_prompts = [
@@ -265,7 +265,7 @@ class EnhancedModelTester:
 
 def main():
     """Main test function"""
-    print("🎯 iLLuMinator Enhanced Model Testing")
+    print("iLLuMinator Enhanced Model Testing")
     print("=" * 50)
     
     # Try to load best model first, fallback to regular
@@ -280,19 +280,19 @@ def main():
     tester = None
     for path in model_paths:
         if os.path.exists(path):
-            print(f"📁 Found model: {path}")
+            print(f"Found model: {path}")
             tester = EnhancedModelTester(path)
             break
     
     if not tester:
-        print("⚠️ No trained model found. Please run training first.")
+        print("No trained model found. Please run training first.")
         print("Available options:")
         print("  python train_enhanced.py  # Enhanced training")
         print("  python train_practical.py  # Basic training")
         return
     
     while True:
-        print(f"\n🎮 Choose test mode:")
+        print(f"\n Choose test mode:")
         print("1. Quick Test (3 samples)")
         print("2. Comprehensive Test (all categories)")
         print("3. Interactive Chat")
@@ -310,11 +310,11 @@ def main():
             tester.interactive_chat()
         
         elif choice == '4':
-            print("👋 Goodbye!")
+            print("Goodbye!")
             break
         
         else:
-            print("❌ Invalid choice. Please enter 1-4.")
+            print("Invalid choice. Please enter 1-4.")
 
 if __name__ == "__main__":
     main()
