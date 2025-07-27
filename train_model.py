@@ -178,7 +178,7 @@ def prepare_sample_data() -> List[str]:
 
 def train_illuminator():
     """Main training function"""
-    print("🚀 Starting iLLuMinator 4.7B Training")
+    print("Starting iLLuMinator 4.9B Training")
     
     # Initialize tokenizer
     print("Loading tokenizer...")
@@ -221,7 +221,7 @@ def train_illuminator():
         trainer.save_checkpoint(epoch, avg_loss, checkpoint_path)
     
     # Save final model
-    print("\n💾 Saving final model...")
+    print("\nSaving final model...")
     torch.save({
         'model_state_dict': model.state_dict(),
         'model_config': {
@@ -231,7 +231,7 @@ def train_illuminator():
         }
     }, "illuminator_4_7b_final.pt")
     
-    print("✅ Training completed!")
+    print("Training completed!")
     return model, tokenizer
 
 if __name__ == "__main__":

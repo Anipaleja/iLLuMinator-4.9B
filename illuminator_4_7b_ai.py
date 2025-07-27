@@ -19,15 +19,15 @@ class iLLuMinator4_7BAI:
         self.fast_mode = fast_mode
         self.conversation_history = []
         
-        print("🚀 Initializing iLLuMinator 4.7B AI System...")
+        print("Initializing iLLuMinator 4.7B AI System...")
         
         # Initialize the inference engine
         try:
             self.inference_engine = iLLuMinatorInference(model_path=model_path)
             self.model_loaded = True
-            print("✅ 4.7B model loaded successfully!")
+            print("4.7B model loaded successfully!")
         except Exception as e:
-            print(f"⚠️  Warning: Could not load 4.7B model: {e}")
+            print(f"Warning: Could not load 4.7B model: {e}")
             print("Falling back to rule-based responses...")
             self.inference_engine = None
             self.model_loaded = False
@@ -219,7 +219,7 @@ for item in items:
 
 def main():
     """Test the iLLuMinator system"""
-    print("🧪 Testing iLLuMinator 4.7B AI System")
+    print("Testing iLLuMinator 4.7B AI System")
     print("=" * 50)
     
     # Initialize system
@@ -235,19 +235,19 @@ def main():
     ]
     
     for query in test_queries:
-        print(f"\n🤔 User: {query}")
-        print("🤖 iLLuMinator: ", end="")
+        print(f"\n User: {query}")
+        print("iLLuMinator: ", end="")
         
         start_time = time.time()
         response = ai.generate_response(query)
         end_time = time.time()
         
         print(response)
-        print(f"⏱️  Response time: {end_time - start_time:.3f}s")
+        print(f"Response time: {end_time - start_time:.3f}s")
         print("-" * 50)
     
     # Model info
-    print("\n📊 Model Information:")
+    print("\nModel Information:")
     info = ai.get_model_info()
     for key, value in info.items():
         print(f"  {key}: {value}")

@@ -27,29 +27,29 @@ class iLLuMinatorInference:
         else:
             self.device = device
             
-        print(f"🔧 Initializing iLLuMinator on {self.device}")
+        print(f"Initializing iLLuMinator on {self.device}")
         
         # Load tokenizer
-        print("📚 Loading tokenizer...")
+        print("Loading tokenizer...")
         if Path(tokenizer_path).exists():
             self.tokenizer = iLLuMinatorTokenizer.from_pretrained(tokenizer_path)
         else:
             self.tokenizer = iLLuMinatorTokenizer()
             
         # Initialize model
-        print("🧠 Loading model...")
+        print("Loading model...")
         self.model = iLLuMinator4_7B(vocab_size=len(self.tokenizer))
         
         # Load trained weights if available
         if model_path and Path(model_path).exists():
             self._load_model_weights(model_path)
         else:
-            print("⚠️  No trained weights found, using randomly initialized model")
+            print("No trained weights found, using randomly initialized model")
         
         self.model.to(self.device)
         self.model.eval()
         
-        print("✅ iLLuMinator ready for inference!")
+        print("iLLuMinator ready for inference!")
         
     def _load_model_weights(self, model_path: str):
         """Load trained model weights"""
@@ -60,11 +60,11 @@ class iLLuMinatorInference:
                 self.model.load_state_dict(checkpoint['model_state_dict'])
             else:
                 self.model.load_state_dict(checkpoint)
-                
-            print(f"✅ Loaded trained weights from {model_path}")
-            
+
+            print(f"Loaded trained weights from {model_path}")
+
         except Exception as e:
-            print(f"❌ Error loading model weights: {e}")
+            print(f"Error loading model weights: {e}")
             print("Using randomly initialized weights")
     
     def generate_text(self, 
@@ -81,7 +81,7 @@ class iLLuMinatorInference:
         input_ids = torch.tensor([self.tokenizer.encode(prompt)], dtype=torch.long).to(self.device)
         
         if input_ids.size(1) >= self.model.max_seq_length:
-            print("⚠️  Prompt too long, truncating...")
+            print("Prompt too long, truncating...")
             input_ids = input_ids[:, :self.model.max_seq_length-max_length]
         
         original_length = input_ids.size(1)
@@ -180,7 +180,7 @@ class iLLuMinatorInference:
     def benchmark_performance(self, num_tokens: int = 100) -> Dict[str, float]:
         """Benchmark model performance"""
         
-        print(f"🔥 Benchmarking performance for {num_tokens} tokens...")
+        print(f"Benchmarking performance for {num_tokens} tokens...")
         
         prompt = "The future of artificial intelligence"
         input_ids = torch.tensor([self.tokenizer.encode(prompt)], dtype=torch.long).to(self.device)
@@ -220,7 +220,7 @@ class iLLuMinatorInference:
 def interactive_chat():
     """Interactive chat interface"""
     
-    print("🤖 iLLuMinator 4.7B Interactive Chat")
+    print("iLLuMinator 4.7B Interactive Chat")
     print("Type 'quit' to exit")
     print("-" * 40)
     
@@ -232,7 +232,7 @@ def interactive_chat():
             user_input = input("\nYou: ").strip()
             
             if user_input.lower() in ['quit', 'exit', 'bye']:
-                print("Goodbye! 👋")
+                print("Goodbye!")
                 break
             
             if not user_input:
@@ -248,7 +248,7 @@ def interactive_chat():
             print(f"({end_time - start_time:.2f}s)")
             
         except KeyboardInterrupt:
-            print("\nGoodbye! 👋")
+            print("\nGoodbye!")
             break
         except Exception as e:
             print(f"Error: {e}")
@@ -256,7 +256,7 @@ def interactive_chat():
 def demo_inference():
     """Demonstration of model capabilities"""
     
-    print("🎯 iLLuMinator 4.7B Demo")
+    print("iLLuMinator 4.7B Demo")
     print("=" * 40)
     
     # Initialize model
@@ -272,8 +272,8 @@ def demo_inference():
     ]
     
     for prompt in demo_prompts:
-        print(f"\n📝 Prompt: {prompt}")
-        print("🤖 Response: ", end="")
+        print(f"\nPrompt: {prompt}")
+        print("Response: ", end="")
         
         response = inference.generate_text(
             prompt=prompt,

@@ -66,15 +66,15 @@ ai_model = None
 async def startup_event():
     """Initialize the AI model on startup"""
     global ai_model
-    print("🚀 Starting iLLuMinator 4.7B API Server...")
+    print("Starting iLLuMinator 4.7B API Server...")
     
     try:
         # Check for trained model
         model_path = "illuminator_4_7b_final.pt"
         ai_model = iLLuMinator4_7BAI(model_path=model_path)
-        print("✅ iLLuMinator 4.7B API Server ready!")
+        print("iLLuMinator 4.7B API Server ready!")
     except Exception as e:
-        print(f"⚠️  Error initializing model: {e}")
+        print(f"Error initializing model: {e}")
         # Initialize with fallback
         ai_model = iLLuMinator4_7BAI()
 
@@ -226,7 +226,7 @@ async def get_examples():
 
 def start_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
     """Start the API server"""
-    print(f"🌐 Starting iLLuMinator 4.7B API Server on {host}:{port}")
+    print(f"Starting iLLuMinator 4.7B API Server on {host}:{port}")
     
     uvicorn.run(
         "api_server_4_7b:app",

@@ -59,7 +59,7 @@ class IlluminatorClient:
             return {"error": f"Connection error: {str(e)}"}
 
 def main():
-    print("🤖 iLLuMinator AI Interactive Client")
+    print("iLLuMinator AI Interactive Client")
     print("=====================================")
     
     client = IlluminatorClient()
@@ -68,12 +68,12 @@ def main():
     print("Testing connection...")
     info = client.get_model_info()
     if "error" in info:
-        print(f"❌ Connection failed: {info['error']}")
+        print(f"Connection failed: {info['error']}")
         return
     
-    print(f"✅ Connected to {info['model_name']} v{info['version']}")
-    print(f"📊 Parameters: {info['total_parameters']}")
-    print(f"🧠 Architecture: {info['architecture']}")
+    print(f"Connected to {info['model_name']} v{info['version']}")
+    print(f"Parameters: {info['total_parameters']}")
+    print(f"Architecture: {info['architecture']}")
     print()
     
     # Interactive chat loop
@@ -82,10 +82,10 @@ def main():
     
     while True:
         try:
-            user_input = input("\n💬 You: ").strip()
+            user_input = input("\nYou: ").strip()
             
             if user_input.lower() in ['quit', 'exit', 'q']:
-                print("👋 Goodbye!")
+                print("Goodbye!")
                 break
             
             if not user_input:
@@ -94,41 +94,41 @@ def main():
             if user_input.startswith('/code '):
                 # Code generation
                 description = user_input[6:]  # Remove '/code '
-                print("🔄 Generating code...")
+                print("Generating code...")
                 
                 result = client.generate_code(description)
                 if "error" in result:
-                    print(f"❌ Error: {result['error']}")
+                    print(f"Error: {result['error']}")
                 else:
-                    print(f"🤖 iLLuMinator: \n{result['response']}")
-                    print(f"⏱️  Response time: {result['response_time']:.3f}s")
+                    print(f"iLLuMinator: \n{result['response']}")
+                    print(f"Response time: {result['response_time']:.3f}s")
             
             elif user_input == '/info':
                 # Model info
                 info = client.get_model_info()
                 if "error" in info:
-                    print(f"❌ Error: {info['error']}")
+                    print(f"Error: {info['error']}")
                 else:
-                    print("🤖 Model Information:")
+                    print("Model Information:")
                     for key, value in info.items():
                         print(f"   {key}: {value}")
             
             else:
                 # Regular chat
-                print("🔄 Thinking...")
+                print("Thinking...")
                 
                 result = client.chat(user_input)
                 if "error" in result:
-                    print(f"❌ Error: {result['error']}")
+                    print(f"Error: {result['error']}")
                 else:
-                    print(f"🤖 iLLuMinator: {result['response']}")
-                    print(f"⏱️  Response time: {result['response_time']:.3f}s | 📝 Tokens: {result['tokens_generated']}")
+                    print(f"iLLuMinator: {result['response']}")
+                    print(f"Response time: {result['response_time']:.3f}s | Tokens: {result['tokens_generated']}")
         
         except KeyboardInterrupt:
-            print("\n👋 Goodbye!")
+            print("\nGoodbye!")
             break
         except Exception as e:
-            print(f"❌ Unexpected error: {e}")
+            print(f"Unexpected error: {e}")
 
 if __name__ == "__main__":
     main()

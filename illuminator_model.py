@@ -293,5 +293,5 @@ if __name__ == "__main__":
         print(f"Input shape: {input_ids.shape}")
         print(f"Output shape: {logits.shape}")
         print(f"Output logits range: [{logits.min():.3f}, {logits.max():.3f}]")
-    
-    print("\n✅ iLLuMinator 4.7B model created successfully!")
+
+    print("\niLLuMinator 4.7B model created successfully!")

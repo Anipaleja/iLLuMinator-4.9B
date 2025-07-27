@@ -39,7 +39,7 @@ class CUDATextDataset(Dataset):
                 if len(chunk) >= 32:  # Minimum viable length
                     self.examples.append(chunk)
         
-        print(f"✅ Created {len(self.examples)} training examples")
+        print(f"Created {len(self.examples)} training examples")
     
     def __len__(self):
         return len(self.examples)
@@ -77,14 +77,14 @@ class CUDATrainer:
         # Create checkpoint directory
         os.makedirs(checkpoint_dir, exist_ok=True)
         
-        print("🚀 Initializing CUDA Trainer...")
+        print("Initializing CUDA Trainer...")
         
         # Initialize tokenizer
-        print("📚 Loading tokenizer...")
+        print("Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
         # Initialize model
-        print("🧠 Creating CUDA-optimized model...")
+        print("Creating CUDA-optimized model...")
         self.model = iLLuMinatorCUDA(vocab_size=len(self.tokenizer))
         
         # Move to GPU and optimize
@@ -96,11 +96,11 @@ class CUDATrainer:
             torch.backends.cudnn.benchmark = True
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
-            
-            print(f"✅ Model on GPU: {torch.cuda.get_device_name()}")
+
+            print(f"Model on GPU: {torch.cuda.get_device_name()}")
         else:
             self.device = torch.device("cpu")
-            print("⚠️  CUDA not available, using CPU")
+            print("CUDA not available, using CPU")
         
         # Initialize optimizer with proper settings for large models
         self.optimizer = optim.AdamW(
@@ -122,12 +122,12 @@ class CUDATrainer:
         # Mixed precision scaler
         if self.use_mixed_precision:
             self.scaler = GradScaler()
-            print("✅ Mixed precision training enabled")
+            print("Mixed precision training enabled")
         
         # Loss function
         self.criterion = nn.CrossEntropyLoss(ignore_index=self.tokenizer.tokenizer.pad_token_id)
         
-        print(f"📊 Trainer Configuration:")
+        print(f"Trainer Configuration:")
         print(f"   Model parameters: {sum(p.numel() for p in self.model.parameters()):,}")
         print(f"   Mixed precision: {self.use_mixed_precision}")
         print(f"   Gradient accumulation: {gradient_accumulation_steps}")
@@ -196,8 +196,8 @@ class CUDATrainer:
     ):
         """Train the model with CUDA optimizations"""
         
-        print(f"🚀 Starting CUDA training for {epochs} epochs...")
-        print(f"📊 Training Configuration:")
+        print(f"Starting CUDA training for {epochs} epochs...")
+        print(f"Training Configuration:")
         print(f"   Batch size: {batch_size}")
         print(f"   Gradient accumulation: {self.gradient_accumulation_steps}")
         print(f"   Effective batch size: {batch_size * self.gradient_accumulation_steps}")
@@ -225,7 +225,7 @@ class CUDATrainer:
             torch.cuda.reset_peak_memory_stats()
         
         for epoch in range(epochs):
-            print(f"\n📖 Epoch {epoch + 1}/{epochs}")
+            print(f"\nEpoch {epoch + 1}/{epochs}")
             epoch_loss = 0
             num_batches = 0
             
@@ -296,18 +296,18 @@ class CUDATrainer:
                     torch.cuda.empty_cache()
             
             avg_epoch_loss = epoch_loss / num_batches
-            print(f"  📊 Epoch {epoch + 1} completed: Average Loss = {avg_epoch_loss:.4f}")
+            print(f"  Epoch {epoch + 1} completed: Average Loss = {avg_epoch_loss:.4f}")
             
             # Save after each epoch
             self._save_checkpoint(global_step, avg_epoch_loss, is_epoch_end=True)
         
         # Final save
         self.save_model()
-        print(f"✅ Training completed! Model saved to {self.model_save_path}")
+        print(f"Training completed! Model saved to {self.model_save_path}")
         
         # Memory summary
         if torch.cuda.is_available():
-            print(f"\n📊 Final GPU Memory Stats:")
+            print(f"\nFinal GPU Memory Stats:")
             print(f"   Peak allocated: {torch.cuda.max_memory_allocated() / 1e9:.2f}GB")
             print(f"   Peak cached: {torch.cuda.max_memory_reserved() / 1e9:.2f}GB")
     
@@ -339,7 +339,7 @@ class CUDATrainer:
                 )
         
         response = self.tokenizer.decode(generated[0].tolist(), skip_special_tokens=True)
-        print(f"  🤖 Eval Sample: {response}")
+        print(f"  Eval Sample: {response}")
         
         self.model.train()
     
@@ -364,7 +364,7 @@ class CUDATrainer:
             checkpoint_path = os.path.join(self.checkpoint_dir, f"checkpoint_step_{step}.pth")
         
         torch.save(checkpoint, checkpoint_path)
-        print(f"💾 Checkpoint saved: {checkpoint_path}")
+        print(f"Checkpoint saved: {checkpoint_path}")
     
     def save_model(self):
         """Save final trained model"""
@@ -383,12 +383,12 @@ class CUDATrainer:
         }
         
         torch.save(checkpoint, self.model_save_path)
-        print(f"💾 Final model saved to {self.model_save_path}")
+        print(f"Final model saved to {self.model_save_path}")
     
     def load_checkpoint(self, checkpoint_path: str):
         """Load training checkpoint"""
-        print(f"📂 Loading checkpoint: {checkpoint_path}")
-        
+        print(f"Loading checkpoint: {checkpoint_path}")
+
         checkpoint = torch.load(checkpoint_path, map_location=self.device)
         
         self.model.load_state_dict(checkpoint['model_state_dict'])
@@ -399,22 +399,22 @@ class CUDATrainer:
         
         if self.use_mixed_precision and 'scaler_state_dict' in checkpoint:
             self.scaler.load_state_dict(checkpoint['scaler_state_dict'])
-        
-        print(f"✅ Checkpoint loaded from step {checkpoint.get('step', 'unknown')}")
+
+        print(f"Checkpoint loaded from step {checkpoint.get('step', 'unknown')}")
         return checkpoint.get('step', 0)
 
 def main():
     """Run CUDA-optimized training"""
-    print("🎯 iLLuMinator CUDA Training")
+    print("iLLuMinator CUDA Training")
     print("=" * 60)
     
     if not torch.cuda.is_available():
-        print("❌ CUDA not available! This training script requires a CUDA-capable GPU.")
+        print("   CUDA not available! This training script requires a CUDA-capable GPU.")
         print("   Please run on a system with NVIDIA GPU and CUDA installed.")
         return
     
-    print(f"🔥 GPU: {torch.cuda.get_device_name()}")
-    print(f"📊 VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB")
+    print(f"GPU: {torch.cuda.get_device_name()}")
+    print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB")
     
     try:
         trainer = CUDATrainer(
@@ -422,7 +422,7 @@ def main():
             gradient_accumulation_steps=8  # Increase for RTX 3070
         )
         
-        print(f"\n🚀 Starting training optimized for RTX 3070...")
+        print(f"\nStarting training optimized for RTX 3070...")
         trainer.train(
             epochs=5,
             batch_size=1,  # Start with batch size 1 for safety
@@ -430,18 +430,18 @@ def main():
             eval_every=250
         )
         
-        print(f"\n🎉 CUDA training completed successfully!")
-        print(f"📁 Model weights: illuminator_cuda_weights.pth")
-        print(f"📁 Checkpoints: checkpoints/")
-        
+        print(f"\nCUDA training completed successfully!")
+        print(f"Model weights: illuminator_cuda_weights.pth")
+        print(f"Checkpoints: checkpoints/")
+
     except torch.cuda.OutOfMemoryError as e:
-        print(f"❌ CUDA Out of Memory Error: {e}")
-        print("💡 Try reducing batch size or sequence length")
-        print("💡 Enable gradient checkpointing")
-        print("💡 Use gradient accumulation for effective larger batches")
+        print(f"CUDA Out of Memory Error: {e}")
+        print("Try reducing batch size or sequence length")
+        print("Enable gradient checkpointing")
+        print("Use gradient accumulation for effective larger batches")
         
     except Exception as e:
-        print(f"❌ Training failed: {e}")
+        print(f"Training failed: {e}")
         import traceback
         traceback.print_exc()
 

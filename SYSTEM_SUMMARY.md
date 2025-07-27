@@ -1,16 +1,8 @@
 # iLLuMinator 4.7B - Complete AI System
 
-## 🎯 Project Overview
+## Project Overview
 
-Successfully built a complete Large Language Model system from scratch as requested:
-
-1. **Removed all web scraping functionality** ✅
-2. **Built a 4.7 billion parameter LLM architecture** ✅ (Actually 4.99B parameters)
-3. **Created a practical 120M parameter working model** ✅
-4. **Full training and inference pipeline** ✅
-5. **Production API server** ✅
-
-## 🏗️ Architecture Components
+## Architecture Components
 
 ### Core Model Files
 
@@ -83,21 +75,21 @@ Successfully built a complete Large Language Model system from scratch as reques
     - Text completion mode
     - Performance metrics
 
-## 📊 Current Status
+## Current Status
 
-### ✅ Working Components
+### Working Components
 - **120M Parameter Model**: Fully functional and trained
 - **API Server**: Running on localhost:8001
 - **Interactive Client**: Ready for chat
 - **Training Pipeline**: Successfully trained on conversational data
 - **Tokenizer**: Complete GPT-2 compatible system
 
-### ⚠️ Large Model Limitations
+### Large Model Limitations
 - **4.99B Parameter Model**: Architecture complete but too large for available memory
 - **Training**: Model size exceeds system RAM
 - **Inference**: Extremely slow on CPU-only system
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Start the API Server
 ```bash
@@ -137,7 +129,7 @@ python train_practical.py
 python practical_ai.py
 ```
 
-## 🔧 Technical Specifications
+## Technical Specifications
 
 ### Large Model (4.99B Parameters)
 - **Layers**: 30 transformer blocks
@@ -155,7 +147,7 @@ python practical_ai.py
 - **Context Length**: 1024 tokens
 - **Parameters**: 124,442,112 (124M)
 
-## 📈 Performance Metrics
+## Performance Metrics
 
 ### Current Performance (120M Model on CPU)
 - **Generation Speed**: ~10-12 tokens/second
@@ -168,7 +160,7 @@ python practical_ai.py
 - **Chat Requests**: 2-17 seconds
 - **Model Info**: <200ms
 
-## 🎓 Training Data
+## Training Data
 
 The practical model was trained on:
 - 20 conversational examples
@@ -177,7 +169,7 @@ The practical model was trained on:
 - Code examples and functions
 - Greeting and help responses
 
-## 🔍 API Endpoints
+## API Endpoints
 
 ### Core Endpoints
 - `GET /` - Welcome message
@@ -193,7 +185,7 @@ The practical model was trained on:
 - `GET /benchmark` - Performance testing
 - `GET /examples` - API usage examples
 
-## 🛠️ Development Notes
+## Development Notes
 
 ### Successfully Implemented
 1. **Complete Transformer Architecture**: Built from scratch with all modern components
@@ -214,7 +206,7 @@ The practical model was trained on:
 - **Performance**: CPU-only inference is slow
 - **Model Quality**: Needs more training data and epochs
 
-## 🚀 Next Steps
+## Next Steps
 
 1. **Improve Training Data**: Add more diverse conversational examples
 2. **Extended Training**: Run more epochs for better coherence
@@ -222,7 +214,7 @@ The practical model was trained on:
 4. **Advanced Features**: Add streaming responses, conversation memory
 5. **Model Variants**: Create specialized models for different tasks
 
-## 📁 File Structure
+## File Structure
 
 ```
 iLLuMinator-4.7B/
@@ -240,14 +232,14 @@ iLLuMinator-4.7B/
 └── requirements_clean.txt       # Dependencies
 ```
 
-## 🎉 Conclusion
+## Conclusion
 
 Successfully delivered a complete LLM system from scratch:
-- ✅ Removed web scraping as requested
-- ✅ Built 4.7B+ parameter transformer architecture  
-- ✅ Created working practical model
-- ✅ Full training and inference pipeline
-- ✅ Production API server
-- ✅ Interactive client interface
+- Removed web scraping as requested
+- Built 4.9B+ parameter transformer architecture  
+- Created working practical model
+- Full training and inference pipeline
+- Production API server
+- Interactive client interface
 
 The system is fully functional and ready for continued iteration and improvement!

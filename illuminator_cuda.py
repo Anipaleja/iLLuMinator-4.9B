@@ -159,7 +159,7 @@ class iLLuMinatorCUDA(nn.Module):
     ):
         super().__init__()
         
-        print("🚀 Initializing CUDA-Optimized iLLuMinator 4.9B...")
+        print("Initializing CUDA-Optimized iLLuMinator 4.9B...")
         
         self.vocab_size = vocab_size
         self.d_model = d_model
@@ -196,7 +196,7 @@ class iLLuMinatorCUDA(nn.Module):
         total_params = sum(p.numel() for p in self.parameters())
         trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         
-        print(f"📊 CUDA Model Configuration:")
+        print(f"CUDA Model Configuration:")
         print(f"   Total parameters: {total_params:,}")
         print(f"   Trainable parameters: {trainable_params:,}")
         print(f"   Model size: {total_params/1e9:.1f}B parameters")
@@ -205,17 +205,17 @@ class iLLuMinatorCUDA(nn.Module):
         
         # CUDA optimizations
         if torch.cuda.is_available():
-            print(f"🔥 CUDA detected: {torch.cuda.get_device_name()}")
+            print(f"   CUDA detected: {torch.cuda.get_device_name()}")
             print(f"   VRAM available: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB")
             
             # Enable optimizations
             torch.backends.cudnn.benchmark = True
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
-            
-            print("✅ CUDA optimizations enabled (TF32, cuDNN benchmark)")
+
+            print("CUDA optimizations enabled (TF32, cuDNN benchmark)")
         else:
-            print("⚠️  CUDA not available, running on CPU")
+            print("CUDA not available, running on CPU")
     
     def _init_weights(self):
         """Initialize weights with proper scaling"""
@@ -358,12 +358,12 @@ class iLLuMinatorCUDA(nn.Module):
             # Optimize with torch.compile if available (PyTorch 2.0+)
             if hasattr(torch, 'compile'):
                 try:
-                    print("🚀 Optimizing with torch.compile...")
+                    print("Optimizing with torch.compile...")
                     self.forward = torch.compile(self.forward, mode="reduce-overhead")
-                    print("✅ Model compiled for faster inference")
+                    print("Model compiled for faster inference")
                 except Exception as e:
-                    print(f"⚠️  Could not compile model: {e}")
-        
+                    print(f"Could not compile model: {e}")
+
         return self
 
 def create_cuda_model(vocab_size: int = 50260) -> iLLuMinatorCUDA:
@@ -387,14 +387,14 @@ def create_cuda_model(vocab_size: int = 50260) -> iLLuMinatorCUDA:
     # Move to GPU if available
     if torch.cuda.is_available():
         model = model.cuda()
-        print(f"✅ Model moved to GPU: {torch.cuda.get_device_name()}")
+        print(f"Model moved to GPU: {torch.cuda.get_device_name()}")
         
         # Clear cache
         torch.cuda.empty_cache()
         
         # Print memory usage
         memory_info = model.get_memory_usage()
-        print(f"📊 GPU Memory Usage:")
+        print(f"GPU Memory Usage:")
         print(f"   Allocated: {memory_info['allocated']:.2f}GB")
         print(f"   Cached: {memory_info['cached']:.2f}GB")
         print(f"   Total VRAM: {memory_info['total_vram']:.1f}GB")
@@ -403,14 +403,14 @@ def create_cuda_model(vocab_size: int = 50260) -> iLLuMinatorCUDA:
 
 def main():
     """Test the CUDA-optimized model"""
-    print("🧪 Testing CUDA-Optimized iLLuMinator 4.9B")
+    print("Testing CUDA-Optimized iLLuMinator 4.9B")
     print("=" * 60)
     
     # Create model
     model = create_cuda_model()
     
     # Test forward pass
-    print("\n🔬 Testing forward pass...")
+    print("\nTesting forward pass...")
     batch_size, seq_len = 1, 128
     
     if torch.cuda.is_available():
@@ -422,7 +422,7 @@ def main():
         with torch.cuda.amp.autocast(enabled=torch.cuda.is_available()):
             logits = model(input_ids)
         
-        print(f"✅ Forward pass successful!")
+        print(f"   Forward pass successful!")
         print(f"   Input shape: {input_ids.shape}")
         print(f"   Output shape: {logits.shape}")
         
@@ -431,11 +431,11 @@ def main():
             print(f"   GPU Memory: {memory_info['allocated']:.2f}GB allocated")
         
     except Exception as e:
-        print(f"❌ Forward pass failed: {e}")
+        print(f"Forward pass failed: {e}")
         return
     
     # Test generation
-    print("\n🎯 Testing generation...")
+    print("\nTesting generation...")
     try:
         test_input = torch.tensor([[1, 2, 3, 4, 5]])  # Simple test sequence
         if torch.cuda.is_available():
@@ -448,13 +448,13 @@ def main():
             do_sample=True
         )
         
-        print(f"✅ Generation successful!")
+        print(f"   Generation successful!")
         print(f"   Generated sequence length: {generated.shape[1]}")
         
     except Exception as e:
-        print(f"❌ Generation failed: {e}")
-    
-    print(f"\n🎉 CUDA model test completed!")
+        print(f"Generation failed: {e}")
+
+    print(f"\nCUDA model test completed!")
 
 if __name__ == "__main__":
     main()

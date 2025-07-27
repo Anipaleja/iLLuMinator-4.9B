@@ -13,7 +13,7 @@
 - **TensorFloat-32**: Automatic acceleration on RTX 30xx series
 - **CUDA Kernels**: Low-level GPU optimizations enabled
 
-### 📁 Project Organization
+### Project Organization
 ```
 iLLuMinator-4.7B/
 ├── illuminator_cuda.py          # RTX 3070 optimized model
@@ -38,7 +38,7 @@ iLLuMinator-4.7B/
 - **Interactive Clients**: Command-line chat interfaces
 - **Complete Documentation**: Setup guides, troubleshooting, optimization tips
 
-## 🔄 Next Iteration Opportunities
+## Next Iteration Opportunities
 
 ### 1. **Training Data Enhancement**
 ```python
@@ -101,11 +101,11 @@ production_features = [
 ]
 ```
 
-## Immediate Next Steps for Your RTX 3070
+## Immediate Next Steps for RTX cards
 
 ### Priority 1: Get Running
 ```bash
-# On your RTX 3070 desktop:
+# On your device:
 git clone https://github.com/Anipaleja/iLLuMinator-4.7B.git
 cd iLLuMinator-4.7B
 pip install -r requirements_cuda.txt

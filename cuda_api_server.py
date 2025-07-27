@@ -65,14 +65,14 @@ class CUDAModelManager:
     async def load_model(self, model_path: Optional[str] = None):
         """Load the CUDA-optimized model"""
         try:
-            logger.info("🚀 Loading CUDA-optimized iLLuMinator 4.9B...")
+            logger.info("Loading CUDA-optimized iLLuMinator 4.9B...")
             
             # Load tokenizer
-            logger.info("📚 Loading tokenizer...")
+            logger.info("Loading tokenizer...")
             self.tokenizer = iLLuMinatorTokenizer()
             
             # Load model
-            logger.info("🧠 Loading CUDA model...")
+            logger.info("Loading CUDA model...")
             self.model = iLLuMinatorCUDA(vocab_size=len(self.tokenizer))
             
             # Load trained weights if available
@@ -83,9 +83,9 @@ class CUDAModelManager:
                         self.model.load_state_dict(checkpoint['model_state_dict'])
                     else:
                         self.model.load_state_dict(checkpoint)
-                    logger.info(f"✅ Loaded weights from {model_path}")
+                    logger.info(f"Loaded weights from {model_path}")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not load weights: {e}")
+                    logger.warning(f"Could not load weights: {e}")
             
             # Move to GPU and optimize
             if torch.cuda.is_available():
@@ -93,17 +93,17 @@ class CUDAModelManager:
                 self.model = self.model.optimize_for_inference()
                 
                 # Warm up the model
-                logger.info("🔥 Warming up GPU model...")
+                logger.info("Warming up GPU model...")
                 await self._warmup_model()
                 
                 memory_info = self.model.get_memory_usage()
-                logger.info(f"📊 GPU Memory: {memory_info['allocated']:.2f}GB allocated")
+                logger.info(f"GPU Memory: {memory_info['allocated']:.2f}GB allocated")
             
             self.model_loaded = True
-            logger.info("✅ Model loaded and ready!")
+            logger.info("Model loaded and ready!")
             
         except Exception as e:
-            logger.error(f"❌ Model loading failed: {e}")
+            logger.error(f"Model loading failed: {e}")
             self.model_loaded = False
             raise
     
@@ -113,9 +113,9 @@ class CUDAModelManager:
             dummy_input = torch.randint(0, 1000, (1, 10)).to(self.device)
             with torch.no_grad():
                 _ = self.model(dummy_input)
-            logger.info("✅ Model warmed up")
+            logger.info("Model warmed up")
         except Exception as e:
-            logger.warning(f"⚠️  Warmup failed: {e}")
+            logger.warning(f"Warmup failed: {e}")
     
     async def generate_response(
         self,
@@ -162,7 +162,7 @@ class CUDAModelManager:
             except torch.cuda.OutOfMemoryError:
                 # Clear cache and retry with smaller parameters
                 torch.cuda.empty_cache()
-                logger.warning("⚠️  CUDA OOM, retrying with reduced parameters")
+                logger.warning("CUDA OOM, retrying with reduced parameters")
                 
                 return await self.generate_response(
                     prompt, 
@@ -238,23 +238,23 @@ model_manager = CUDAModelManager()
 async def lifespan(app: FastAPI):
     """Handle startup and shutdown"""
     # Startup
-    logger.info("🚀 Starting iLLuMinator CUDA API Server...")
+    logger.info("Starting iLLuMinator CUDA API Server...")
     
     try:
         # Try to load trained weights
         model_path = "illuminator_cuda_weights.pth"
         if not torch.cuda.is_available():
-            logger.warning("⚠️  CUDA not available, model performance will be limited")
+            logger.warning("CUDA not available, model performance will be limited")
         
         await model_manager.load_model(model_path)
         
     except Exception as e:
-        logger.error(f"❌ Failed to load model: {e}")
+        logger.error(f"Failed to load model: {e}")
     
     yield
     
     # Shutdown
-    logger.info("👋 Shutting down iLLuMinator CUDA API Server...")
+    logger.info("Shutting down iLLuMinator CUDA API Server...")
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
@@ -476,21 +476,21 @@ async def examples():
 def main():
     """Run the CUDA-optimized server"""
     
-    print("🚀 iLLuMinator CUDA API Server")
+    print("iLLuMinator CUDA API Server")
     print("=" * 50)
     
     if torch.cuda.is_available():
-        print(f"🔥 GPU: {torch.cuda.get_device_name()}")
-        print(f"📊 VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB")
+        print(f"GPU: {torch.cuda.get_device_name()}")
+        print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB")
     else:
-        print("⚠️  CUDA not available - performance will be limited")
+        print("CUDA not available - performance will be limited")
     
-    print("\n📚 API Documentation: http://localhost:8002/docs")
-    print("🔍 Health Check: http://localhost:8002/health")
-    print("💬 Chat Endpoint: http://localhost:8002/chat")
-    print("📝 Completion: http://localhost:8002/completion")
-    print("🧠 Model Info: http://localhost:8002/model/info")
-    
+    print("\nAPI Documentation: http://localhost:8002/docs")
+    print("Health Check: http://localhost:8002/health")
+    print("Chat Endpoint: http://localhost:8002/chat")
+    print("Completion: http://localhost:8002/completion")
+    print("Model Info: http://localhost:8002/model/info")
+
     uvicorn.run(
         app,
         host="0.0.0.0",
