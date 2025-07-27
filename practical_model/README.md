@@ -2,7 +2,7 @@
 
 This folder contains the practical, lightweight version of iLLuMinator designed to run efficiently on consumer hardware.
 
-## 📊 Model Specifications
+## Model Specifications
 
 - **Parameters**: 124.4 million
 - **Architecture**: 12-layer transformer
@@ -12,7 +12,7 @@ This folder contains the practical, lightweight version of iLLuMinator designed 
 - **Memory Usage**: ~500MB RAM
 - **Target Hardware**: CPU, integrated GPUs, low-end hardware
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Test the Model
 ```bash
@@ -34,7 +34,7 @@ python practical_api_server.py
 python interactive_client.py
 ```
 
-## 📁 Files
+## Files
 
 - `illuminator_practical.py` - 120M parameter transformer model
 - `practical_ai.py` - Complete AI system wrapper
@@ -43,14 +43,14 @@ python interactive_client.py
 - `interactive_client.py` - Command-line chat interface
 - `illuminator_practical_weights.pth` - Trained model weights
 
-## ⚡ Performance
+## Performance
 
 - **Generation Speed**: 10-12 tokens/second (CPU)
 - **Response Time**: 2-4 seconds for short responses
 - **Memory Usage**: ~500MB RAM
 - **Training Time**: ~5 minutes for 10 epochs
 
-## 🎯 Use Cases
+## Use Cases
 
 - **Development & Testing**: Quick prototyping and testing
 - **Resource-Constrained Environments**: Laptops, edge devices
@@ -58,7 +58,7 @@ python interactive_client.py
 - **Fallback System**: When the large model is unavailable
 - **Local AI Assistant**: Personal productivity tool
 
-## 🔧 Configuration
+## Configuration
 
 The practical model uses efficient architecture choices:
 
@@ -75,7 +75,7 @@ config = {
 }
 ```
 
-## 📈 Training Data
+## Training Data
 
 Currently trained on:
 - 20+ conversational examples
@@ -84,7 +84,7 @@ Currently trained on:
 - Code examples and functions
 - Greeting and help responses
 
-## 🚀 API Usage
+## API Usage
 
 ### Start Server
 ```bash
@@ -105,7 +105,7 @@ curl -X POST "http://localhost:8001/chat" \
 curl http://localhost:8001/health
 ```
 
-## 🎓 Educational Value
+## Educational Value
 
 This practical model demonstrates:
 - Complete transformer implementation
@@ -114,7 +114,7 @@ This practical model demonstrates:
 - Interactive chat interfaces
 - Model optimization techniques
 
-## 🔄 Relationship to Main Model
+## Relationship to Main Model
 
 The practical model serves as:
 - **Development Environment**: Test changes quickly
@@ -123,7 +123,7 @@ The practical model serves as:
 - **Baseline Comparison**: Performance benchmarking
 - **Production Prototype**: Rapid deployment testing
 
-## 💡 Future Improvements
+## Future Improvements
 
 - [ ] Expand training dataset
 - [ ] Add more specialized training data
@@ -132,7 +132,7 @@ The practical model serves as:
 - [ ] Create model variants for specific tasks
 - [ ] Optimize inference speed further
 
-## 🔧 Customization
+## Customization
 
 To modify the model:
 
@@ -141,7 +141,7 @@ To modify the model:
 3. **Customize API**: Update `practical_api_server.py`
 4. **Adjust Parameters**: Configure in respective files
 
-## 🎯 Performance Tips
+## Performance Tips
 
 - **CPU Optimization**: Use Intel MKL or OpenBLAS
 - **Memory Efficiency**: Enable gradient checkpointing
