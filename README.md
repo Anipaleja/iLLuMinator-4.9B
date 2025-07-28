@@ -12,7 +12,7 @@ A comprehensive Large Language Model implementation featuring both a production-
 - **Performance**: 5-10 tokens/second on RTX 3070
 - **Memory**: ~6-7GB VRAM for inference
 
-### Practical Model (120M Parameters)  
+### Practical CPU optimized Model (120M Parameters)  
 - **Target Hardware**: CPU, laptops, edge devices
 - **Performance**: 10-12 tokens/second on CPU
 - **Memory**: ~500MB RAM
