@@ -1,0 +1,52 @@
+# Enhanced requirements for iLLuMinator 4.9B Training and Debugging
+# Optimized for Windows with NVIDIA GPU
+
+# Core PyTorch with CUDA support
+torch>=2.0.0+cu118
+torchvision>=0.15.0+cu118
+torchaudio>=2.0.0+cu118
+
+# Transformers and ML libraries
+transformers>=4.30.0
+accelerate>=0.20.0
+datasets>=2.12.0
+tokenizers>=0.13.0
+
+# Training and optimization
+wandb>=0.15.0
+tensorboard>=2.13.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Visualization and analysis
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.14.0
+
+# System monitoring
+psutil>=5.9.0
+GPUtil>=1.4.0
+nvidia-ml-py3>=7.352.0
+
+# Data processing
+numpy>=1.24.0
+pandas>=2.0.0
+tqdm>=4.65.0
+
+# Memory optimization
+memory-profiler>=0.60.0
+pympler>=0.9
+
+# Development and debugging
+jupyter>=1.0.0
+ipython>=8.14.0
+pytest>=7.4.0
+
+# API and web interface
+fastapi>=0.100.0
+uvicorn>=0.22.0
+requests>=2.31.0
+
+# Additional optimizations
+ninja>=1.11.0  # For faster compilation
+flash-attn>=2.0.0  # Flash attention (if available)

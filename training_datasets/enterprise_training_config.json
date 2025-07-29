@@ -1,0 +1,37 @@
+{
+  "model_architecture": {
+    "parameters": "4.9B",
+    "context_length": 2048,
+    "vocabulary_size": 50257,
+    "architecture": "transformer_decoder"
+  },
+  "training_data": {
+    "total_tokens": 300000000000,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 32,
+    "sequence_length": 2048,
+    "preprocessing": {
+      "tokenizer": "tiktoken_gpt3",
+      "filtering": {
+        "min_length": 200,
+        "max_length": 8192,
+        "remove_duplicates": true,
+        "quality_threshold": 0.7
+      }
+    }
+  },
+  "optimization": {
+    "hardware": "RTX_3050_8GB",
+    "mixed_precision": true,
+    "gradient_checkpointing": true,
+    "memory_efficient_attention": true,
+    "compile_model": true
+  },
+  "data_quality": {
+    "deduplication": true,
+    "content_filtering": true,
+    "language_detection": true,
+    "toxic_content_removal": true,
+    "privacy_filtering": true
+  }
+}
