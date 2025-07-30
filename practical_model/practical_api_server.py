@@ -42,18 +42,18 @@ ai_system: Optional[PracticaliLLuMinatorAI] = None
 async def startup_event():
     """Initialize the AI system on startup"""
     global ai_system
-    print("🚀 Starting Practical iLLuMinator API Server...")
+    print("Starting Practical iLLuMinator API Server...")
     
     try:
         ai_system = PracticaliLLuMinatorAI()
         
         if ai_system.model_loaded:
-            print("✅ AI system loaded successfully!")
+            print("AI system loaded successfully!")
         else:
-            print("⚠️  AI system running in fallback mode")
+            print("AI system running in fallback mode")
             
     except Exception as e:
-        print(f"❌ Failed to initialize AI system: {e}")
+        print(f"Failed to initialize AI system: {e}")
         ai_system = None
 
 @app.get("/")
@@ -215,10 +215,10 @@ async def examples():
 
 def main():
     """Run the server"""
-    print("🚀 Starting iLLuMinator Practical API Server")
-    print("📚 Interactive docs will be available at: http://localhost:8001/docs")
-    print("🔍 Health check: http://localhost:8001/health")
-    print("💬 Chat endpoint: http://localhost:8001/chat")
+    print("Starting iLLuMinator Practical API Server")
+    print("Interactive docs will be available at: http://localhost:8001/docs")
+    print("Health check: http://localhost:8001/health")
+    print("Chat endpoint: http://localhost:8001/chat")
     
     uvicorn.run(
         app,

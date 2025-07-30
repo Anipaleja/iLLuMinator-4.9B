@@ -165,38 +165,38 @@ def start_training():
 
 def main():
     """Main setup and launch function"""
-    print("🚀 4.9B Parameter Model - Complete Setup & Training")
+    print("4.9B Parameter Model - Complete Setup & Training")
     print("=" * 70)
-    print("Enterprise-grade AI training similar to ChatGPT, Claude, and Gemini")
+    print("Professional AI training using top datasets from LLMDataHub")
     print("Optimized for RTX 3050 8GB VRAM")
     print()
     
     # Run all checks and setup
     if not check_requirements():
-        print("❌ Requirements check failed")
+        print("Requirements check failed")
         return
     
     cuda_available = check_cuda()
     setup_directories()
     
     if not check_training_data():
-        print("❌ Training data setup failed")
+        print("Training data setup failed")
         return
     
-    print("\n✅ Setup Complete!")
-    print(f"🖥️  Using: {'CUDA GPU' if cuda_available else 'CPU'}")
-    print("📊 Training data ready")
-    print("📁 Directories created")
+    print("\nSetup Complete!")
+    print(f"Using: {'CUDA GPU' if cuda_available else 'CPU'}")
+    print("Training data ready")
+    print("Directories created")
     print()
     
     # Ask user to start training
-    response = input("🎯 Start 4.9B parameter training now? (y/n): ").lower().strip()
+    response = input("Start 4.9B parameter training now? (y/n): ").lower().strip()
     
     if response in ['y', 'yes', '']:
         start_training()
     else:
-        print("\n📋 Setup complete. Run 'python train_4_9B_professional.py' to start training.")
-        print("📊 Run 'python monitor_training.py' to monitor progress.")
+        print("\nSetup complete. Run 'python train_4_9B_professional.py' to start training.")
+        print("Run 'python monitor_training.py' to monitor progress.")
 
 if __name__ == "__main__":
     main()

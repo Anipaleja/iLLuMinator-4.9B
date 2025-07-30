@@ -15,19 +15,19 @@ class PracticaliLLuMinatorAI:
     """Practical AI system with efficient inference"""
     
     def __init__(self, model_path: str = None):
-        print("🚀 Initializing Practical iLLuMinator AI...")
+        print("Initializing Practical iLLuMinator AI...")
         
         # Initialize tokenizer
-        print("📚 Loading tokenizer...")
+        print("Loading tokenizer...")
         try:
             self.tokenizer = iLLuMinatorTokenizer()
-            print(f"✅ Tokenizer loaded with {len(self.tokenizer)} tokens")
+            print(f"Tokenizer loaded with {len(self.tokenizer)} tokens")
         except Exception as e:
-            print(f"❌ Tokenizer failed: {e}")
+            print(f"Tokenizer failed: {e}")
             return
         
         # Initialize model
-        print("🧠 Loading practical model...")
+        print("Loading practical model...")
         try:
             self.model = iLLuMinatorPractical(vocab_size=len(self.tokenizer))
             
@@ -37,14 +37,14 @@ class PracticaliLLuMinatorAI:
             elif os.path.exists("illuminator_practical_weights.pth"):
                 self._load_weights("illuminator_practical_weights.pth")
             else:
-                print("⚠️  No trained weights found, using randomly initialized weights")
+                print("No trained weights found, using randomly initialized weights")
             
             self.model.eval()
             self.model_loaded = True
-            print("✅ Practical model ready!")
+            print("Practical model ready!")
             
         except Exception as e:
-            print(f"❌ Model loading failed: {e}")
+            print(f"Model loading failed: {e}")
             self.model_loaded = False
     
     def _load_weights(self, model_path: str):
@@ -55,9 +55,9 @@ class PracticaliLLuMinatorAI:
                 self.model.load_state_dict(checkpoint['model_state_dict'])
             else:
                 self.model.load_state_dict(checkpoint)
-            print(f"✅ Loaded weights from {model_path}")
+            print(f"Loaded weights from {model_path}")
         except Exception as e:
-            print(f"⚠️  Could not load weights: {e}")
+            print(f"Could not load weights: {e}")
     
     def generate_response(self, prompt: str, max_tokens: int = 100, temperature: float = 0.8) -> str:
         """Generate response efficiently"""
@@ -196,14 +196,14 @@ class PracticaliLLuMinatorAI:
 
 def main():
     """Test the practical system"""
-    print("🧪 Testing Practical iLLuMinator AI")
+    print("Testing Practical iLLuMinator AI")
     print("=" * 50)
     
     # Initialize
     ai = PracticaliLLuMinatorAI()
     
     if not ai.model_loaded:
-        print("❌ Model failed to load, exiting...")
+        print("Model failed to load, exiting...")
         return
     
     # Test queries
@@ -216,28 +216,28 @@ def main():
     ]
     
     for query in test_queries:
-        print(f"\n🤔 User: {query}")
-        print("🤖 iLLuMinator: ", end="")
+        print(f"\nUser: {query}")
+        print("iLLuMinator: ", end="")
         
         start_time = time.time()
         response = ai.chat(query)
         end_time = time.time()
         
         print(response)
-        print(f"⏱️  ({end_time - start_time:.3f}s)")
+        print(f"({end_time - start_time:.3f}s)")
         print("-" * 40)
     
     # Benchmark
-    print(f"\n📊 Model Info:")
+    print(f"\nModel Info:")
     info = ai.get_model_info()
     for key, value in info.items():
         print(f"  {key}: {value}")
     
     # Quick benchmark
-    print(f"\n⚡ Performance Benchmark:")
+    print(f"\nPerformance Benchmark:")
     results = ai.benchmark_performance(5)
-    
-    print(f"\n✅ Practical iLLuMinator AI test completed!")
+
+    print(f"\nPractical iLLuMinator AI test completed!")
 
 if __name__ == "__main__":
     main()

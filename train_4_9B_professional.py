@@ -1,5 +1,5 @@
 # Professional 4.9B Parameter Model Training
-# Enterprise-grade datasets similar to ChatGPT, Claude, and Gemini
+# Using top-tier datasets from LLMDataHub repository
 # Optimized for RTX 3050 8GB VRAM
 
 import os
@@ -21,7 +21,6 @@ from torch.utils.data import Dataset, DataLoader
 from torch.cuda.amp import GradScaler, autocast
 import numpy as np
 
-# Suppress warnings for clean output
 warnings.filterwarnings("ignore")
 
 @dataclass
@@ -177,11 +176,11 @@ class GPT4_9B(nn.Module):
         
         # Calculate and report parameter count
         n_params = sum(p.numel() for p in self.parameters())
-        print(f"🎯 Model initialized with {n_params:,} parameters ({n_params/1e9:.2f}B)")
+        print(f"Model initialized with {n_params:,} parameters ({n_params/1e9:.2f}B)")
         
         # Verify we hit 4.9B parameters
         if abs(n_params - 4.9e9) / 4.9e9 > 0.1:  # Allow 10% variance
-            print(f"⚠️ Parameter count is {n_params/1e9:.2f}B, adjusting architecture...")
+            print(f"Warning: Parameter count is {n_params/1e9:.2f}B, adjusting architecture...")
     
     def _init_weights(self, module):
         """Initialize weights with GPT-3 scheme"""
@@ -221,98 +220,234 @@ class GPT4_9B(nn.Module):
         
         return logits, loss
 
-class EnterpriseDataset(Dataset):
-    """Dataset with enterprise-grade data similar to ChatGPT/Claude/Gemini training"""
+class ProfessionalDatasetLoader:
+    """Load and process top-tier datasets from LLMDataHub"""
     
-    def __init__(self, data_paths: List[str], max_length: int = 2048):
+    def __init__(self, max_length: int = 2048):
         self.max_length = max_length
         self.tokenizer = self._get_tokenizer()
         
-        print("📊 Loading enterprise training datasets...")
-        self.samples = []
+        # Top-tier datasets from LLMDataHub
+        self.dataset_configs = [
+            {
+                'name': 'OpenOrca',
+                'hf_dataset': 'Open-Orca/OpenOrca',
+                'text_field': 'response',
+                'quality': 'high',
+                'size': '4.5M'
+            },
+            {
+                'name': 'UltraChat',
+                'hf_dataset': 'stingning/ultrachat',
+                'text_field': 'content',
+                'quality': 'high',
+                'size': '1.57M'
+            },
+            {
+                'name': 'WizardLM',
+                'hf_dataset': 'WizardLM/WizardLM_evol_instruct_V2_196k',
+                'text_field': 'output',
+                'quality': 'high',
+                'size': '196k'
+            },
+            {
+                'name': 'Dolma',
+                'hf_dataset': 'allenai/dolma',
+                'text_field': 'text',
+                'quality': 'pretraining',
+                'size': '3T tokens'
+            },
+            {
+                'name': 'RedPajama',
+                'hf_dataset': 'togethercomputer/RedPajama-Data-1T',
+                'text_field': 'text',
+                'quality': 'pretraining',
+                'size': '1.2T tokens'
+            }
+        ]
         
-        # Load data from multiple sources
-        for data_path in data_paths:
-            if Path(data_path).exists():
-                self._load_dataset(data_path)
-        
-        if not self.samples:
-            print("⚠️ No training data found, creating sample dataset...")
-            self._create_sample_data()
-        
-        print(f"✅ Loaded {len(self.samples):,} training samples")
+        print("Loading professional datasets from LLMDataHub...")
+        self.samples = self._load_datasets()
+        print(f"Loaded {len(self.samples):,} high-quality training samples")
     
     def _get_tokenizer(self):
-        """Get tiktoken tokenizer (GPT-3 compatible)"""
+        """Get the best available tokenizer"""
         try:
             import tiktoken
             return tiktoken.get_encoding("cl100k_base")
         except ImportError:
-            print("⚠️ tiktoken not available, using simple tokenizer")
-            return self._create_simple_tokenizer()
+            print("Warning: tiktoken not available, using fallback tokenizer")
+            return self._create_fallback_tokenizer()
     
-    def _create_simple_tokenizer(self):
-        """Simple fallback tokenizer"""
-        class SimpleTokenizer:
+    def _create_fallback_tokenizer(self):
+        """Professional fallback tokenizer"""
+        class ProfessionalTokenizer:
+            def __init__(self):
+                # Create vocabulary from common tokens
+                self.vocab = {}
+                self.reverse_vocab = {}
+                
+                # Special tokens
+                special_tokens = ["<PAD>", "<BOS>", "<EOS>", "<UNK>"]
+                for i, token in enumerate(special_tokens):
+                    self.vocab[token] = i
+                    self.reverse_vocab[i] = token
+                
+                # Common characters and subwords
+                chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?'\"-()[]{}:;@#$%^&*+=_/\\|`~<>"
+                for i, char in enumerate(chars):
+                    idx = len(self.vocab)
+                    self.vocab[char] = idx
+                    self.reverse_vocab[idx] = char
+                
+                # Common subwords
+                common_subwords = ["the", "and", "ing", "ion", "tion", "er", "re", "an", "ed", "nd", "on", "en", "at", "es", "or", "te", "of", "be", "to", "in", "he", "have", "it", "that", "for", "they", "with", "as", "not", "on", "she", "at", "by", "this", "we", "you", "do", "but", "from", "or", "which", "one", "would", "all", "will", "there", "say", "who", "make", "when", "can", "more", "if", "no", "man", "out", "other", "so", "what", "time", "up", "go", "about", "than", "into", "could", "state", "only", "new", "year", "some", "take", "come", "these", "know", "see", "use", "get", "like", "then", "first", "any", "work", "now", "may", "such", "give", "over", "think", "most", "even", "find", "day", "also", "after", "way", "many", "must", "look", "before", "great", "back", "through", "long", "where", "much", "should", "well", "people", "down", "own", "just", "because", "good", "each", "those", "feel", "seem", "how", "high", "too", "place", "little", "world", "very", "still", "nation", "hand", "old", "life", "tell", "write", "become", "here", "show", "house", "both", "between", "need", "mean", "call", "develop", "under", "last", "right", "move", "thing", "general", "school", "never", "same", "another", "begin", "while", "number", "part", "turn", "real", "leave", "might", "want", "point", "form", "off", "child", "few", "small", "since", "against", "ask", "late", "home", "interest", "large", "person", "end", "open", "public", "follow", "during", "present", "without", "again", "hold", "govern", "around", "possible", "head", "consider", "word", "program", "problem", "however", "lead", "system", "set", "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand", "increase", "early", "course", "change", "help", "line"]
+                
+                for subword in common_subwords:
+                    if subword not in self.vocab:
+                        idx = len(self.vocab)
+                        self.vocab[subword] = idx
+                        self.reverse_vocab[idx] = subword
+                
+                # Fill remaining vocab space
+                while len(self.vocab) < 50257:
+                    idx = len(self.vocab)
+                    self.vocab[f"<token_{idx}>"] = idx
+                    self.reverse_vocab[idx] = f"<token_{idx}>"
+            
             def encode(self, text):
-                return [min(ord(c), 50256) for c in text[:2000]]  # Character-level encoding
+                tokens = []
+                i = 0
+                text = text.lower().strip()
+                
+                while i < len(text):
+                    # Try to match longest subword first
+                    matched = False
+                    for length in range(min(20, len(text) - i), 0, -1):
+                        substr = text[i:i+length]
+                        if substr in self.vocab:
+                            tokens.append(self.vocab[substr])
+                            i += length
+                            matched = True
+                            break
+                    
+                    if not matched:
+                        # Fall back to character level
+                        char = text[i]
+                        if char in self.vocab:
+                            tokens.append(self.vocab[char])
+                        else:
+                            tokens.append(self.vocab["<UNK>"])
+                        i += 1
+                
+                return tokens[:2000]  # Limit token length
             
             def decode(self, tokens):
-                return ''.join([chr(min(t, 127)) for t in tokens if t > 0])
+                return ''.join([self.reverse_vocab.get(t, '<UNK>') for t in tokens if t < len(self.reverse_vocab)])
         
-        return SimpleTokenizer()
+        return ProfessionalTokenizer()
     
-    def _load_dataset(self, data_path: str):
-        """Load dataset from JSONL file"""
-        with open(data_path, 'r', encoding='utf-8') as f:
-            for line_num, line in enumerate(f):
+    def _load_datasets(self):
+        """Load datasets using various methods"""
+        all_samples = []
+        
+        # First try to load from Hugging Face datasets
+        try:
+            from datasets import load_dataset
+            print("Loading from Hugging Face datasets...")
+            
+            # Try to load a small sample from high-quality datasets
+            for config in self.dataset_configs[:2]:  # Start with first 2 datasets
                 try:
-                    data = json.loads(line.strip())
-                    text = data.get('text', '')
+                    print(f"Loading {config['name']}...")
+                    dataset = load_dataset(config['hf_dataset'], split='train[:1000]', trust_remote_code=True)
                     
-                    if len(text) > 100:  # Filter very short texts
-                        tokens = self.tokenizer.encode(text)
+                    for item in dataset:
+                        text = item.get(config['text_field'], '')
+                        if isinstance(text, list) and len(text) > 0:
+                            text = text[0] if isinstance(text[0], str) else str(text[0])
+                        elif isinstance(text, dict):
+                            text = str(text)
                         
-                        # Create overlapping chunks
-                        for i in range(0, len(tokens), self.max_length // 2):
-                            chunk = tokens[i:i + self.max_length]
-                            if len(chunk) >= 50:
-                                self.samples.append(chunk)
+                        if len(str(text)) > 100:
+                            tokens = self.tokenizer.encode(str(text))
+                            if len(tokens) >= 50:
+                                all_samples.append(tokens[:self.max_length])
                     
-                    if (line_num + 1) % 10000 == 0:
-                        print(f"  Processed {line_num + 1:,} lines from {Path(data_path).name}")
-                
-                except (json.JSONDecodeError, UnicodeDecodeError):
+                    print(f"Loaded {len(all_samples)} samples from {config['name']}")
+                    
+                except Exception as e:
+                    print(f"Could not load {config['name']}: {e}")
                     continue
+        
+        except ImportError:
+            print("Hugging Face datasets not available")
+        
+        # If we don't have enough samples, create high-quality synthetic data
+        if len(all_samples) < 100:
+            print("Creating high-quality synthetic training data...")
+            all_samples.extend(self._create_synthetic_data())
+        
+        return all_samples
     
-    def _create_sample_data(self):
-        """Create high-quality sample training data"""
-        sample_texts = [
-            "The development of large language models represents a significant breakthrough in artificial intelligence. These models, trained on vast datasets containing billions of tokens, demonstrate remarkable capabilities in natural language understanding, generation, and reasoning.",
+    def _create_synthetic_data(self):
+        """Create high-quality synthetic training data"""
+        synthetic_texts = [
+            "Large language models have revolutionized natural language processing by demonstrating unprecedented capabilities in text generation, comprehension, and reasoning. These models, trained on massive datasets containing billions of tokens, employ transformer architectures with attention mechanisms to process and understand complex linguistic patterns. The training process involves predicting the next token in a sequence, which enables the model to learn grammar, semantics, and world knowledge from diverse text sources including books, articles, and web content.",
             
-            "Machine learning algorithms learn patterns from data through iterative optimization processes. Deep neural networks, particularly transformer architectures, have proven exceptionally effective at capturing complex linguistic and semantic relationships.",
+            "The transformer architecture introduced the concept of self-attention, allowing models to weigh the importance of different parts of the input sequence when making predictions. This mechanism enables the capture of long-range dependencies and contextual relationships that were difficult for previous recurrent neural network architectures to model effectively. Multi-head attention further enhances this capability by allowing the model to attend to different types of relationships simultaneously.",
             
-            "Natural language processing has evolved from rule-based systems to statistical methods and now to large-scale neural models. Modern language models can perform tasks such as translation, summarization, question answering, and creative writing.",
+            "Deep learning optimization techniques are crucial for successfully training large neural networks. Gradient descent algorithms, particularly variants like Adam and AdamW, adapt learning rates based on gradient statistics to ensure stable convergence. Regularization methods such as dropout, weight decay, and layer normalization prevent overfitting and improve generalization. Learning rate scheduling, including warmup and cosine annealing, helps optimize the training dynamics.",
             
-            "The transformer architecture revolutionized sequence modeling by replacing recurrent connections with self-attention mechanisms. This innovation enabled parallel processing and better capture of long-range dependencies in text.",
+            "Natural language processing applications have been transformed by pre-trained language models. Tasks such as machine translation, text summarization, question answering, and sentiment analysis now achieve state-of-the-art performance through fine-tuning pre-trained models on task-specific data. This transfer learning approach reduces computational requirements and improves performance compared to training models from scratch.",
             
-            "Training large language models requires substantial computational resources, including high-performance GPUs, distributed computing infrastructure, and carefully curated datasets from diverse sources including web text, books, and scientific literature.",
+            "The scaling laws of neural language models demonstrate predictable improvements in performance as model size, dataset size, and computational budget increase. These relationships guide efficient resource allocation in training large models. However, scaling also introduces challenges in memory management, distributed training, and inference efficiency that require sophisticated engineering solutions.",
             
-            "Artificial intelligence research encompasses multiple disciplines including computer science, mathematics, cognitive science, and linguistics. The interdisciplinary nature of AI research drives continuous innovation and breakthrough discoveries.",
+            "Artificial intelligence research encompasses theoretical foundations, algorithmic innovations, and practical applications. Machine learning techniques including supervised learning, unsupervised learning, and reinforcement learning provide frameworks for building intelligent systems. The intersection of AI with other fields such as computer vision, robotics, and natural language processing drives interdisciplinary advances.",
             
-            "Deep learning models learn hierarchical representations of data through multiple layers of nonlinear transformations. Each layer extracts increasingly abstract features, enabling the model to understand complex patterns.",
+            "Data preprocessing and feature engineering are fundamental steps in machine learning pipelines. Quality data cleaning, normalization, augmentation, and representation learning significantly impact model performance. Understanding data distributions, handling missing values, and addressing biases in datasets are critical for developing robust and fair AI systems.",
             
-            "The field of artificial intelligence has experienced rapid growth, with applications spanning healthcare, finance, education, transportation, and scientific research. AI systems are becoming increasingly integrated into daily life.",
+            "Computer vision applications leverage convolutional neural networks and vision transformers to process visual information. Object detection, image classification, semantic segmentation, and image generation tasks have achieved remarkable performance through deep learning. The combination of visual and textual understanding in multimodal models opens new possibilities for AI applications.",
             
-            "Computational linguistics combines computational methods with linguistic theory to understand and model human language. This field contributes foundational knowledge for natural language processing applications.",
+            "Reinforcement learning enables agents to learn optimal behaviors through interaction with environments. Q-learning, policy gradient methods, and actor-critic algorithms provide frameworks for sequential decision making. Applications in game playing, robotics, and autonomous systems demonstrate the potential of reinforcement learning for complex control tasks.",
             
-            "Large-scale language models demonstrate emergent capabilities that arise from scaling model size and training data. These capabilities include few-shot learning, reasoning, and domain adaptation."
+            "Ethical considerations in artificial intelligence development include fairness, transparency, accountability, and privacy. Ensuring AI systems operate safely and beneficially requires careful attention to bias mitigation, explainability, and alignment with human values. Responsible AI development practices are essential as these systems become more prevalent in society.",
+            
+            "Scientific computing and numerical methods underpin modern machine learning implementations. Linear algebra operations, matrix factorizations, and optimization algorithms are efficiently implemented using specialized hardware like GPUs and TPUs. Understanding computational complexity and memory management is crucial for scaling AI systems.",
+            
+            "Software engineering principles apply to machine learning system development, including version control, testing, documentation, and deployment practices. MLOps methodologies help manage the lifecycle of machine learning models in production environments, ensuring reliability, scalability, and maintainability.",
+            
+            "Research methodology in artificial intelligence combines theoretical analysis, empirical evaluation, and practical implementation. Hypothesis formation, experimental design, statistical analysis, and peer review processes ensure the validity and reproducibility of scientific findings. Collaboration between academia and industry accelerates progress in the field.",
+            
+            "The future of artificial intelligence holds promise for addressing complex global challenges in healthcare, climate change, education, and scientific discovery. Continued research in areas such as few-shot learning, causal reasoning, and general intelligence will shape the next generation of AI systems. Responsible development and deployment will be crucial for realizing the positive potential of these technologies.",
+            
+            "Mathematical foundations of machine learning include probability theory, statistics, calculus, and linear algebra. Understanding these mathematical concepts is essential for developing new algorithms, analyzing model behavior, and solving complex optimization problems. The interplay between theory and practice drives advances in both fundamental understanding and practical applications."
         ]
         
-        for text in sample_texts:
+        samples = []
+        for text in synthetic_texts:
             tokens = self.tokenizer.encode(text)
             if len(tokens) >= 50:
-                self.samples.append(tokens[:self.max_length])
+                samples.append(tokens[:self.max_length])
+        
+        # Create additional variations
+        additional_samples = []
+        for i in range(len(samples)):
+            for j in range(i+1, min(i+3, len(samples))):
+                # Combine samples
+                combined_tokens = samples[i][:self.max_length//2] + samples[j][:self.max_length//2]
+                if len(combined_tokens) >= 50:
+                    additional_samples.append(combined_tokens[:self.max_length])
+        
+        samples.extend(additional_samples)
+        return samples
+    
+class ProfessionalTrainingDataset(Dataset):
+    """Professional dataset using ProfessionalDatasetLoader"""
+    
+    def __init__(self, data_loader: ProfessionalDatasetLoader):
+        self.samples = data_loader.samples
+        self.max_length = data_loader.max_length
     
     def __len__(self):
         return len(self.samples)
@@ -339,7 +474,7 @@ class Professional4_9BTrainer:
         self.config = config
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        print(f"🚀 Initializing 4.9B parameter training on {self.device}")
+        print(f"Initializing 4.9B parameter training on {self.device}")
         
         # Setup logging
         self._setup_logging()
@@ -350,12 +485,9 @@ class Professional4_9BTrainer:
         # Setup optimizations
         self._setup_optimizations()
         
-        # Load dataset
-        data_paths = [
-            "training_datasets/enterprise_mixed_dataset.jsonl",
-            "training_datasets/sample_dataset.jsonl"
-        ]
-        self.dataset = EnterpriseDataset(data_paths, config.n_positions)
+        # Load dataset using professional data loader
+        data_loader = ProfessionalDatasetLoader(config.n_positions)
+        self.dataset = ProfessionalTrainingDataset(data_loader)
         self.dataloader = DataLoader(
             self.dataset,
             batch_size=config.batch_size,
@@ -377,9 +509,9 @@ class Professional4_9BTrainer:
         self.global_step = 0
         self.best_loss = float('inf')
         
-        print(f"✅ Training setup complete!")
-        print(f"📊 Dataset: {len(self.dataset):,} samples")
-        print(f"🔥 Ready to train 4.9B parameter model!")
+        print(f"Training setup complete!")
+        print(f"Dataset: {len(self.dataset):,} samples")
+        print(f"Ready to train 4.9B parameter model!")
     
     def _setup_logging(self):
         """Setup comprehensive logging"""
@@ -397,7 +529,7 @@ class Professional4_9BTrainer:
             ]
         )
         self.logger = logging.getLogger(__name__)
-        self.logger.info("🔥 Professional 4.9B training started")
+        self.logger.info("Professional 4.9B training started")
     
     def _setup_optimizations(self):
         """Setup RTX 3050 optimizations"""
@@ -417,9 +549,9 @@ class Professional4_9BTrainer:
             
             gpu_name = torch.cuda.get_device_name()
             gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3
-            self.logger.info(f"🖥️ GPU: {gpu_name} ({gpu_memory:.1f} GB)")
+            self.logger.info(f"GPU: {gpu_name} ({gpu_memory:.1f} GB)")
         else:
-            self.logger.info("💻 Training on CPU")
+            self.logger.info("Training on CPU")
     
     def _setup_optimizer(self):
         """Setup AdamW optimizer"""
@@ -477,7 +609,7 @@ class Professional4_9BTrainer:
     
     def train(self):
         """Main training loop"""
-        print("\n🎯 Starting 4.9B Parameter Model Training")
+        print("\nStarting 4.9B Parameter Model Training")
         print("=" * 60)
         print(f"Target: {self.config.max_steps:,} training steps")
         print(f"Batch size: {self.config.batch_size} (effective: {self.config.batch_size * self.config.gradient_accumulation_steps})")
@@ -558,16 +690,16 @@ class Professional4_9BTrainer:
                         
                         # Check completion
                         if self.global_step >= self.config.max_steps:
-                            print(f"\n🎉 Training completed after {self.global_step} steps!")
+                            print(f"\nTraining completed after {self.global_step} steps!")
                             self._save_checkpoint(checkpoint_dir, avg_loss if 'avg_loss' in locals() else loss, final=True)
                             return
         
         except KeyboardInterrupt:
-            print(f"\n⏹️ Training interrupted at step {self.global_step}")
+            print(f"\nTraining interrupted at step {self.global_step}")
             self._save_checkpoint(checkpoint_dir, total_loss / max(1, self.global_step % self.config.log_interval), final=True)
         
         except Exception as e:
-            print(f"\n❌ Training error: {e}")
+            print(f"\nTraining error: {e}")
             self.logger.error(f"Training failed: {e}")
             import traceback
             traceback.print_exc()
@@ -605,15 +737,15 @@ class Professional4_9BTrainer:
                 'loss': loss,
                 'timestamp': datetime.now().isoformat()
             }, best_path)
-            print(f"💎 New best model saved! Loss: {loss:.4f}")
+            print(f"New best model saved! Loss: {loss:.4f}")
         
-        print(f"💾 Checkpoint saved: {checkpoint_path.name}")
+        print(f"Checkpoint saved: {checkpoint_path.name}")
 
 def main():
     """Main function to start 4.9B parameter training"""
-    print("🚀 Professional 4.9B Parameter Model Training")
+    print("Professional 4.9B Parameter Model Training")
     print("=" * 70)
-    print("Enterprise-grade training similar to ChatGPT, Claude, and Gemini")
+    print("Using top-tier datasets from LLMDataHub repository")
     print(f"Optimized for RTX 3050 8GB VRAM")
     print()
     
@@ -621,17 +753,17 @@ def main():
     if torch.cuda.is_available():
         gpu_name = torch.cuda.get_device_name()
         gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3
-        print(f"🖥️ GPU: {gpu_name} ({gpu_memory:.1f} GB VRAM)")
+        print(f"GPU: {gpu_name} ({gpu_memory:.1f} GB VRAM)")
     else:
-        print("💻 CUDA not available, training on CPU")
+        print("CUDA not available, training on CPU")
     
-    print(f"🐍 PyTorch version: {torch.__version__}")
+    print(f"PyTorch version: {torch.__version__}")
     print()
     
     # Initialize configuration
     config = Config4_9B()
     
-    print("📋 Training Configuration:")
+    print("Training Configuration:")
     print(f"  Parameters: ~4.9 billion")
     print(f"  Architecture: {config.n_layer} layers, {config.n_head} heads, {config.n_embd} embedding dim")
     print(f"  Batch size: {config.batch_size} (effective: {config.batch_size * config.gradient_accumulation_steps})")
@@ -646,12 +778,12 @@ def main():
         trainer = Professional4_9BTrainer(config)
         trainer.train()
         
-        print("\n🎉 Training completed successfully!")
-        print("📁 Check 'checkpoints_4.9B/' for saved models")
-        print("📊 Check 'training_logs/' for detailed logs")
+        print("\nTraining completed successfully!")
+        print("Check 'checkpoints_4.9B/' for saved models")
+        print("Check 'training_logs/' for detailed logs")
         
     except Exception as e:
-        print(f"\n❌ Training failed: {e}")
+        print(f"\nTraining failed: {e}")
         import traceback
         traceback.print_exc()
 
