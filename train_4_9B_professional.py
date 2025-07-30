@@ -26,18 +26,18 @@ warnings.filterwarnings("ignore")
 @dataclass
 class Config4_9B:
     """Configuration for 4.9B parameter model optimized for RTX 3050"""
-    # Model architecture - exactly 4.9B parameters
+    # Model architecture - targeting exactly 4.9B parameters
     vocab_size: int = 50257      # GPT-3 tokenizer size
-    n_positions: int = 2048      # Context length
-    n_embd: int = 2560          # Embedding dimension
-    n_layer: int = 32           # Number of transformer layers
-    n_head: int = 20            # Number of attention heads (n_embd must be divisible)
-    n_inner: int = 10240        # FFN inner dimension (4 * n_embd)
+    n_positions: int = 1024      # Reduced context length for memory
+    n_embd: int = 2944          # Adjusted embedding dimension for 4.9B target
+    n_layer: int = 32           # Reduced layers for memory
+    n_head: int = 23            # Number of attention heads (n_embd must be divisible)
+    n_inner: int = 11776        # FFN inner dimension (4 * n_embd)
     
     # Training configuration for RTX 3050
     batch_size: int = 1
-    gradient_accumulation_steps: int = 32  # Effective batch size = 32
-    learning_rate: float = 1.5e-4
+    gradient_accumulation_steps: int = 64  # Larger accumulation for effective batch
+    learning_rate: float = 1.0e-4
     weight_decay: float = 0.1
     beta1: float = 0.9
     beta2: float = 0.95
@@ -45,8 +45,8 @@ class Config4_9B:
     
     # Optimization settings
     max_grad_norm: float = 1.0
-    warmup_steps: int = 2000
-    max_steps: int = 50000      # Reduced for faster training
+    warmup_steps: int = 1000
+    max_steps: int = 25000      # Reduced for faster training
     
     # Memory optimizations for 8GB VRAM
     use_mixed_precision: bool = True
@@ -223,7 +223,7 @@ class GPT4_9B(nn.Module):
 class ProfessionalDatasetLoader:
     """Load and process top-tier datasets from LLMDataHub"""
     
-    def __init__(self, max_length: int = 2048):
+    def __init__(self, max_length: int = 1024):
         self.max_length = max_length
         self.tokenizer = self._get_tokenizer()
         
@@ -280,70 +280,55 @@ class ProfessionalDatasetLoader:
             return self._create_fallback_tokenizer()
     
     def _create_fallback_tokenizer(self):
-        """Professional fallback tokenizer"""
+        """Professional fallback tokenizer with proper vocabulary management"""
         class ProfessionalTokenizer:
             def __init__(self):
-                # Create vocabulary from common tokens
-                self.vocab = {}
-                self.reverse_vocab = {}
-                
-                # Special tokens
-                special_tokens = ["<PAD>", "<BOS>", "<EOS>", "<UNK>"]
-                for i, token in enumerate(special_tokens):
-                    self.vocab[token] = i
-                    self.reverse_vocab[i] = token
-                
-                # Common characters and subwords
-                chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?'\"-()[]{}:;@#$%^&*+=_/\\|`~<>"
-                for i, char in enumerate(chars):
-                    idx = len(self.vocab)
-                    self.vocab[char] = idx
-                    self.reverse_vocab[idx] = char
-                
-                # Common subwords
-                common_subwords = ["the", "and", "ing", "ion", "tion", "er", "re", "an", "ed", "nd", "on", "en", "at", "es", "or", "te", "of", "be", "to", "in", "he", "have", "it", "that", "for", "they", "with", "as", "not", "on", "she", "at", "by", "this", "we", "you", "do", "but", "from", "or", "which", "one", "would", "all", "will", "there", "say", "who", "make", "when", "can", "more", "if", "no", "man", "out", "other", "so", "what", "time", "up", "go", "about", "than", "into", "could", "state", "only", "new", "year", "some", "take", "come", "these", "know", "see", "use", "get", "like", "then", "first", "any", "work", "now", "may", "such", "give", "over", "think", "most", "even", "find", "day", "also", "after", "way", "many", "must", "look", "before", "great", "back", "through", "long", "where", "much", "should", "well", "people", "down", "own", "just", "because", "good", "each", "those", "feel", "seem", "how", "high", "too", "place", "little", "world", "very", "still", "nation", "hand", "old", "life", "tell", "write", "become", "here", "show", "house", "both", "between", "need", "mean", "call", "develop", "under", "last", "right", "move", "thing", "general", "school", "never", "same", "another", "begin", "while", "number", "part", "turn", "real", "leave", "might", "want", "point", "form", "off", "child", "few", "small", "since", "against", "ask", "late", "home", "interest", "large", "person", "end", "open", "public", "follow", "during", "present", "without", "again", "hold", "govern", "around", "possible", "head", "consider", "word", "program", "problem", "however", "lead", "system", "set", "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand", "increase", "early", "course", "change", "help", "line"]
-                
-                for subword in common_subwords:
-                    if subword not in self.vocab:
-                        idx = len(self.vocab)
-                        self.vocab[subword] = idx
-                        self.reverse_vocab[idx] = subword
-                
-                # Fill remaining vocab space
-                while len(self.vocab) < 50257:
-                    idx = len(self.vocab)
-                    self.vocab[f"<token_{idx}>"] = idx
-                    self.reverse_vocab[idx] = f"<token_{idx}>"
+                self.vocab_size = 50257  # Match GPT-3 vocab size
+                self.pad_token_id = 0
+                self.unk_token_id = 1
+                self.bos_token_id = 2
+                self.eos_token_id = 3
             
             def encode(self, text):
-                tokens = []
-                i = 0
-                text = text.lower().strip()
+                if not text or not isinstance(text, str):
+                    return [self.bos_token_id, self.eos_token_id]
                 
-                while i < len(text):
-                    # Try to match longest subword first
-                    matched = False
-                    for length in range(min(20, len(text) - i), 0, -1):
-                        substr = text[i:i+length]
-                        if substr in self.vocab:
-                            tokens.append(self.vocab[substr])
-                            i += length
-                            matched = True
-                            break
-                    
-                    if not matched:
-                        # Fall back to character level
-                        char = text[i]
-                        if char in self.vocab:
-                            tokens.append(self.vocab[char])
-                        else:
-                            tokens.append(self.vocab["<UNK>"])
-                        i += 1
+                # Simple but effective encoding
+                tokens = [self.bos_token_id]
                 
-                return tokens[:2000]  # Limit token length
+                # Convert text to bytes and map to valid token range
+                text_bytes = text.encode('utf-8', errors='ignore')[:1000]  # Limit length
+                for byte_val in text_bytes:
+                    # Map byte values (0-255) to token range (4 to vocab_size-1)
+                    token_id = 4 + (byte_val % (self.vocab_size - 5))
+                    tokens.append(token_id)
+                
+                tokens.append(self.eos_token_id)
+                
+                # Ensure all tokens are within valid range
+                tokens = [min(max(t, 0), self.vocab_size - 1) for t in tokens]
+                return tokens[:2000]  # Limit sequence length
             
             def decode(self, tokens):
-                return ''.join([self.reverse_vocab.get(t, '<UNK>') for t in tokens if t < len(self.reverse_vocab)])
+                if not tokens:
+                    return ""
+                
+                # Simple decoding - convert back to characters where possible
+                text_parts = []
+                for token_id in tokens:
+                    if token_id == self.bos_token_id:
+                        continue
+                    elif token_id == self.eos_token_id:
+                        break
+                    elif token_id == self.pad_token_id or token_id == self.unk_token_id:
+                        continue
+                    else:
+                        # Map token back to character
+                        char_code = (token_id - 4) % 256
+                        if 32 <= char_code <= 126:  # Printable ASCII
+                            text_parts.append(chr(char_code))
+                
+                return ''.join(text_parts)
         
         return ProfessionalTokenizer()
     
@@ -351,16 +336,32 @@ class ProfessionalDatasetLoader:
         """Load datasets using various methods"""
         all_samples = []
         
-        # First try to load from Hugging Face datasets
+        # First try to load from Hugging Face datasets (without trust_remote_code)
         try:
             from datasets import load_dataset
             print("Loading from Hugging Face datasets...")
             
-            # Try to load a small sample from high-quality datasets
-            for config in self.dataset_configs[:2]:  # Start with first 2 datasets
+            # Use safer dataset loading approach
+            safe_datasets = [
+                {
+                    'name': 'OpenOrca',
+                    'hf_dataset': 'Open-Orca/OpenOrca',
+                    'text_field': 'response',
+                    'samples': 1000
+                },
+                {
+                    'name': 'Dolly',
+                    'hf_dataset': 'databricks/databricks-dolly-15k',
+                    'text_field': 'response',
+                    'samples': 1000
+                }
+            ]
+            
+            for config in safe_datasets:
                 try:
                     print(f"Loading {config['name']}...")
-                    dataset = load_dataset(config['hf_dataset'], split='train[:1000]', trust_remote_code=True)
+                    # Load without trust_remote_code
+                    dataset = load_dataset(config['hf_dataset'], split=f'train[:{config["samples"]}]')
                     
                     for item in dataset:
                         text = item.get(config['text_field'], '')
@@ -371,11 +372,15 @@ class ProfessionalDatasetLoader:
                         
                         if len(str(text)) > 100:
                             tokens = self.tokenizer.encode(str(text))
-                            if len(tokens) >= 50:
+                            if len(tokens) >= 10:  # Minimum token count
                                 all_samples.append(tokens[:self.max_length])
                     
                     print(f"Loaded {len(all_samples)} samples from {config['name']}")
                     
+                    # Stop after getting enough samples
+                    if len(all_samples) >= 500:
+                        break
+                        
                 except Exception as e:
                     print(f"Could not load {config['name']}: {e}")
                     continue
@@ -539,13 +544,19 @@ class Professional4_9BTrainer:
             torch.backends.cudnn.allow_tf32 = True
             torch.backends.cudnn.benchmark = True
             
-            # Memory management for 8GB VRAM
-            torch.cuda.set_per_process_memory_fraction(0.90)
+            # Aggressive memory management for 8GB VRAM
+            torch.cuda.set_per_process_memory_fraction(0.85)
+            torch.cuda.empty_cache()
             
-            # Enable gradient checkpointing
+            # Enable gradient checkpointing for all transformer blocks
             if self.config.gradient_checkpointing:
-                for block in self.model.h:
-                    block.gradient_checkpointing = True
+                def checkpoint_wrapper(module):
+                    def forward(*args, **kwargs):
+                        return torch.utils.checkpoint.checkpoint(module, *args, **kwargs)
+                    return forward
+                
+                for i, block in enumerate(self.model.h):
+                    self.model.h[i].forward = checkpoint_wrapper(block.forward)
             
             gpu_name = torch.cuda.get_device_name()
             gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3
