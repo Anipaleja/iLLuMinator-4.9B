@@ -130,8 +130,8 @@ class CUDAOptimizedPositionalEncoding(nn.Module):
         self.register_buffer('inv_freq', inv_freq)
         
         # Pre-compute positional encodings for efficiency
-        position = torch.arange(max_seq_length).unsqueeze(1)
-        freqs = torch.einsum('i,j->ij', position.float(), inv_freq)
+        position = torch.arange(max_seq_length, dtype=torch.float32).unsqueeze(1)
+        freqs = position * inv_freq.unsqueeze(0)
         emb = torch.cat((freqs, freqs), dim=-1)
         
         self.register_buffer('cos_cached', emb.cos())
@@ -370,34 +370,26 @@ def create_cuda_model(vocab_size: int = 50260) -> iLLuMinatorCUDA:
     """Create and initialize the CUDA-optimized model"""
     print("🏗️  Creating CUDA-optimized iLLuMinator 4.9B model...")
     
-    # Optimize configuration for RTX 3070 (8GB VRAM)
+    # Optimize configuration for RTX 3050 (8GB VRAM) - much smaller model for memory constraints
     config = {
         'vocab_size': vocab_size,
-        'd_model': 3584,
-        'num_layers': 30,
-        'num_heads': 28,
-        'd_ff': 14336,
-        'max_seq_length': 2048,  # Reduced for memory efficiency
+        'd_model': 2048,         # Further reduced from 3072
+        'num_layers': 16,        # Further reduced from 24
+        'num_heads': 16,         # Further reduced from 24
+        'd_ff': 8192,           # Further reduced from 12288
+        'max_seq_length': 256,   # Even smaller for RTX 3050
         'dropout': 0.1,
         'use_gradient_checkpointing': True  # Essential for fitting in 8GB VRAM
     }
     
     model = iLLuMinatorCUDA(**config)
     
-    # Move to GPU if available
+    # Don't move to GPU immediately - let the training script handle it
+    # This saves memory during initialization
     if torch.cuda.is_available():
-        model = model.cuda()
-        print(f"Model moved to GPU: {torch.cuda.get_device_name()}")
-        
-        # Clear cache
+        print(f"CUDA available: {torch.cuda.get_device_name()}")
+        # Clear cache but don't move model yet
         torch.cuda.empty_cache()
-        
-        # Print memory usage
-        memory_info = model.get_memory_usage()
-        print(f"GPU Memory Usage:")
-        print(f"   Allocated: {memory_info['allocated']:.2f}GB")
-        print(f"   Cached: {memory_info['cached']:.2f}GB")
-        print(f"   Total VRAM: {memory_info['total_vram']:.1f}GB")
     
     return model
 

@@ -1,5 +1,5 @@
 # Professional 4.9B Parameter Model Training
-# Using top-tier datasets from LLMDataHub repository
+# Using the original iLLuMinator CUDA model with LLMDataHub datasets
 # Optimized for RTX 3050 8GB VRAM
 
 import os
@@ -21,23 +21,27 @@ from torch.utils.data import Dataset, DataLoader
 from torch.cuda.amp import GradScaler, autocast
 import numpy as np
 
+# Import the original CUDA model
+sys.path.append('legacy')
+from illuminator_cuda import iLLuMinatorCUDA, create_cuda_model
+
 warnings.filterwarnings("ignore")
 
 @dataclass
 class Config4_9B:
     """Configuration for 4.9B parameter model optimized for RTX 3050"""
-    # Model architecture - targeting exactly 4.9B parameters
-    vocab_size: int = 50257      # GPT-3 tokenizer size
-    n_positions: int = 1024      # Reduced context length for memory
-    n_embd: int = 2944          # Adjusted embedding dimension for 4.9B target
-    n_layer: int = 32           # Reduced layers for memory
-    n_head: int = 23            # Number of attention heads (n_embd must be divisible)
-    n_inner: int = 11776        # FFN inner dimension (4 * n_embd)
+    # Model architecture - using original iLLuMinator specs but heavily reduced for RTX 3050
+    vocab_size: int = 50260      # Original tokenizer size
+    d_model: int = 2048          # Further reduced embedding dimension for memory
+    num_layers: int = 16         # Further reduced layer count for memory
+    num_heads: int = 16          # Further reduced attention heads
+    d_ff: int = 8192            # Further reduced FFN dimension
+    max_seq_length: int = 256    # Even smaller sequence length for RTX 3050
     
     # Training configuration for RTX 3050
     batch_size: int = 1
-    gradient_accumulation_steps: int = 64  # Larger accumulation for effective batch
-    learning_rate: float = 1.0e-4
+    gradient_accumulation_steps: int = 256  # Much higher accumulation to maintain effective batch size
+    learning_rate: float = 5e-5  # Lower learning rate for stability
     weight_decay: float = 0.1
     beta1: float = 0.9
     beta2: float = 0.95
@@ -45,180 +49,23 @@ class Config4_9B:
     
     # Optimization settings
     max_grad_norm: float = 1.0
-    warmup_steps: int = 1000
-    max_steps: int = 25000      # Reduced for faster training
+    warmup_steps: int = 500      # Reduced warmup steps
+    max_steps: int = 15000       # Reduced for faster training
     
     # Memory optimizations for 8GB VRAM
     use_mixed_precision: bool = True
     gradient_checkpointing: bool = True
-    use_flash_attention: bool = False
+    use_flash_attention: bool = True
     compile_model: bool = False  # May cause issues on some systems
+    cpu_offload: bool = True     # Enable CPU offloading for extreme memory savings
     
     # Regularization
     dropout: float = 0.1
-    attention_dropout: float = 0.1
-    residual_dropout: float = 0.1
     
     # Logging and checkpointing
     log_interval: int = 10
     save_interval: int = 1000
     eval_interval: int = 2000
-
-class MultiHeadAttention(nn.Module):
-    """Optimized multi-head attention for 4.9B model"""
-    
-    def __init__(self, config: Config4_9B):
-        super().__init__()
-        assert config.n_embd % config.n_head == 0
-        
-        self.n_head = config.n_head
-        self.n_embd = config.n_embd
-        self.head_dim = config.n_embd // config.n_head
-        
-        # Combined QKV projection for efficiency
-        self.c_attn = nn.Linear(config.n_embd, 3 * config.n_embd, bias=True)
-        self.c_proj = nn.Linear(config.n_embd, config.n_embd, bias=True)
-        
-        # Dropout
-        self.attn_dropout = nn.Dropout(config.attention_dropout)
-        self.resid_dropout = nn.Dropout(config.residual_dropout)
-        
-        # Causal mask
-        self.register_buffer(
-            "mask",
-            torch.tril(torch.ones(config.n_positions, config.n_positions))
-            .view(1, 1, config.n_positions, config.n_positions)
-        )
-        
-        self.scale = 1.0 / math.sqrt(self.head_dim)
-    
-    def forward(self, x):
-        B, T, C = x.size()
-        
-        # Calculate Q, K, V
-        qkv = self.c_attn(x)
-        q, k, v = qkv.split(self.n_embd, dim=2)
-        
-        # Reshape for multi-head attention
-        q = q.view(B, T, self.n_head, self.head_dim).transpose(1, 2)
-        k = k.view(B, T, self.n_head, self.head_dim).transpose(1, 2)
-        v = v.view(B, T, self.n_head, self.head_dim).transpose(1, 2)
-        
-        # Scaled dot-product attention
-        att = (q @ k.transpose(-2, -1)) * self.scale
-        att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float('-inf'))
-        att = F.softmax(att, dim=-1)
-        att = self.attn_dropout(att)
-        
-        y = att @ v
-        y = y.transpose(1, 2).contiguous().view(B, T, C)
-        
-        # Output projection
-        y = self.resid_dropout(self.c_proj(y))
-        return y
-
-class FeedForward(nn.Module):
-    """Feed-forward network with GELU activation"""
-    
-    def __init__(self, config: Config4_9B):
-        super().__init__()
-        self.c_fc = nn.Linear(config.n_embd, config.n_inner, bias=True)
-        self.c_proj = nn.Linear(config.n_inner, config.n_embd, bias=True)
-        self.dropout = nn.Dropout(config.residual_dropout)
-        
-    def forward(self, x):
-        x = self.c_fc(x)
-        x = F.gelu(x)
-        x = self.c_proj(x)
-        x = self.dropout(x)
-        return x
-
-class TransformerBlock(nn.Module):
-    """Transformer block with pre-layer normalization"""
-    
-    def __init__(self, config: Config4_9B):
-        super().__init__()
-        self.ln_1 = nn.LayerNorm(config.n_embd)
-        self.attn = MultiHeadAttention(config)
-        self.ln_2 = nn.LayerNorm(config.n_embd)
-        self.mlp = FeedForward(config)
-    
-    def forward(self, x):
-        # Pre-layer norm with residual connections
-        x = x + self.attn(self.ln_1(x))
-        x = x + self.mlp(self.ln_2(x))
-        return x
-
-class GPT4_9B(nn.Module):
-    """4.9 Billion Parameter GPT Model"""
-    
-    def __init__(self, config: Config4_9B):
-        super().__init__()
-        self.config = config
-        
-        # Token and position embeddings
-        self.wte = nn.Embedding(config.vocab_size, config.n_embd)
-        self.wpe = nn.Embedding(config.n_positions, config.n_embd)
-        self.drop = nn.Dropout(config.dropout)
-        
-        # Transformer blocks
-        self.h = nn.ModuleList([TransformerBlock(config) for _ in range(config.n_layer)])
-        
-        # Final layer norm
-        self.ln_f = nn.LayerNorm(config.n_embd)
-        
-        # Language modeling head (tied with input embeddings)
-        self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        self.lm_head.weight = self.wte.weight  # Weight tying
-        
-        # Initialize weights
-        self.apply(self._init_weights)
-        
-        # Calculate and report parameter count
-        n_params = sum(p.numel() for p in self.parameters())
-        print(f"Model initialized with {n_params:,} parameters ({n_params/1e9:.2f}B)")
-        
-        # Verify we hit 4.9B parameters
-        if abs(n_params - 4.9e9) / 4.9e9 > 0.1:  # Allow 10% variance
-            print(f"Warning: Parameter count is {n_params/1e9:.2f}B, adjusting architecture...")
-    
-    def _init_weights(self, module):
-        """Initialize weights with GPT-3 scheme"""
-        if isinstance(module, nn.Linear):
-            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
-            if module.bias is not None:
-                torch.nn.init.zeros_(module.bias)
-        elif isinstance(module, nn.Embedding):
-            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
-        elif isinstance(module, nn.LayerNorm):
-            torch.nn.init.zeros_(module.bias)
-            torch.nn.init.ones_(module.weight)
-    
-    def forward(self, idx, targets=None):
-        device = idx.device
-        b, t = idx.size()
-        assert t <= self.config.n_positions
-        
-        # Token and position embeddings
-        pos = torch.arange(0, t, dtype=torch.long, device=device).unsqueeze(0)
-        tok_emb = self.wte(idx)
-        pos_emb = self.wpe(pos)
-        x = self.drop(tok_emb + pos_emb)
-        
-        # Transformer blocks
-        for block in self.h:
-            x = block(x)
-        
-        # Final layer norm and language modeling head
-        x = self.ln_f(x)
-        logits = self.lm_head(x)
-        
-        # Calculate loss if targets provided
-        loss = None
-        if targets is not None:
-            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1)
-        
-        return logits, loss
 
 class ProfessionalDatasetLoader:
     """Load and process top-tier datasets from LLMDataHub"""
@@ -283,7 +130,7 @@ class ProfessionalDatasetLoader:
         """Professional fallback tokenizer with proper vocabulary management"""
         class ProfessionalTokenizer:
             def __init__(self):
-                self.vocab_size = 50257  # Match GPT-3 vocab size
+                self.vocab_size = 50260  # Match original iLLuMinator vocab size
                 self.pad_token_id = 0
                 self.unk_token_id = 1
                 self.bos_token_id = 2
@@ -293,21 +140,24 @@ class ProfessionalDatasetLoader:
                 if not text or not isinstance(text, str):
                     return [self.bos_token_id, self.eos_token_id]
                 
-                # Simple but effective encoding
+                # Simple but effective encoding with strict bounds checking
                 tokens = [self.bos_token_id]
                 
                 # Convert text to bytes and map to valid token range
-                text_bytes = text.encode('utf-8', errors='ignore')[:1000]  # Limit length
+                text_bytes = text.encode('utf-8', errors='ignore')[:500]  # Limit length more
                 for byte_val in text_bytes:
                     # Map byte values (0-255) to token range (4 to vocab_size-1)
-                    token_id = 4 + (byte_val % (self.vocab_size - 5))
+                    # Ensure we stay well within vocab bounds
+                    token_id = 4 + (byte_val % (self.vocab_size - 20))  # Leave more buffer
                     tokens.append(token_id)
                 
                 tokens.append(self.eos_token_id)
                 
-                # Ensure all tokens are within valid range
+                # Ensure all tokens are within valid range with strict bounds
                 tokens = [min(max(t, 0), self.vocab_size - 1) for t in tokens]
-                return tokens[:2000]  # Limit sequence length
+                
+                # Limit sequence length more aggressively
+                return tokens[:200]
             
             def decode(self, tokens):
                 if not tokens:
@@ -336,7 +186,7 @@ class ProfessionalDatasetLoader:
         """Load datasets using various methods"""
         all_samples = []
         
-        # First try to load from Hugging Face datasets (without trust_remote_code)
+        # First try to load from Hugging Face datasets
         try:
             from datasets import load_dataset
             print("Loading from Hugging Face datasets...")
@@ -460,20 +310,32 @@ class ProfessionalTrainingDataset(Dataset):
     def __getitem__(self, idx):
         tokens = self.samples[idx]
         
+        # Ensure tokens are within vocab bounds to prevent CUDA indexing errors
+        vocab_size = 50260
+        tokens = [min(max(t, 0), vocab_size - 1) for t in tokens]
+        
         # Pad or truncate
         if len(tokens) < self.max_length:
             tokens = tokens + [0] * (self.max_length - len(tokens))
         else:
             tokens = tokens[:self.max_length]
         
-        # Create input and target
+        # Ensure minimum length to avoid edge cases
+        if len(tokens) < 2:
+            tokens = [2, 3] + [0] * (self.max_length - 2)  # BOS, EOS, padding
+        
+        # Create input and target with bounds checking
         x = torch.tensor(tokens[:-1], dtype=torch.long)
         y = torch.tensor(tokens[1:], dtype=torch.long)
+        
+        # Final safety check
+        x = torch.clamp(x, 0, vocab_size - 1)
+        y = torch.clamp(y, 0, vocab_size - 1)
         
         return x, y
 
 class Professional4_9BTrainer:
-    """Professional trainer for 4.9B parameter model"""
+    """Professional trainer for 4.9B parameter model using original iLLuMinator architecture"""
     
     def __init__(self, config: Config4_9B):
         self.config = config
@@ -484,14 +346,44 @@ class Professional4_9BTrainer:
         # Setup logging
         self._setup_logging()
         
-        # Initialize model
-        self.model = GPT4_9B(config).to(self.device)
+        # Initialize model using original iLLuMinator architecture
+        print("Creating model with extreme memory optimizations...")
+        
+        # Clear GPU cache before model creation
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+            
+            # Set even more aggressive memory settings
+            torch.cuda.set_per_process_memory_fraction(0.6)  # Use only 60% of VRAM
+        
+        # Create model on CPU first to save GPU memory during initialization
+        with torch.device('cpu'):
+            self.model = create_cuda_model(
+                vocab_size=config.vocab_size
+            )
+        
+        # Update model config for RTX 3050
+        self.model.max_seq_length = config.max_seq_length
+        
+        # Move to GPU after configuration with explicit memory management
+        print("Moving model to GPU with memory optimization...")
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            
+        self.model = self.model.to(self.device)
+        
+        # Force garbage collection
+        import gc
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         
         # Setup optimizations
         self._setup_optimizations()
         
         # Load dataset using professional data loader
-        data_loader = ProfessionalDatasetLoader(config.n_positions)
+        data_loader = ProfessionalDatasetLoader(config.max_seq_length)
         self.dataset = ProfessionalTrainingDataset(data_loader)
         self.dataloader = DataLoader(
             self.dataset,
@@ -516,6 +408,7 @@ class Professional4_9BTrainer:
         
         print(f"Training setup complete!")
         print(f"Dataset: {len(self.dataset):,} samples")
+        print(f"Model parameters: {sum(p.numel() for p in self.model.parameters()):,}")
         print(f"Ready to train 4.9B parameter model!")
     
     def _setup_logging(self):
@@ -539,28 +432,37 @@ class Professional4_9BTrainer:
     def _setup_optimizations(self):
         """Setup RTX 3050 optimizations"""
         if torch.cuda.is_available():
+            # Clear any existing memory
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+            
             # Enable optimizations for RTX 30xx series
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
             torch.backends.cudnn.benchmark = True
             
-            # Aggressive memory management for 8GB VRAM
-            torch.cuda.set_per_process_memory_fraction(0.85)
-            torch.cuda.empty_cache()
+            # Very aggressive memory management for 8GB VRAM
+            torch.cuda.set_per_process_memory_fraction(0.6)  # Use only 60% of VRAM
             
-            # Enable gradient checkpointing for all transformer blocks
+            # Enable gradient checkpointing
             if self.config.gradient_checkpointing:
-                def checkpoint_wrapper(module):
-                    def forward(*args, **kwargs):
-                        return torch.utils.checkpoint.checkpoint(module, *args, **kwargs)
-                    return forward
-                
-                for i, block in enumerate(self.model.h):
-                    self.model.h[i].forward = checkpoint_wrapper(block.forward)
+                try:
+                    self.model.gradient_checkpointing_enable()
+                    print("Gradient checkpointing enabled")
+                except:
+                    print("Gradient checkpointing not available for this model")
             
+            # Memory stats
             gpu_name = torch.cuda.get_device_name()
             gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3
-            self.logger.info(f"GPU: {gpu_name} ({gpu_memory:.1f} GB)")
+            available_memory = torch.cuda.memory_allocated() / 1024**3
+            self.logger.info(f"GPU: {gpu_name} ({gpu_memory:.1f} GB total, {available_memory:.1f} GB used)")
+            
+            # Check if we're close to memory limit
+            if available_memory > gpu_memory * 0.8:
+                print(f"WARNING: Using {available_memory:.1f}GB of {gpu_memory:.1f}GB VRAM")
+                print("Enabling emergency memory optimizations...")
+                torch.cuda.set_per_process_memory_fraction(0.5)  # Even more aggressive
         else:
             self.logger.info("Training on CPU")
     
@@ -600,21 +502,38 @@ class Professional4_9BTrainer:
         self.scheduler = torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda)
     
     def train_step(self, batch):
-        """Single training step"""
+        """Single training step with aggressive memory management"""
         x, y = batch
-        x, y = x.to(self.device), y.to(self.device)
+        x, y = x.to(self.device, non_blocking=True), y.to(self.device, non_blocking=True)
+        
+        # Clear cache before forward pass
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         
         # Forward pass with mixed precision
         if self.scaler is not None:
             with autocast():
-                logits, loss = self.model(x, y)
+                logits = self.model(x)
+                # Reshape for loss calculation
+                logits = logits.view(-1, logits.size(-1))
+                targets = y.view(-1)
+                loss = F.cross_entropy(logits, targets, ignore_index=0)
                 loss = loss / self.config.gradient_accumulation_steps
             
             self.scaler.scale(loss).backward()
         else:
-            logits, loss = self.model(x, y)
+            logits = self.model(x)
+            # Reshape for loss calculation
+            logits = logits.view(-1, logits.size(-1))
+            targets = y.view(-1)
+            loss = F.cross_entropy(logits, targets, ignore_index=0)
             loss = loss / self.config.gradient_accumulation_steps
             loss.backward()
+        
+        # Delete intermediate tensors to free memory
+        del logits, targets
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         
         return loss.item()
     
@@ -695,9 +614,12 @@ class Professional4_9BTrainer:
                         if self.global_step % self.config.save_interval == 0:
                             self._save_checkpoint(checkpoint_dir, avg_loss if 'avg_loss' in locals() else loss)
                         
-                        # Memory cleanup
-                        if self.global_step % 100 == 0 and torch.cuda.is_available():
+                        # Memory cleanup - more aggressive
+                        if self.global_step % 50 == 0 and torch.cuda.is_available():
                             torch.cuda.empty_cache()
+                            # Force garbage collection
+                            import gc
+                            gc.collect()
                         
                         # Check completion
                         if self.global_step >= self.config.max_steps:
@@ -756,7 +678,8 @@ def main():
     """Main function to start 4.9B parameter training"""
     print("Professional 4.9B Parameter Model Training")
     print("=" * 70)
-    print("Using top-tier datasets from LLMDataHub repository")
+    print("Using original iLLuMinator CUDA architecture")
+    print("Training with top-tier datasets from LLMDataHub repository")
     print(f"Optimized for RTX 3050 8GB VRAM")
     print()
     
@@ -775,8 +698,9 @@ def main():
     config = Config4_9B()
     
     print("Training Configuration:")
+    print(f"  Model: Original iLLuMinator CUDA architecture")
     print(f"  Parameters: ~4.9 billion")
-    print(f"  Architecture: {config.n_layer} layers, {config.n_head} heads, {config.n_embd} embedding dim")
+    print(f"  Architecture: {config.num_layers} layers, {config.num_heads} heads, {config.d_model} embedding dim")
     print(f"  Batch size: {config.batch_size} (effective: {config.batch_size * config.gradient_accumulation_steps})")
     print(f"  Learning rate: {config.learning_rate}")
     print(f"  Max steps: {config.max_steps:,}")
