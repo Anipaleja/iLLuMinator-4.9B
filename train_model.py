@@ -15,8 +15,8 @@ import os
 from tqdm import tqdm
 import wandb
 
-from illuminator_model import iLLuMinator4_7B
-from tokenizer import iLLuMinatorTokenizer
+from legacy.illuminator_model import iLLuMinator4_7B
+from practical_model.tokenizer import iLLuMinatorTokenizer
 
 class TextDataset(Dataset):
     """Dataset for text training"""
@@ -275,10 +275,13 @@ def train_illuminator():
     return model, tokenizer
 
 if __name__ == "__main__":
-    # Check if CUDA is available
-    if torch.cuda.is_available():
-        print(f"CUDA available: {torch.cuda.get_device_name()}")
+    # Check available backends
+    print("🔍 Checking available compute backends...")
+    if torch.backends.mps.is_available():
+        print("✅ Apple Silicon MPS available")
+    elif torch.cuda.is_available():
+        print(f"✅ CUDA available: {torch.cuda.get_device_name()}")
     else:
-        print("CUDA not available, training on CPU (will be slow)")
+        print("⚠️  Only CPU available (training will be slow)")
     
     model, tokenizer = train_illuminator()
