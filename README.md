@@ -2,11 +2,13 @@
 
 A clean, optimized implementation for training a 4.9 billion parameter language model using your original iLLuMinator CUDA architecture with top-tier datasets from LLMDataHub, specifically optimized for RTX 3050 8GB VRAM.
 
+**Please Note**: This project is still in development. Ic you encounter any issues, please report them under the issues tab!
+
 ## What's Working
 
-- **Original Architecture**: Using your complete iLLuMinator CUDA model (4.8B parameters)
-- **Training Pipeline**: Professional training script with LLMDataHub datasets
-- **Memory Optimization**: RTX 3050 optimized with gradient checkpointing and mixed precision
+- **Original Architecture**: Using the complete iLLuMinator CUDA model (4.8B parameters)
+- **Training Pipeline**: Training script with LLMDataHub datasets
+- **Memory Optimization**: RTX card optimized with gradient checkpointing and mixed precision
 - **Clean Codebase**: Removed unnecessary files, kept essential components
 - **Ready to Train**: The model is now training successfully!
 
