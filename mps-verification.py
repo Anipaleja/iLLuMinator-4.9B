@@ -12,10 +12,10 @@ from practical_model.tokenizer import iLLuMinatorTokenizer
 
 def test_mps_functionality():
     """Test MPS backend functionality"""
-    print("🧪 Testing Apple Silicon MPS...")
+    print("Testing Apple Silicon MPS...")
     
     if not torch.backends.mps.is_available():
-        print("❌ MPS not available")
+        print("MPS not available")
         return False
     
     try:
@@ -25,23 +25,23 @@ def test_mps_functionality():
         y = torch.randn(100, 100, device=device)
         z = torch.matmul(x, y)
         
-        print(f"✅ MPS tensor operations successful")
+        print(f"MPS tensor operations successful")
         print(f"   Device: {z.device}")
         print(f"   Shape: {z.shape}")
         return True
         
     except Exception as e:
-        print(f"❌ MPS test failed: {e}")
+        print(f"MPS test failed: {e}")
         return False
 
 def test_model_loading():
     """Test model loading and basic forward pass"""
-    print("\n🧠 Testing 4.9B model loading...")
+    print("\nTesting 4.9B model loading...")
     
     try:
         # Initialize tokenizer
         tokenizer = iLLuMinatorTokenizer()
-        print(f"✅ Tokenizer loaded: {len(tokenizer)} tokens")
+        print(f"Tokenizer loaded: {len(tokenizer)} tokens")
         
         # Initialize model
         model = iLLuMinator4_7B(
@@ -55,52 +55,52 @@ def test_model_loading():
         
         # Count parameters
         total_params = sum(p.numel() for p in model.parameters())
-        print(f"✅ Model loaded: {total_params:,} parameters ({total_params/1e9:.2f}B)")
+        print(f"Model loaded: {total_params:,} parameters ({total_params/1e9:.2f}B)")
         
         return model, tokenizer
         
     except Exception as e:
-        print(f"❌ Model loading failed: {e}")
+        print(f"Model loading failed: {e}")
         return None, None
 
 def test_model_on_mps(model, tokenizer):
     """Test model inference on MPS"""
-    print("\n🚀 Testing model on Apple Silicon MPS...")
+    print("\nTesting model on Apple Silicon MPS...")
     
     if not torch.backends.mps.is_available():
-        print("❌ MPS not available for testing")
+        print("MPS not available for testing")
         return False
     
     try:
         # Move model to MPS
         device = torch.device('mps')
         model = model.to(device)
-        print("✅ Model moved to MPS device")
+        print("Model moved to MPS device")
         
         # Create test input
         test_text = "The future of artificial intelligence"
         tokens = tokenizer.encode(test_text, max_length=100)
         input_ids = torch.tensor([tokens], device=device)
         
-        print(f"✅ Test input prepared: {input_ids.shape}")
+        print(f"Test input prepared: {input_ids.shape}")
         
         # Forward pass
         model.eval()
         with torch.no_grad():
             outputs = model(input_ids)
         
-        print(f"✅ Forward pass successful: {outputs.shape}")
+        print(f"Forward pass successful: {outputs.shape}")
         print(f"   Output device: {outputs.device}")
         
         return True
         
     except Exception as e:
-        print(f"❌ MPS inference failed: {e}")
+        print(f"MPS inference failed: {e}")
         return False
 
 def check_memory_requirements():
     """Check if system has enough memory"""
-    print("\n💾 Checking memory requirements...")
+    print("\nChecking memory requirements...")
     
     memory = psutil.virtual_memory()
     total_gb = memory.total / (1024**3)
@@ -116,18 +116,18 @@ def check_memory_requirements():
     print(f"   Estimated model memory: ~{model_memory_gb:.1f}GB")
     
     if available_gb < 8:
-        print("⚠️  Warning: Low available memory for 4.9B model")
+        print("Warning: Low available memory for 4.9B model")
         return False
     elif available_gb >= 12:
-        print("✅ Sufficient memory available")
+        print("Sufficient memory available")
         return True
     else:
-        print("⚠️  Marginal memory - training may be slow")
+        print("Marginal memory - training may be slow")
         return True
 
 def main():
     """Main test function"""
-    print("🧪 iLLuMinator 4.9B Pre-Training Test")
+    print("iLLuMinator 4.9B Pre-Training Test")
     print("="*45)
     
     # Test 1: MPS functionality
@@ -148,18 +148,18 @@ def main():
     # Summary
     print("\n" + "="*45)
     print("🎯 Test Results Summary:")
-    print(f"   MPS Backend: {'✅ Pass' if mps_ok else '❌ Fail'}")
-    print(f"   Model Loading: {'✅ Pass' if model_ok else '❌ Fail'}")
-    print(f"   MPS Inference: {'✅ Pass' if mps_inference_ok else '❌ Fail'}")
-    print(f"   Memory Check: {'✅ Pass' if memory_ok else '⚠️  Warning'}")
+    print(f"   MPS Backend: {'Pass' if mps_ok else 'Fail'}")
+    print(f"   Model Loading: {'Pass' if model_ok else 'Fail'}")
+    print(f"   MPS Inference: {'Pass' if mps_inference_ok else 'Fail'}")
+    print(f"   Memory Check: {'Pass' if memory_ok else 'Warning'}")
     
     all_tests_pass = mps_ok and model_ok and mps_inference_ok and memory_ok
     
     if all_tests_pass:
-        print("\n🎉 All tests passed! Ready for 4.9B training!")
-        print("💡 Run: ./start_4_9b_training.sh to begin")
+        print("\nAll tests passed! Ready for 4.9B training!")
+        print("Run: ./start_4_9b_training.sh to begin")
     else:
-        print("\n⚠️  Some tests failed. Check issues before training.")
+        print("\nSome tests failed. Check issues before training.")
         
         if not mps_ok:
             print("   • MPS backend not working - training will be very slow on CPU")
