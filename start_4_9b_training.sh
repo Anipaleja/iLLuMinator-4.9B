@@ -5,7 +5,7 @@
 echo "Apple Silicon 4.9B Parameter Training Setup"
 echo "=============================================="
 
-# Check system requirements
+# Check system requirements 
 echo "Checking system requirements..."
 
 # Check macOS version
