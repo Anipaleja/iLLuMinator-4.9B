@@ -48,7 +48,7 @@ class WorkingModel(nn.Module):
         
         # Print actual parameters
         total_params = sum(p.numel() for p in self.model.parameters())
-        print(f"✅ Proven Working Model Configuration:")
+        print(f"Proven Working Model Configuration:")
         print(f"   Parameters: {total_params:,} ({total_params/1e9:.2f}B)")
         print(f"   Architecture: {self.n_layers} layers, {self.n_heads} heads")
         print(f"   Model dimension: {self.d_model}")
@@ -71,10 +71,10 @@ class ProvenTrainer:
         if torch.backends.mps.is_available():
             os.environ['PYTORCH_MPS_HIGH_WATERMARK_RATIO'] = '0.5'  # Very conservative
             self.device = torch.device('mps')
-            print("🚀 Using Apple Silicon MPS (50% memory limit)")
+            print("Using Apple Silicon MPS (50% memory limit)")
         else:
             self.device = torch.device('cpu')
-            print("🖥️  Using CPU")
+            print("Using CPU")
         
         self.model = model.to(self.device)
         self.tokenizer = tokenizer
@@ -91,7 +91,7 @@ class ProvenTrainer:
             ignore_index=tokenizer.tokenizer.pad_token_id
         )
         
-        print(f"✅ Trainer ready on {self.device}")
+        print(f"Trainer ready on {self.device}")
     
     def train_step(self, batch):
         """Safe training step"""
@@ -133,7 +133,7 @@ class ProvenTrainer:
                 })
                 
             except Exception as e:
-                print(f"⚠️  Skipping batch {batch_idx}: {e}")
+                print(f"Skipping batch {batch_idx}: {e}")
                 continue
         
         return total_loss / len(dataloader)
@@ -151,7 +151,7 @@ class ProvenTrainer:
                 'max_seq_length': self.model.max_seq_length
             }
         }, path)
-        print(f"💾 Model saved: {path}")
+        print(f"Model saved: {path}")
 
 class SimpleDataset(Dataset):
     """Simple, memory-efficient dataset"""
@@ -181,13 +181,13 @@ class SimpleDataset(Dataset):
 
 def main():
     """Guaranteed working training"""
-    print("🍎 iLLuMinator 2.8B Apple Silicon Training")
+    print("iLLuMinator 2.8B Apple Silicon Training")
     print("Guaranteed to work on 16GB Apple Silicon!")
     print("="*50)
     
     # Memory check
     memory = psutil.virtual_memory()
-    print(f"💾 Memory: {memory.used/1024**3:.1f}GB / {memory.total/1024**3:.1f}GB ({memory.percent:.1f}%)")
+    print(f"Memory: {memory.used/1024**3:.1f}GB / {memory.total/1024**3:.1f}GB ({memory.percent:.1f}%)")
     
     # Clean memory
     if torch.backends.mps.is_available():
@@ -195,10 +195,10 @@ def main():
     gc.collect()
     
     # Initialize
-    print("\n🔤 Loading tokenizer...")
+    print("\nLoading tokenizer...")
     tokenizer = iLLuMinatorTokenizer()
     
-    print("\n🧠 Creating proven working model...")
+    print("\nCreating proven working model...")
     model = WorkingModel(vocab_size=len(tokenizer))
     
     # Training data
@@ -220,42 +220,42 @@ def main():
     dataloader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=0)
     
     # Trainer
-    print("\n⚙️  Initializing trainer...")
+    print("\nInitializing trainer...")
     trainer = ProvenTrainer(model, tokenizer)
     
     # Show final config
     total_params = sum(p.numel() for p in model.parameters())
-    print(f"\n📊 Final Configuration:")
+    print(f"\nFinal Configuration:")
     print(f"   Parameters: {total_params:,} ({total_params/1e9:.2f}B)")
     print(f"   Training samples: {len(texts)}")
     print(f"   Device: {trainer.device}")
     print(f"   Batch size: 2")
     
     # Training
-    print(f"\n🔥 Starting Proven Training!")
+    print(f"\nStarting Proven Training!")
     start_time = time.time()
     
     for epoch in range(1, 4):  # 3 epochs
-        print(f"\n📅 Epoch {epoch}/3")
+        print(f"\nEpoch {epoch}/3")
         
         try:
             avg_loss = trainer.train_epoch(dataloader, epoch)
-            print(f"✅ Epoch {epoch} - Average Loss: {avg_loss:.4f}")
+            print(f"Epoch {epoch} - Average Loss: {avg_loss:.4f}")
             
         except Exception as e:
-            print(f"❌ Error in epoch {epoch}: {e}")
+            print(f"Error in epoch {epoch}: {e}")
             break
     
     # Save model
-    print(f"\n💾 Saving final model...")
+    print(f"\nSaving final model...")
     trainer.save_model("illuminator_2_8b_apple_silicon_proven.pt")
     
     training_time = (time.time() - start_time) / 3600
-    print(f"\n🎉 Training Complete!")
+    print(f"\nTraining Complete!")
     print(f"   Time: {training_time:.2f} hours")
     print(f"   Parameters: {total_params:,} ({total_params/1e9:.2f}B)")
     print(f"   Device: {trainer.device}")
-    print(f"   Status: ✅ SUCCESS")
+    print(f"   Status: SUCCESS")
     
     return model, tokenizer
 
