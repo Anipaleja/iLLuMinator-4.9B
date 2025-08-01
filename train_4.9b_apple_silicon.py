@@ -142,7 +142,7 @@ class AppleSiliconTrainer:
         # Memory optimization
         self.memory_optimizer = AppleSiliconOptimizer()
         
-        print(f"🚀 Trainer initialized:")
+        print(f"Trainer initialized:")
         print(f"   Device: {self.device}")
         print(f"   Learning rate: {self.lr}")
         print(f"   Mixed precision: {self.use_mixed_precision}")
@@ -156,7 +156,7 @@ class AppleSiliconTrainer:
                 _ = test_tensor @ test_tensor  # Test operation
                 return 'mps'
             except Exception as e:
-                print(f"⚠️  MPS test failed: {e}, falling back to CPU")
+                print(f"MPS test failed: {e}, falling back to CPU")
                 return 'cpu'
         elif torch.cuda.is_available():
             return 'cuda'
@@ -214,7 +214,7 @@ class AppleSiliconTrainer:
         
         # Memory info at start
         mem_info = self.memory_optimizer.get_memory_info()
-        print(f"📊 Memory at epoch start: {mem_info['used_gb']:.1f}GB / {mem_info['total_gb']:.1f}GB ({mem_info['percent']:.1f}%)")
+        print(f"Memory at epoch start: {mem_info['used_gb']:.1f}GB / {mem_info['total_gb']:.1f}GB ({mem_info['percent']:.1f}%)")
         
         progress_bar = tqdm(dataloader, desc=f"Epoch {epoch}")
         
@@ -267,7 +267,7 @@ class AppleSiliconTrainer:
         }
         
         torch.save(checkpoint, save_path)
-        print(f"💾 Checkpoint saved: {save_path}")
+        print(f"Checkpoint saved: {save_path}")
 
 def prepare_training_data(size: str = "large") -> List[str]:
     """Prepare comprehensive training data"""
@@ -302,7 +302,7 @@ def prepare_training_data(size: str = "large") -> List[str]:
 
 def main():
     """Main training function for 4.9B parameter model"""
-    print("🚀 iLLuMinator 4.9B Apple Silicon Training")
+    print("iLLuMinator 4.9B Apple Silicon Training")
     print("=" * 50)
     
     # System checks
@@ -313,25 +313,25 @@ def main():
     print(f"   Memory usage: {mem_info['percent']:.1f}%")
     
     if AppleSiliconOptimizer.is_mps_available():
-        print("   ✅ Apple Silicon MPS: Available")
+        print("   Apple Silicon MPS: Available")
     else:
-        print("   ❌ Apple Silicon MPS: Not available")
+        print("   Apple Silicon MPS: Not available")
     
     # Training configuration
     num_epochs = 3
     max_sequence_length = 1024  # Reduced for memory efficiency
     
-    print(f"\n📋 Training Configuration:")
+    print(f"\nTraining Configuration:")
     print(f"   Epochs: {num_epochs}")
     print(f"   Sequence Length: {max_sequence_length}")
     print(f"   Target Model Size: 4.9B parameters")
     
     # Initialize tokenizer
-    print("\n🔤 Loading tokenizer...")
+    print("\nLoading tokenizer...")
     tokenizer = iLLuMinatorTokenizer()
     
     # Initialize model (full 4.9B parameters)
-    print("\n🧠 Initializing 4.9B parameter model...")
+    print("\nInitializing 4.9B parameter model...")
     model = iLLuMinator4_7B(
         vocab_size=len(tokenizer),
         d_model=3584,      # Keep full model dimension
@@ -343,7 +343,7 @@ def main():
     )
     
     # Prepare training data
-    print("\n📚 Preparing training data...")
+    print("\nPreparing training data...")
     texts = prepare_training_data("large")
     dataset = OptimizedTextDataset(
         texts, 
@@ -371,7 +371,7 @@ def main():
     )
     
     # Initialize trainer
-    print("\n⚙️  Initializing Apple Silicon trainer...")
+    print("\nInitializing Apple Silicon trainer...")
     trainer = AppleSiliconTrainer(model, tokenizer, use_mixed_precision=True)
     
     # Setup learning rate scheduler
@@ -381,7 +381,7 @@ def main():
         num_warmup_steps=min(1000, total_steps // 10)  # 10% warmup
     )
     
-    print(f"\n📊 Training Statistics:")
+    print(f"\nTraining Statistics:")
     print(f"   Model parameters: {model_params:,}")
     print(f"   Training samples: {len(texts):,}")
     print(f"   Batches per epoch: {len(dataloader):,}")
@@ -393,13 +393,13 @@ def main():
     os.makedirs("checkpoints", exist_ok=True)
     
     # Training loop
-    print(f"\n🔥 Starting 4.9B Parameter Training!")
+    print(f"\nStarting 4.9B Parameter Training!")
     print("=" * 50)
     
     start_time = time.time()
     
     for epoch in range(1, num_epochs + 1):
-        print(f"\n📅 Epoch {epoch}/{num_epochs}")
+        print(f"\nEpoch {epoch}/{num_epochs}")
         
         # Train epoch
         avg_loss = trainer.train_epoch(dataloader, epoch, scheduler)
@@ -408,7 +408,7 @@ def main():
         current_lr = trainer.optimizer.param_groups[0]['lr']
         elapsed_time = time.time() - start_time
         
-        print(f"\n📈 Epoch {epoch} Results:")
+        print(f"\nEpoch {epoch} Results:")
         print(f"   Average Loss: {avg_loss:.4f}")
         print(f"   Learning Rate: {current_lr:.2e}")
         print(f"   Elapsed Time: {elapsed_time/3600:.2f} hours")
@@ -422,7 +422,7 @@ def main():
         print(f"   Memory Usage: {mem_info['used_gb']:.1f}GB / {mem_info['total_gb']:.1f}GB ({mem_info['percent']:.1f}%)")
     
     # Save final model
-    print(f"\n💾 Saving final 4.9B parameter model...")
+    print(f"\nSaving final 4.9B parameter model...")
     final_model_path = "illuminator_4_9b_apple_silicon_final.pt"
     torch.save({
         'model_state_dict': model.state_dict(),
@@ -444,7 +444,7 @@ def main():
     }, final_model_path)
     
     total_time = time.time() - start_time
-    print(f"\n🎉 Training Complete!")
+    print(f"\nTraining Complete!")
     print(f"   Final model saved: {final_model_path}")
     print(f"   Total parameters: {model_params:,}")
     print(f"   Training time: {total_time/3600:.2f} hours")
@@ -455,7 +455,7 @@ def main():
 if __name__ == "__main__":
     # Check system compatibility
     if not AppleSiliconOptimizer.is_mps_available():
-        print("⚠️  Warning: MPS not available. Training will use CPU (very slow).")
+        print("Warning: MPS not available. Training will use CPU (very slow).")
         response = input("Continue anyway? (y/N): ")
         if response.lower() != 'y':
             print("Exiting...")
