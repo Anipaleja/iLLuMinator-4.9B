@@ -84,27 +84,27 @@ class AppleSiliconMonitor:
         
         # Memory
         mem = info['memory']
-        print(f"💾 Memory: {mem['used_gb']:.1f}GB / {mem['total_gb']:.1f}GB ({mem['percent']:.1f}%)")
+        print(f"Memory: {mem['used_gb']:.1f}GB / {mem['total_gb']:.1f}GB ({mem['percent']:.1f}%)")
         
         # CPU
         cpu = info['cpu']
-        print(f"🧠 CPU: {cpu['percent']:.1f}% usage, {cpu['cores']} cores")
+        print(f"CPU: {cpu['percent']:.1f}% usage, {cpu['cores']} cores")
         if cpu['frequency_mhz']:
             print(f"    Frequency: {cpu['frequency_mhz']:.0f} MHz")
         
         # Disk
         disk = info['disk']
-        print(f"💿 Disk: {disk['used_gb']:.1f}GB / {disk['total_gb']:.1f}GB ({disk['percent']:.1f}%)")
+        print(f"Disk: {disk['used_gb']:.1f}GB / {disk['total_gb']:.1f}GB ({disk['percent']:.1f}%)")
         print(f"    Free space: {disk['free_gb']:.1f}GB")
         
         # MPS
-        mps_status = "✅ Available" if info['mps_available'] else "❌ Not Available"
-        print(f"🚀 Apple MPS: {mps_status}")
+        mps_status = "Available" if info['mps_available'] else "❌ Not Available"
+        print(f"Apple MPS: {mps_status}")
         
         # Training time
         if self.start_time:
             elapsed = time.time() - self.start_time
-            print(f"⏱️  Training time: {elapsed/3600:.2f} hours")
+            print(f"Training time: {elapsed/3600:.2f} hours")
     
     def start_monitoring(self, interval: int = 30):
         """Start continuous monitoring"""
@@ -125,15 +125,15 @@ class AppleSiliconMonitor:
     def stop_monitoring(self):
         """Stop monitoring"""
         self.monitoring = False
-        print("🛑 Monitoring stopped")
+        print("Monitoring stopped")
     
     def analyze_training_log(self):
         """Analyze training performance from log"""
         if not os.path.exists(self.log_file):
-            print("❌ No log file found")
+            print("No log file found")
             return
         
-        print("\n📊 Training Performance Analysis")
+        print("\nTraining Performance Analysis")
         print("="*40)
         
         try:
@@ -141,7 +141,7 @@ class AppleSiliconMonitor:
                 lines = f.readlines()
             
             if not lines:
-                print("❌ Empty log file")
+                print("Empty log file")
                 return
             
             # Parse first and last entries
@@ -171,11 +171,11 @@ class AppleSiliconMonitor:
             print(f"Log entries: {len(lines)}")
             
         except Exception as e:
-            print(f"❌ Error analyzing log: {e}")
+            print(f"Error analyzing log: {e}")
 
 def main():
     """Main monitoring function"""
-    print("🍎 Apple Silicon Training Monitor")
+    print("Apple Silicon Training Monitor")
     print("="*40)
     
     monitor = AppleSiliconMonitor()
@@ -185,7 +185,7 @@ def main():
     
     # Start monitoring
     try:
-        print("\n🔍 Starting continuous monitoring...")
+        print("\nStarting continuous monitoring...")
         print("Press Ctrl+C to stop and analyze results")
         
         monitor_thread = monitor.start_monitoring(interval=60)  # Every minute
@@ -195,13 +195,13 @@ def main():
             time.sleep(1)
             
     except KeyboardInterrupt:
-        print("\n\n🛑 Stopping monitor...")
+        print("\n\nStopping monitor...")
         monitor.stop_monitoring()
         
         # Analyze results
         monitor.analyze_training_log()
         
-        print("\n✅ Monitoring complete!")
+        print("\nMonitoring complete!")
 
 if __name__ == "__main__":
     main()
