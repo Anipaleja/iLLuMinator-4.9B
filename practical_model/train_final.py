@@ -102,10 +102,10 @@ class ConservativeTrainer:
     def __init__(self, model_save_path: str = "illuminator_practical_final.pth"):
         self.model_save_path = model_save_path
         
-        print("📚 Loading tokenizer...")
+        print("Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
-        print("🧠 Creating conservative model...")
+        print("Creating conservative model...")
         self.model = iLLuMinatorPractical(vocab_size=len(self.tokenizer))
         
         # Very conservative optimizer settings
@@ -122,18 +122,18 @@ class ConservativeTrainer:
             label_smoothing=0.2  # Higher smoothing
         )
         
-        print(f"✅ Conservative trainer ready with {sum(p.numel() for p in self.model.parameters()):,} parameters")
+        print(f"Conservative trainer ready with {sum(p.numel() for p in self.model.parameters()):,} parameters")
     
     def train(self, epochs: int = 8, batch_size: int = 1):
         """Conservative training with minimal epochs"""
         
-        print(f"🚀 Starting conservative training for {epochs} epochs...")
+        print(f"Starting conservative training for {epochs} epochs...")
         
         # Create dataset
         dataset = ConservativeDataset(self.tokenizer)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         
-        print(f"📊 Dataset size: {len(dataset)} examples")
+        print(f"Dataset size: {len(dataset)} examples")
         
         self.model.train()
         
