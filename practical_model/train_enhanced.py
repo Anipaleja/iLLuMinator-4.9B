@@ -235,14 +235,14 @@ class EnhancedTrainer:
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
         val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
         
-        print(f"📊 Dataset split: {train_size} train, {val_size} validation samples")
+        print(f"Dataset split: {train_size} train, {val_size} validation samples")
         
         best_val_loss = float('inf')
         patience = 5
         patience_counter = 0
         
         for epoch in range(epochs):
-            print(f"\n📖 Epoch {epoch + 1}/{epochs}")
+            print(f"\nEpoch {epoch + 1}/{epochs}")
             
             # Training phase
             train_loss = self._train_epoch(train_loader, epoch)
@@ -259,19 +259,19 @@ class EnhancedTrainer:
             self.val_losses.append(val_loss)
             self.learning_rates.append(current_lr)
             
-            print(f"  📈 Train Loss: {train_loss:.4f}")
-            print(f"  📉 Val Loss: {val_loss:.4f}")
-            print(f"  ⚡ Learning Rate: {current_lr:.2e}")
+            print(f"  Train Loss: {train_loss:.4f}")
+            print(f"  Val Loss: {val_loss:.4f}")
+            print(f"  Learning Rate: {current_lr:.2e}")
             
             # Early stopping check
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 patience_counter = 0
                 self.save_model(is_best=True)
-                print(f"  ⭐ Best validation loss so far!")
+                print(f"  Best validation loss so far!")
             else:
                 patience_counter += 1
-                print(f"  ⏰ Patience: {patience_counter}/{patience}")
+                print(f"  Patience: {patience_counter}/{patience}")
             
             # Test generation every few epochs
             if epoch % 3 == 0:
