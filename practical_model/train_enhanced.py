@@ -355,7 +355,7 @@ class EnhancedTrainer:
             "Q: How do loops work?\nA:"
         ]
         
-        print(f"\n  🤖 Generation Test:")
+        print(f"\n  Generation Test:")
         
         for prompt in test_prompts[:1]:  # Test one prompt to save time
             input_ids = self.tokenizer.encode(prompt)
@@ -393,7 +393,7 @@ class EnhancedTrainer:
         
         torch.save(checkpoint, save_path)
         if is_best:
-            print(f"💎 Best model saved to {save_path}")
+            print(f"Best model saved to {save_path}")
     
     def _plot_training_history(self):
         """Plot training curves"""
@@ -423,14 +423,14 @@ class EnhancedTrainer:
             plt.tight_layout()
             plt.savefig('training_history.png', dpi=300, bbox_inches='tight')
             plt.show()
-            print(f"📊 Training curves saved to training_history.png")
+            print(f"Training curves saved to training_history.png")
             
         except Exception as e:
-            print(f"⚠️ Could not create plots: {e}")
+            print(f"Could not create plots: {e}")
 
 def main():
     """Run enhanced training"""
-    print("🎯 iLLuMinator Enhanced Training")
+    print("iLLuMinator Enhanced Training")
     print("=" * 50)
     
     # Set random seeds for reproducibility
@@ -443,10 +443,10 @@ def main():
     try:
         trainer.train(epochs=10, batch_size=1, validation_split=0.2)
         
-        print(f"\n🎉 Enhanced training completed successfully!")
-        print(f"📁 Best model: illuminator_practical_enhanced_best.pth")
-        print(f"📁 Final model: illuminator_practical_enhanced.pth")
-        print(f"🚀 Run 'python enhanced_test.py' to test the trained model!")
+        print(f"\nEnhanced training completed successfully!")
+        print(f"Best model: illuminator_practical_enhanced_best.pth")
+        print(f"Final model: illuminator_practical_enhanced.pth")
+        print(f"Run 'python enhanced_test.py' to test the trained model!")
         
     except Exception as e:
         print(f"❌ Training failed: {e}")
