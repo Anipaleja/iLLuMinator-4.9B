@@ -279,13 +279,13 @@ class EnhancedTrainer:
             
             # Early stopping
             if patience_counter >= patience:
-                print(f"\n🛑 Early stopping triggered after {epoch + 1} epochs")
+                print(f"\nEarly stopping triggered after {epoch + 1} epochs")
                 break
         
         # Final save and plot results
         self.save_model()
         self._plot_training_history()
-        print(f"✅ Enhanced training completed!")
+        print(f"Enhanced training completed!")
     
     def _train_epoch(self, train_loader: DataLoader, epoch: int) -> float:
         """Train for one epoch"""
