@@ -89,7 +89,7 @@ The improved model shows:
 ## Training Scripts Created
 
 1. **`train_enhanced.py`**: Full-featured training with validation
-2. **`train_improved.py`**: Balanced approach with good results ⭐
+2. **`train_improved.py`**: Balanced approach with good results
 3. **`train_final.py`**: Ultra-conservative minimal overfitting
 4. **`simple_test.py`**: Easy model evaluation tool
 
