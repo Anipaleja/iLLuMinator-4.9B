@@ -1,6 +1,6 @@
 # iLLuMinator 4.9B - Professional Language Model Training
 
-A clean, optimized implementation for training a 4.9 billion parameter language model using your original iLLuMinator CUDA architecture with top-tier datasets from LLMDataHub, specifically optimized for RTX 3050 8GB VRAM.
+A clean, optimized implementation for training a 4.9 billion parameter language model using your original iLLuMinator CUDA architecture with top-tier datasets from LLMDataHub, specifically optimized for RTX cards and future implementations with cloud training.
 
 **Please Note**: This project is still in development. Ic you encounter any issues, please report them under the issues tab!
 

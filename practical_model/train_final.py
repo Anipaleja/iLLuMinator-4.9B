@@ -102,10 +102,10 @@ class ConservativeTrainer:
     def __init__(self, model_save_path: str = "illuminator_practical_final.pth"):
         self.model_save_path = model_save_path
         
-        print("📚 Loading tokenizer...")
+        print("Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
-        print("🧠 Creating conservative model...")
+        print("Creating conservative model...")
         self.model = iLLuMinatorPractical(vocab_size=len(self.tokenizer))
         
         # Very conservative optimizer settings
@@ -122,18 +122,18 @@ class ConservativeTrainer:
             label_smoothing=0.2  # Higher smoothing
         )
         
-        print(f"✅ Conservative trainer ready with {sum(p.numel() for p in self.model.parameters()):,} parameters")
+        print(f"Conservative trainer ready with {sum(p.numel() for p in self.model.parameters()):,} parameters")
     
     def train(self, epochs: int = 8, batch_size: int = 1):
         """Conservative training with minimal epochs"""
         
-        print(f"🚀 Starting conservative training for {epochs} epochs...")
+        print(f"Starting conservative training for {epochs} epochs...")
         
         # Create dataset
         dataset = ConservativeDataset(self.tokenizer)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         
-        print(f"📊 Dataset size: {len(dataset)} examples")
+        print(f"Dataset size: {len(dataset)} examples")
         
         self.model.train()
         
@@ -179,7 +179,7 @@ class ConservativeTrainer:
             if epoch >= 3:  # Only save after some training
                 self.save_model()
         
-        print("✅ Conservative training completed!")
+        print("Conservative training completed!")
     
     def _test_generation(self):
         """Quick test during training"""
@@ -199,7 +199,7 @@ class ConservativeTrainer:
             )
         
         response = self.tokenizer.decode(generated[0].tolist(), skip_special_tokens=True)
-        print(f"  🤖 Test: {response}")
+        print(f"  Test: {response}")
         
         self.model.train()
     
@@ -212,11 +212,11 @@ class ConservativeTrainer:
         }
         
         torch.save(checkpoint, self.model_save_path)
-        print(f"💾 Model saved to {self.model_save_path}")
+        print(f"Model saved to {self.model_save_path}")
 
 def main():
     """Run conservative training"""
-    print("🎯 iLLuMinator Conservative Training")
+    print("iLLuMinator Conservative Training")
     print("=" * 50)
     
     # Set seeds
@@ -229,12 +229,12 @@ def main():
         # Very few epochs to prevent overfitting
         trainer.train(epochs=6, batch_size=1)
         
-        print(f"\n🎉 Conservative training completed!")
-        print(f"📁 Model saved: illuminator_practical_final.pth")
-        print(f"🧪 Test with: python simple_test.py")
+        print(f"\nConservative training completed!")
+        print(f"Model saved: illuminator_practical_final.pth")
+        print(f"Test with: python simple_test.py")
         
     except Exception as e:
-        print(f"❌ Training failed: {e}")
+        print(f"Training failed: {e}")
         import traceback
         traceback.print_exc()
 

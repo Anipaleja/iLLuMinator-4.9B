@@ -1,0 +1,18 @@
+{
+  "model_name": "iLLuMinator-4.9B-Enhanced",
+  "architecture": "enhanced-transformer",
+  "vocab_size": 65536,
+  "d_model": 3328,
+  "n_layers": 32,
+  "n_heads": 32,
+  "n_kv_heads": 8,
+  "d_ff": 9984,
+  "max_seq_length": 4096,
+  "dropout": 0.0,
+  "activation": "swiglu",
+  "norm_type": "rmsnorm",
+  "position_embedding": "rope",
+  "attention_type": "grouped_query_attention",
+  "tie_embeddings": true,
+  "estimated_parameters": "4.9B"
+}
