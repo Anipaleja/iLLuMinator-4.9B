@@ -1,0 +1,17 @@
+{
+  "model_name": "iLLuMinator-4.7B",
+  "architecture": "standard-transformer",
+  "vocab_size": 50257,
+  "d_model": 3584,
+  "n_layers": 30,
+  "n_heads": 28,
+  "d_ff": 14336,
+  "max_seq_length": 2048,
+  "dropout": 0.1,
+  "activation": "gelu",
+  "norm_type": "layernorm",
+  "position_embedding": "sinusoidal",
+  "attention_type": "multi_head_attention",
+  "tie_embeddings": false,
+  "estimated_parameters": "4.7B"
+}

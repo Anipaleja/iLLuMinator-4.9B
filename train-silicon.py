@@ -336,11 +336,11 @@ def main():
     print("\nInitializing Enhanced 4.9B parameter model...")
     model = iLLuMinator4_9B(
         vocab_size=65536,      # Enhanced vocabulary size
-        d_model=3328,          # Optimized model dimension for 4.9B
+        d_model=4096,          # Enhanced model dimension
         n_layers=32,           # Enhanced layer count
-        n_heads=32,            # Optimized attention heads (divisible by n_kv_heads)
+        n_heads=32,            # Enhanced attention heads
         n_kv_heads=8,          # Grouped query attention
-        d_ff=9984,             # Optimized feedforward dimension
+        d_ff=14336,            # Enhanced feedforward dimension
         max_seq_length=max_sequence_length,
         dropout=0.0,           # Lower dropout for large models
         tie_embeddings=True    # Tie embeddings for efficiency
