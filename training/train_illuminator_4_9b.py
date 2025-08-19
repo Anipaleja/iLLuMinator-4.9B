@@ -604,4 +604,7 @@ def main():
         mp.spawn(train_worker, args=(world_size, config), nprocs=world_size, join=True)
     else:
         print(f"   Using single GPU/CPU training")
-        train_work
+        train_worker(0, 1, config)
+
+if __name__ == "__main__":
+    main()
