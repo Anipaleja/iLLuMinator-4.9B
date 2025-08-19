@@ -16,7 +16,13 @@ import os
 from typing import List, Dict, Optional
 from pathlib import Path
 from tqdm import tqdm
-import wandb  # For professional experiment tracking
+
+# Optional wandb import for professional experiment tracking
+try:
+    import wandb
+    WANDB_AVAILABLE = True
+except ImportError:
+    WANDB_AVAILABLE = False
 
 # Import our enhanced data sources
 from data_sources import ProfessionalDatasetLoader, format_for_training
@@ -147,7 +153,7 @@ class ProfessionalTrainer:
     
     def _setup_logging(self):
         """Setup professional experiment tracking"""
-        if self.config.get('use_wandb', False):
+        if self.config.get('use_wandb', False) and WANDB_AVAILABLE:
             try:
                 wandb.init(
                     project="illuminator-4.9b",
@@ -157,6 +163,8 @@ class ProfessionalTrainer:
                 logger.info("Weights & Biases logging enabled")
             except Exception as e:
                 logger.warning(f"Failed to initialize wandb: {e}")
+        elif self.config.get('use_wandb', False) and not WANDB_AVAILABLE:
+            logger.warning("wandb requested but not available. Install with: pip install wandb")
     
     def train_epoch(self, dataloader: DataLoader, epoch: int):
         """Train for one epoch with professional practices"""
@@ -224,7 +232,7 @@ class ProfessionalTrainer:
             })
             
             # Log to wandb if enabled
-            if self.config.get('use_wandb', False) and batch_idx % 100 == 0:
+            if self.config.get('use_wandb', False) and WANDB_AVAILABLE and batch_idx % 100 == 0:
                 try:
                     wandb.log({
                         'train_loss': loss.item(),
