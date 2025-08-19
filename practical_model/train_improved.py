@@ -131,7 +131,7 @@ class ImprovedTrainer:
         self.model_save_path = model_save_path
         
         # Initialize tokenizer
-        print("📚 Loading tokenizer...")
+        print(" Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
         # Initialize model
@@ -157,18 +157,18 @@ class ImprovedTrainer:
             label_smoothing=0.1  # Prevents overconfidence
         )
         
-        print(f"✅ Improved trainer initialized with {sum(p.numel() for p in self.model.parameters()):,} parameters")
+        print(f" Improved trainer initialized with {sum(p.numel() for p in self.model.parameters()):,} parameters")
     
     def train(self, epochs: int = 15, batch_size: int = 2):
         """Train with improved techniques"""
         
-        print(f"🚀 Starting improved training for {epochs} epochs...")
+        print(f" Starting improved training for {epochs} epochs...")
         
         # Create dataset
         dataset = ImprovedConversationDataset(self.tokenizer)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         
-        print(f"📊 Dataset size: {len(dataset)} examples")
+        print(f" Dataset size: {len(dataset)} examples")
         
         self.model.train()
         best_loss = float('inf')
@@ -179,7 +179,7 @@ class ImprovedTrainer:
             total_loss = 0
             num_batches = 0
             
-            print(f"\n📖 Epoch {epoch + 1}/{epochs}")
+            print(f"\n Epoch {epoch + 1}/{epochs}")
             
             for batch_idx, (input_ids, target_ids) in enumerate(dataloader):
                 # Forward pass
@@ -218,11 +218,11 @@ class ImprovedTrainer:
                 best_loss = avg_loss
                 patience_counter = 0
                 self.save_model(is_best=True)
-                print("  ⭐ Best loss so far - model saved!")
+                print("   Best loss so far - model saved!")
             else:
                 patience_counter += 1
                 if patience_counter >= patience:
-                    print(f"  🛑 Early stopping at epoch {epoch + 1}")
+                    print(f"   Early stopping at epoch {epoch + 1}")
                     break
             
             # Test generation every few epochs
@@ -231,7 +231,7 @@ class ImprovedTrainer:
         
         # Final save
         self.save_model()
-        print("✅ Improved training completed!")
+        print(" Improved training completed!")
     
     def _test_generation(self):
         """Test generation during training"""
@@ -277,11 +277,11 @@ class ImprovedTrainer:
         
         torch.save(checkpoint, save_path)
         if is_best:
-            print(f"💎 Best model saved to {save_path}")
+            print(f" Best model saved to {save_path}")
 
 def main():
     """Run improved training"""
-    print("🎯 iLLuMinator Improved Training")
+    print(" iLLuMinator Improved Training")
     print("=" * 50)
     
     # Set seeds for reproducibility
@@ -293,13 +293,13 @@ def main():
     try:
         trainer.train(epochs=12, batch_size=2)
         
-        print(f"\n🎉 Improved training completed successfully!")
-        print(f"📁 Best model: illuminator_practical_improved_best.pth")
-        print(f"📁 Final model: illuminator_practical_improved.pth")
-        print(f"🚀 Test with: python enhanced_test.py")
+        print(f"\n Improved training completed successfully!")
+        print(f" Best model: illuminator_practical_improved_best.pth")
+        print(f" Final model: illuminator_practical_improved.pth")
+        print(f" Test with: python enhanced_test.py")
         
     except Exception as e:
-        print(f"❌ Training failed: {e}")
+        print(f" Training failed: {e}")
         import traceback
         traceback.print_exc()
 

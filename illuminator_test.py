@@ -215,7 +215,7 @@ def main():
         "The democratization of AI through accessible frameworks accelerates innovation across industries."
     ] * 100  # 1000 samples
     
-    print(f"\n📚 Training data: {len(texts)} samples")
+    print(f"\n Training data: {len(texts)} samples")
     dataset = SimpleDataset(texts, tokenizer)
     dataloader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=0)
     

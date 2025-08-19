@@ -17,7 +17,7 @@ def test_enhanced_model():
     print("=" * 50)
     
     # Load tokenizer
-    print("📚 Loading tokenizer...")
+    print(" Loading tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained('microsoft/DialoGPT-small')
     tokenizer.pad_token = tokenizer.eos_token
     
@@ -26,7 +26,7 @@ def test_enhanced_model():
     model = iLLuMinatorPractical(vocab_size=len(tokenizer))
     
     # Load trained weights
-    print("💾 Loading trained weights...")
+    print(" Loading trained weights...")
     try:
         model_path = 'illuminator_practical_improved_best.pth'
         if os.path.exists(model_path):
@@ -35,26 +35,26 @@ def test_enhanced_model():
             # Check vocab size from checkpoint
             if 'vocab_size' in checkpoint:
                 trained_vocab_size = checkpoint['vocab_size']
-                print(f"📝 Trained vocab size: {trained_vocab_size}")
-                print(f"📝 Current vocab size: {len(tokenizer)}")
+                print(f" Trained vocab size: {trained_vocab_size}")
+                print(f" Current vocab size: {len(tokenizer)}")
                 
                 # Recreate model with correct vocab size
                 if trained_vocab_size != len(tokenizer):
-                    print(f"🔄 Recreating model with vocab size {trained_vocab_size}")
+                    print(f" Recreating model with vocab size {trained_vocab_size}")
                     model = iLLuMinatorPractical(vocab_size=trained_vocab_size)
             
             if 'model_state_dict' in checkpoint:
                 model.load_state_dict(checkpoint['model_state_dict'])
-                print(f"✅ Model loaded from {model_path}")
-                print(f"📊 Model config: {checkpoint.get('model_config', 'N/A')}")
+                print(f" Model loaded from {model_path}")
+                print(f" Model config: {checkpoint.get('model_config', 'N/A')}")
             else:
                 model.load_state_dict(checkpoint)
-                print(f"✅ Model loaded from {model_path}")
+                print(f" Model loaded from {model_path}")
         else:
-            print(f"❌ Model file not found: {model_path}")
+            print(f" Model file not found: {model_path}")
             return
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f" Error loading model: {e}")
         return
     
     # Test prompts
@@ -138,16 +138,16 @@ def test_enhanced_model():
             print(f"Assistant: {response}")
             
         except Exception as e:
-            print(f"❌ Error generating response: {e}")
+            print(f" Error generating response: {e}")
     
     print("\n" + "=" * 50)
-    print("✅ Testing completed!")
+    print(" Testing completed!")
     
     # Model statistics
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     
-    print(f"\n📊 Model Statistics:")
+    print(f"\n Model Statistics:")
     print(f"   Total parameters: {total_params:,}")
     print(f"   Trainable parameters: {trainable_params:,}")
     print(f"   Model size: {total_params/1e6:.1f}M parameters")

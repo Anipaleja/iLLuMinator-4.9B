@@ -1,0 +1,54 @@
+{
+  "model": {
+    "vocab_size": 50000,
+    "d_model": 2560,
+    "n_layers": 24,
+    "n_heads": 20,
+    "n_kv_heads": 5,
+    "d_ff": 10240,
+    "max_seq_length": 3072,
+    "dropout": 0.0,
+    "tie_embeddings": true,
+    "use_rope": true,
+    "use_swiglu": true,
+    "use_rmsnorm": true,
+    "rope_theta": 10000.0
+  },
+  "training": {
+    "learning_rate": 0.00035,
+    "weight_decay": 0.1,
+    "beta1": 0.9,
+    "beta2": 0.95,
+    "eps": 1e-08,
+    "max_grad_norm": 1.0,
+    "warmup_steps": 2000,
+    "max_steps": 80000,
+    "batch_size": 2,
+    "gradient_accumulation_steps": 32,
+    "eval_every": 500,
+    "save_every": 1000,
+    "log_every": 100,
+    "num_epochs": 5,
+    "mixed_precision": true,
+    "gradient_checkpointing": true
+  },
+  "data": {
+    "max_seq_length": 2048,
+    "dataset_size": 20000,
+    "train_split": 0.9,
+    "val_split": 0.1,
+    "use_external_data": true,
+    "quality_threshold": 0.8,
+    "data_format": "alpaca",
+    "cache_dir": "datasets"
+  },
+  "system": {
+    "device": "auto",
+    "num_workers": 4,
+    "pin_memory": true,
+    "compile_model": false,
+    "use_wandb": false,
+    "checkpoint_dir": "checkpoints",
+    "log_dir": "logs"
+  }
+}

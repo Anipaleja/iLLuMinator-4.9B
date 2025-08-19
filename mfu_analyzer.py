@@ -43,7 +43,7 @@ class MFUAnalyzer:
         self.flops_calculator = FLOPsCalculator()
         self.model_profiles = []
         
-        print(f"🔬 MFU Analyzer initialized on {self.device}")
+        print(f" MFU Analyzer initialized on {self.device}")
     
     def select_best_device(self) -> str:
         """Select the best available device"""
@@ -419,7 +419,7 @@ class MFUAnalyzer:
         with open(filepath, 'w') as f:
             json.dump(analysis, f, indent=2)
         
-        print(f"📄 Analysis report saved: {filepath}")
+        print(f" Analysis report saved: {filepath}")
 
 
 def create_test_models() -> List[Tuple[nn.Module, str]]:
@@ -470,7 +470,7 @@ def create_test_models() -> List[Tuple[nn.Module, str]]:
 
 def main():
     """Main MFU analysis function"""
-    print("🔬 iLLuMinator MFU Analysis Tool")
+    print(" iLLuMinator MFU Analysis Tool")
     print("=" * 50)
     
     # Initialize analyzer
@@ -481,11 +481,11 @@ def main():
     models = create_test_models()
     
     # Analyze individual models
-    print(f"\n📊 Analyzing {len(models)} models...")
+    print(f"\n Analyzing {len(models)} models...")
     
     analyses = []
     for model, name in models:
-        print(f"\n🔍 Analyzing {name}...")
+        print(f"\n Analyzing {name}...")
         analysis = analyzer.analyze_mfu_potential(analyzer.profile_model(model, name))
         analyses.append((name, analysis))
         
@@ -500,7 +500,7 @@ def main():
         analyzer.save_analysis_report(analysis, f"mfu_analysis_{name.lower().replace('-', '_')}.json")
     
     # Compare models
-    print(f"\n🏆 Model Comparison:")
+    print(f"\n Model Comparison:")
     comparison = analyzer.compare_models(models)
     print(comparison['summary'])
     
@@ -509,14 +509,14 @@ def main():
         json.dump(comparison, f, indent=2)
     
     # Generate recommendations
-    print(f"\n💡 General Recommendations:")
+    print(f"\n General Recommendations:")
     for i, (name, analysis) in enumerate(analyses, 1):
         print(f"\n{i}. {name}:")
         for rec in analysis['recommendations'][:3]:  # Top 3 recommendations
             print(f"   • {rec}")
     
-    print(f"\n✅ MFU analysis complete!")
-    print(f"📄 Reports saved in current directory")
+    print(f"\n MFU analysis complete!")
+    print(f" Reports saved in current directory")
     
     return analyzer, analyses
 

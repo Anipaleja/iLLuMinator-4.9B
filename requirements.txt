@@ -1,13 +1,44 @@
+# Core dependencies
 torch>=2.0.0
 torchvision>=0.15.0
 torchaudio>=2.0.0
+
+# Dataset and model libraries
 datasets>=2.14.0
 transformers>=4.30.0
-tiktoken>=0.4.0
-numpy>=1.24.0
-tqdm>=4.65.0
-requests>=2.31.0
 huggingface-hub>=0.16.0
 accelerate>=0.20.0
+
+# Tokenization
+tiktoken>=0.4.0
 sentencepiece>=0.1.99
+
+# Data processing
+numpy>=1.24.0
+pandas>=2.0.0
+pyarrow>=12.0.0
+
+# Progress and logging
+tqdm>=4.65.0
+wandb>=0.15.0
+
+# Networking and APIs
+requests>=2.31.0
+fastapi>=0.100.0
+uvicorn>=0.22.0
+
+# Data validation and serialization
 protobuf>=3.20.0
+pydantic>=2.0.0
+
+# Optional optimizations (install manually if needed)
+# flash-attn>=2.0.0  # Requires compatible GPU
+# deepspeed>=0.9.0   # For distributed training
+# bitsandbytes>=0.39.0  # For quantization
+
+# Development and testing
+pytest>=7.0.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
+pre-commit>=3.0.0

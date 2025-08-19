@@ -12,7 +12,7 @@ from tokenizer import iLLuMinatorTokenizer
 def test_model(model_path: str):
     """Test a model with simple prompts"""
     
-    print(f"📁 Loading model: {model_path}")
+    print(f" Loading model: {model_path}")
     
     # Load tokenizer
     tokenizer = iLLuMinatorTokenizer()
@@ -23,9 +23,9 @@ def test_model(model_path: str):
     if os.path.exists(model_path):
         checkpoint = torch.load(model_path, map_location='cpu')
         model.load_state_dict(checkpoint['model_state_dict'])
-        print("✅ Model loaded successfully")
+        print(" Model loaded successfully")
     else:
-        print("⚠️ Model file not found - using untrained model")
+        print(" Model file not found - using untrained model")
     
     model.eval()
     
@@ -74,7 +74,7 @@ def test_model(model_path: str):
 
 def main():
     """Test available models"""
-    print("🎯 iLLuMinator Simple Model Test")
+    print(" iLLuMinator Simple Model Test")
     print("=" * 40)
     
     # Available models in order of preference
@@ -95,7 +95,7 @@ def main():
             test_model(path)
             break
     else:
-        print("❌ No trained models found!")
+        print(" No trained models found!")
         print("Available training options:")
         print("  python train_improved.py   # Recommended")
         print("  python train_enhanced.py   # Advanced")

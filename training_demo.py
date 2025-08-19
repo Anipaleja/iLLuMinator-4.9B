@@ -32,7 +32,7 @@ class EnhancedTrainingDemo:
     
     def compare_model_architectures(self):
         """Compare different model configurations"""
-        print("🏗️  Model Architecture Comparison")
+        print("  Model Architecture Comparison")
         print("=" * 60)
         
         configs = [
@@ -55,7 +55,7 @@ class EnhancedTrainingDemo:
         ]
         
         for config in configs:
-            print(f"\n📊 {config['name']}:")
+            print(f"\n {config['name']}:")
             
             # Create model with config
             model = iLLuMinator4_9B(
@@ -81,7 +81,7 @@ class EnhancedTrainingDemo:
     
     def demonstrate_attention_mechanisms(self):
         """Demonstrate different attention mechanisms"""
-        print("\n🎯 Attention Mechanism Comparison")
+        print("\n Attention Mechanism Comparison")
         print("=" * 60)
         
         batch_size = 1
@@ -102,7 +102,7 @@ class EnhancedTrainingDemo:
         ]
         
         for config in attention_configs:
-            print(f"\n🔍 {config['name']}:")
+            print(f"\n {config['name']}:")
             
             from enhanced_illuminator_4_9b import GroupedQueryAttention
             
@@ -132,7 +132,7 @@ class EnhancedTrainingDemo:
     
     def demonstrate_enhanced_features(self):
         """Demonstrate enhanced model features"""
-        print("\n✨ Enhanced Features Demonstration")
+        print("\n Enhanced Features Demonstration")
         print("=" * 60)
         
         # Create enhanced model
@@ -146,15 +146,15 @@ class EnhancedTrainingDemo:
         )
         
         print(f"Enhanced Model Created:")
-        print(f"✅ RMSNorm instead of LayerNorm")
-        print(f"✅ SwiGLU instead of GELU")
-        print(f"✅ RoPE instead of sinusoidal embeddings")
-        print(f"✅ Grouped Query Attention (32 heads, 8 KV heads)")
-        print(f"✅ Tied input/output embeddings")
-        print(f"✅ Larger vocabulary (65K tokens)")
+        print(f" RMSNorm instead of LayerNorm")
+        print(f" SwiGLU instead of GELU")
+        print(f" RoPE instead of sinusoidal embeddings")
+        print(f" Grouped Query Attention (32 heads, 8 KV heads)")
+        print(f" Tied input/output embeddings")
+        print(f" Larger vocabulary (65K tokens)")
         
         # Test generation capabilities
-        print(f"\n🎲 Testing Enhanced Generation:")
+        print(f"\n Testing Enhanced Generation:")
         
         # Create dummy input
         input_ids = torch.randint(0, 1000, (1, 20))
@@ -183,7 +183,7 @@ class EnhancedTrainingDemo:
     
     def benchmark_training_efficiency(self):
         """Benchmark training efficiency improvements"""
-        print("\n⚡ Training Efficiency Benchmark")
+        print("\n Training Efficiency Benchmark")
         print("=" * 60)
         
         # Create models for comparison
@@ -211,7 +211,7 @@ class EnhancedTrainingDemo:
         seq_length = 512
         
         for name, model in models.items():
-            print(f"\n📈 {name}:")
+            print(f"\n {name}:")
             
             # Count parameters
             total_params = sum(p.numel() for p in model.parameters())
@@ -237,13 +237,13 @@ class EnhancedTrainingDemo:
             
             # Test memory efficiency
             if "Enhanced" in name:
-                print(f"   🎯 GQA Memory Reduction: ~25%")
-                print(f"   🎯 Tied Embeddings Savings: ~268M params")
-                print(f"   🎯 RoPE: No positional embedding table")
+                print(f"    GQA Memory Reduction: ~25%")
+                print(f"    Tied Embeddings Savings: ~268M params")
+                print(f"    RoPE: No positional embedding table")
     
     def run_full_demo(self):
         """Run complete demonstration"""
-        print("🚀 Enhanced iLLuMinator 4.9B Demonstration")
+        print(" Enhanced iLLuMinator 4.9B Demonstration")
         print("=" * 80)
         
         print(f"Device: {self.device}")
@@ -256,15 +256,15 @@ class EnhancedTrainingDemo:
         self.benchmark_training_efficiency()
         
         print("\n" + "=" * 80)
-        print("✅ Enhanced iLLuMinator 4.9B demonstration complete!")
+        print(" Enhanced iLLuMinator 4.9B demonstration complete!")
         print("\nKey Improvements Summary:")
-        print("  🎯 Grouped Query Attention - 25% memory reduction")
-        print("  🎯 RoPE - Better positional understanding")
-        print("  🎯 SwiGLU - Improved activation function")
-        print("  🎯 RMSNorm - More stable training")
-        print("  🎯 Enhanced vocabulary - Better coverage")
-        print("  🎯 Longer context - 4K tokens")
-        print("  🎯 Tied embeddings - Parameter efficiency")
+        print("   Grouped Query Attention - 25% memory reduction")
+        print("   RoPE - Better positional understanding")
+        print("   SwiGLU - Improved activation function")
+        print("   RMSNorm - More stable training")
+        print("   Enhanced vocabulary - Better coverage")
+        print("   Longer context - 4K tokens")
+        print("   Tied embeddings - Parameter efficiency")
 
 def main():
     """Main demonstration function"""

@@ -73,13 +73,13 @@ class MFUOptimizedTrainer:
         self.mfu_history = []
         self.best_mfu = 0.0
         
-        print(f"🎯 MFU-Optimized Trainer initialized on {device}")
+        print(f" MFU-Optimized Trainer initialized on {device}")
         print(f"   Device optimizations: {self.device_optimizations}")
     
     def find_optimal_batch_size(self, sample_texts: List[str], max_batch_size: int = 16, 
                                seq_len: int = 512) -> int:
         """Find optimal batch size for this model and data"""
-        print(f"\n🔍 Finding optimal batch size for MFU...")
+        print(f"\n Finding optimal batch size for MFU...")
         
         # Create sample dataset
         dataset = MFUOptimizedDataset(sample_texts[:50], self.tokenizer, seq_len)
@@ -101,7 +101,7 @@ class MFUOptimizedTrainer:
             eps=1e-8
         )
         
-        print(f"⚙️  Optimizer initialized with lr={lr}")
+        print(f"  Optimizer initialized with lr={lr}")
     
     def train_step_with_mfu(self, batch: Dict[str, torch.Tensor]) -> Dict[str, float]:
         """Training step with MFU measurement"""
@@ -145,7 +145,7 @@ class MFUOptimizedTrainer:
     
     def train_epoch_with_mfu(self, dataloader: DataLoader, epoch: int) -> Dict[str, float]:
         """Train one epoch with comprehensive MFU monitoring"""
-        print(f"\n📈 Epoch {epoch} - MFU Optimized Training")
+        print(f"\n Epoch {epoch} - MFU Optimized Training")
         
         total_loss = 0
         total_mfu = 0
@@ -189,7 +189,7 @@ class MFUOptimizedTrainer:
                 
             except RuntimeError as e:
                 if "out of memory" in str(e).lower():
-                    print(f"💥 OOM at batch {batch_idx}, cleaning up...")
+                    print(f" OOM at batch {batch_idx}, cleaning up...")
                     self.cleanup_memory()
                     continue
                 else:
@@ -227,7 +227,7 @@ class MFUOptimizedTrainer:
     
     def print_epoch_summary(self, epoch: int, summary: Dict[str, float]):
         """Print detailed epoch summary"""
-        print(f"\n📊 Epoch {epoch} Summary:")
+        print(f"\n Epoch {epoch} Summary:")
         print(f"   Average Loss: {summary['avg_loss']:.4f}")
         print(f"   Average MFU: {summary['avg_mfu']:.2f}%")
         print(f"   Average FLOPS: {summary['avg_flops']:.2f} TFLOPS")
@@ -242,7 +242,7 @@ class MFUOptimizedTrainer:
         elif summary['avg_mfu'] > 15:
             print("   🟠 Moderate MFU performance")
         else:
-            print("   🔴 Low MFU - optimization needed")
+            print("    Low MFU - optimization needed")
     
     def save_mfu_checkpoint(self, epoch: int, metrics: Dict[str, float], path: str):
         """Save checkpoint with MFU metrics"""
@@ -262,7 +262,7 @@ class MFUOptimizedTrainer:
         }
         
         torch.save(checkpoint, path)
-        print(f"💾 MFU checkpoint saved: {path}")
+        print(f" MFU checkpoint saved: {path}")
     
     def get_optimization_report(self) -> Dict[str, Any]:
         """Generate optimization report"""
@@ -296,22 +296,22 @@ def prepare_sample_data() -> List[str]:
 
 def main():
     """Main MFU-optimized training function"""
-    print("🎯 iLLuMinator MFU-Optimized Training")
+    print(" iLLuMinator MFU-Optimized Training")
     print("=" * 60)
     
     # Device selection
     if torch.backends.mps.is_available():
         device = 'mps'
-        print("🍎 Using Apple Silicon MPS")
+        print(" Using Apple Silicon MPS")
     elif torch.cuda.is_available():
         device = 'cuda'
-        print("🚀 Using CUDA")
+        print(" Using CUDA")
     else:
         device = 'cpu'
         print("🧠 Using CPU")
     
     # Initialize components
-    print("\n🔤 Loading tokenizer...")
+    print("\n Loading tokenizer...")
     tokenizer = iLLuMinatorTokenizer()
     
     print("\n🧠 Creating model...")
@@ -328,14 +328,14 @@ def main():
     
     # Count parameters
     total_params = sum(p.numel() for p in model.parameters())
-    print(f"📊 Model: {total_params:,} parameters ({total_params/1e9:.2f}B)")
+    print(f" Model: {total_params:,} parameters ({total_params/1e9:.2f}B)")
     
     # Initialize MFU trainer
-    print("\n⚙️  Initializing MFU-optimized trainer...")
+    print("\n  Initializing MFU-optimized trainer...")
     trainer = MFUOptimizedTrainer(model, tokenizer, device)
     
     # Prepare data
-    print("\n📚 Preparing training data...")
+    print("\n Preparing training data...")
     texts = prepare_sample_data()
     
     # Find optimal batch size
@@ -355,7 +355,7 @@ def main():
     trainer.initialize_optimizer(lr=1e-4)
     
     # Run initial MFU benchmark
-    print(f"\n🏁 Running MFU benchmark...")
+    print(f"\n Running MFU benchmark...")
     benchmark_profiler = benchmark_mfu(
         model=model,
         tokenizer=tokenizer,
@@ -366,7 +366,7 @@ def main():
     
     # Training configuration
     num_epochs = 2
-    print(f"\n🔥 Starting MFU-Optimized Training!")
+    print(f"\n Starting MFU-Optimized Training!")
     print(f"   Epochs: {num_epochs}")
     print(f"   Optimal batch size: {optimal_batch_size}")
     print(f"   Sequence length: 512")
@@ -394,13 +394,13 @@ def main():
             trainer.mfu_profiler.save_measurements(mfu_log_path)
             
         except Exception as e:
-            print(f"❌ Error in epoch {epoch}: {e}")
+            print(f" Error in epoch {epoch}: {e}")
             break
     
     # Final summary
     training_time = time.time() - start_time
     
-    print(f"\n🎉 MFU-Optimized Training Complete!")
+    print(f"\n MFU-Optimized Training Complete!")
     print(f"   Training time: {training_time/3600:.2f} hours")
     print(f"   Device: {device}")
     
@@ -410,7 +410,7 @@ def main():
     # Generate optimization report
     report = trainer.get_optimization_report()
     
-    print(f"\n💡 Optimization Report:")
+    print(f"\n Optimization Report:")
     print(f"   Average MFU: {report['average_mfu']:.2f}%")
     print(f"   Peak MFU: {report['peak_mfu']:.2f}%")
     print(f"   Suggestions:")
@@ -421,7 +421,7 @@ def main():
     with open("mfu_optimization_report.json", 'w') as f:
         json.dump(report, f, indent=2)
     
-    print(f"\n📄 Full report saved: mfu_optimization_report.json")
+    print(f"\n Full report saved: mfu_optimization_report.json")
     
     return model, trainer
 

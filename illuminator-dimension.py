@@ -249,12 +249,12 @@ class iLLuMinator4_9B(nn.Module):
         training_memory_gb = param_memory_gb * 4  # Rough estimate for gradients + activations
         
         print(f"Enhanced iLLuMinator 4.9B Model Configuration:")
-        print(f"├── Total parameters: {total_params:,}")
-        print(f"├── Trainable parameters: {trainable_params:,}")
-        print(f"├── Model size: {total_params / 1e9:.2f}B parameters")
-        print(f"├── Estimated memory (params): {param_memory_gb:.2f}GB")
-        print(f"├── Estimated memory (training): {training_memory_gb:.2f}GB")
-        print(f"└── Architecture: Enhanced Transformer with GQA, RoPE, SwiGLU, RMSNorm")
+        print(f" Total parameters: {total_params:,}")
+        print(f" Trainable parameters: {trainable_params:,}")
+        print(f" Model size: {total_params / 1e9:.2f}B parameters")
+        print(f" Estimated memory (params): {param_memory_gb:.2f}GB")
+        print(f" Estimated memory (training): {training_memory_gb:.2f}GB")
+        print(f" Architecture: Enhanced Transformer with GQA, RoPE, SwiGLU, RMSNorm")
         
     def create_causal_mask(self, seq_length: int, device: torch.device) -> torch.Tensor:
         """Create causal mask for autoregressive generation"""
@@ -382,10 +382,10 @@ if __name__ == "__main__":
     # Create enhanced model configuration
     print("Creating Enhanced iLLuMinator 4.9B configuration...")
     config = create_enhanced_model_config()
-    print("✅ Model configuration saved to illuminator_4_9b_enhanced_config.json")
+    print(" Model configuration saved to illuminator_4_9b_enhanced_config.json")
     
     # Initialize enhanced model
-    print("\n🚀 Initializing Enhanced iLLuMinator 4.9B model...")
+    print("\n Initializing Enhanced iLLuMinator 4.9B model...")
     model = iLLuMinator4_9B()
     
     # Test forward pass
@@ -399,17 +399,17 @@ if __name__ == "__main__":
     # Forward pass
     with torch.no_grad():
         logits = model(input_ids)
-        print(f"✓ Input shape: {input_ids.shape}")
-        print(f"✓ Output shape: {logits.shape}")
-        print(f"✓ Output logits range: [{logits.min():.3f}, {logits.max():.3f}]")
+        print(f" Input shape: {input_ids.shape}")
+        print(f" Output shape: {logits.shape}")
+        print(f" Output logits range: [{logits.min():.3f}, {logits.max():.3f}]")
         
         # Test generation
-        print("\n🔥 Testing text generation...")
+        print("\n Testing text generation...")
         generated = model.generate(input_ids[:, :10], max_new_tokens=20, temperature=0.8)
-        print(f"✓ Generated sequence length: {generated.shape[1]}")
+        print(f" Generated sequence length: {generated.shape[1]}")
 
-    print("\n✨ Enhanced iLLuMinator 4.9B model created successfully!")
-    print("🎯 Key improvements:")
+    print("\n Enhanced iLLuMinator 4.9B model created successfully!")
+    print(" Key improvements:")
     print("   • Grouped Query Attention for efficiency")
     print("   • Rotary Position Embedding (RoPE)")
     print("   • SwiGLU activation function")

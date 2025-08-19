@@ -79,7 +79,7 @@ class AppleSiliconMonitor:
         info = self.get_system_info()
         
         print("\n" + "="*60)
-        print(f"🖥️  Apple Silicon System Status - {info['timestamp']}")
+        print(f"  Apple Silicon System Status - {info['timestamp']}")
         print("="*60)
         
         # Memory
@@ -98,7 +98,7 @@ class AppleSiliconMonitor:
         print(f"    Free space: {disk['free_gb']:.1f}GB")
         
         # MPS
-        mps_status = "Available" if info['mps_available'] else "❌ Not Available"
+        mps_status = "Available" if info['mps_available'] else " Not Available"
         print(f"Apple MPS: {mps_status}")
         
         # Training time
@@ -119,7 +119,7 @@ class AppleSiliconMonitor:
         
         monitor_thread = threading.Thread(target=monitor_loop, daemon=True)
         monitor_thread.start()
-        print(f"🔍 Monitoring started (interval: {interval}s)")
+        print(f" Monitoring started (interval: {interval}s)")
         return monitor_thread
     
     def stop_monitoring(self):

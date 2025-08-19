@@ -141,7 +141,7 @@ class ConservativeTrainer:
             total_loss = 0
             num_batches = 0
             
-            print(f"\n📖 Epoch {epoch + 1}/{epochs}")
+            print(f"\n Epoch {epoch + 1}/{epochs}")
             
             for batch_idx, (input_ids, target_ids) in enumerate(dataloader):
                 # Forward pass
