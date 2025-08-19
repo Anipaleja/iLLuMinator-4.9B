@@ -165,7 +165,7 @@ class PracticaliLLuMinatorAI:
         if not self.model_loaded:
             return {"error": "Model not loaded"}
         
-        print(f"🔥 Benchmarking {num_iterations} generations...")
+        print(f" Benchmarking {num_iterations} generations...")
         
         prompt = "The future of AI is"
         times = []
@@ -189,8 +189,8 @@ class PracticaliLLuMinatorAI:
             "model_size": "120M parameters"
         }
         
-        print(f"⚡ Average generation time: {avg_time:.3f}s")
-        print(f"⚡ Estimated speed: {tokens_per_second:.1f} tokens/second")
+        print(f" Average generation time: {avg_time:.3f}s")
+        print(f" Estimated speed: {tokens_per_second:.1f} tokens/second")
         
         return results
 

@@ -84,7 +84,7 @@ class PracticalTrainer:
         self.model_save_path = model_save_path
         
         # Initialize tokenizer
-        print("📚 Loading tokenizer...")
+        print(" Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
         # Initialize model
@@ -95,12 +95,12 @@ class PracticalTrainer:
         self.optimizer = optim.AdamW(self.model.parameters(), lr=1e-4, weight_decay=0.01)
         self.criterion = nn.CrossEntropyLoss(ignore_index=self.tokenizer.tokenizer.pad_token_id)
         
-        print(f"✅ Trainer initialized with {sum(p.numel() for p in self.model.parameters()):,} parameters")
+        print(f" Trainer initialized with {sum(p.numel() for p in self.model.parameters()):,} parameters")
     
     def train(self, epochs: int = 5, batch_size: int = 4):
         """Train the model on conversation data"""
         
-        print(f"🚀 Starting training for {epochs} epochs...")
+        print(f" Starting training for {epochs} epochs...")
         
         # Create dataset
         dataset = ConversationDataset(self.tokenizer)
@@ -112,7 +112,7 @@ class PracticalTrainer:
             total_loss = 0
             num_batches = 0
             
-            print(f"\n📖 Epoch {epoch + 1}/{epochs}")
+            print(f"\n Epoch {epoch + 1}/{epochs}")
             
             for batch_idx, (input_ids, target_ids) in enumerate(dataloader):
                 # Forward pass
@@ -148,7 +148,7 @@ class PracticalTrainer:
         
         # Save model
         self.save_model()
-        print(f"✅ Training completed!")
+        print(f" Training completed!")
     
     def _test_generation(self):
         """Test generation during training"""
@@ -181,26 +181,26 @@ class PracticalTrainer:
         }
         
         torch.save(checkpoint, self.model_save_path)
-        print(f"💾 Model saved to {self.model_save_path}")
+        print(f" Model saved to {self.model_save_path}")
 
 def main():
     """Run training"""
-    print("🎯 iLLuMinator Practical Training")
+    print(" iLLuMinator Practical Training")
     print("=" * 50)
     
     trainer = PracticalTrainer()
     
-    print(f"\n📊 Dataset size: {len(ConversationDataset(trainer.tokenizer))} examples")
+    print(f"\n Dataset size: {len(ConversationDataset(trainer.tokenizer))} examples")
     
     try:
         trainer.train(epochs=10, batch_size=2)  # Small batch size for memory
         
-        print(f"\n🎉 Training completed successfully!")
-        print(f"📁 Model weights saved to: illuminator_practical_weights.pth")
-        print(f"🚀 Run 'python practical_ai.py' to test the trained model!")
+        print(f"\n Training completed successfully!")
+        print(f" Model weights saved to: illuminator_practical_weights.pth")
+        print(f" Run 'python practical_ai.py' to test the trained model!")
         
     except Exception as e:
-        print(f"❌ Training failed: {e}")
+        print(f" Training failed: {e}")
         import traceback
         traceback.print_exc()
 

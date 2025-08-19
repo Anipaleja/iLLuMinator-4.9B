@@ -92,10 +92,10 @@ def print_comparison():
     original = get_original_config()
     enhanced = get_enhanced_config()
     
-    print("🔍 iLLuMinator Model Architecture Comparison")
+    print(" iLLuMinator Model Architecture Comparison")
     print("=" * 80)
     
-    print(f"\n📊 Basic Configuration:")
+    print(f"\n Basic Configuration:")
     print(f"{'Metric':<25} {'Original 4.7B':<20} {'Enhanced 4.9B':<20} {'Improvement':<15}")
     print("-" * 80)
     
@@ -125,7 +125,7 @@ def print_comparison():
             
         print(f"{name:<25} {str(orig_val):<20} {str(enh_val):<20} {improvement:<15}")
     
-    print(f"\n🎯 Advanced Features:")
+    print(f"\n Advanced Features:")
     print(f"{'Feature':<25} {'Original 4.7B':<20} {'Enhanced 4.9B':<20}")
     print("-" * 70)
     
@@ -147,7 +147,7 @@ def print_comparison():
     if "n_kv_heads" in enhanced:
         print(f"{'KV Heads (GQA)':<25} {'N/A':<20} {str(enhanced['n_kv_heads']):<20}")
     
-    print(f"\n📈 Parameter Estimates:")
+    print(f"\n Parameter Estimates:")
     orig_params = calculate_parameter_estimate(original)
     enh_params = calculate_parameter_estimate(enhanced)
     param_increase = ((enh_params - orig_params) / orig_params * 100)
@@ -156,29 +156,29 @@ def print_comparison():
     print(f"Enhanced Model:  {enh_params:,} parameters ({enh_params/1e9:.2f}B)")
     print(f"Parameter Increase: {param_increase:+.1f}%")
     
-    print(f"\n🚀 Key Improvements in Enhanced Model:")
+    print(f"\n Key Improvements in Enhanced Model:")
     improvements = [
-        "✅ Grouped Query Attention (GQA) - Reduces memory usage and improves efficiency",
-        "✅ Rotary Position Embedding (RoPE) - Better handling of long sequences",
-        "✅ SwiGLU Activation - Improved performance over GELU",
-        "✅ RMSNorm - More stable training than LayerNorm", 
-        "✅ Larger vocabulary (65K vs 50K) - Better tokenization coverage",
-        "✅ Longer context (4K vs 2K tokens) - Can process longer documents",
-        "✅ Tied embeddings - Reduces parameters while maintaining performance",
-        "✅ Lower dropout - Optimal for large models",
-        "✅ Pre-norm architecture - More stable training dynamics"
+        " Grouped Query Attention (GQA) - Reduces memory usage and improves efficiency",
+        " Rotary Position Embedding (RoPE) - Better handling of long sequences",
+        " SwiGLU Activation - Improved performance over GELU",
+        " RMSNorm - More stable training than LayerNorm", 
+        " Larger vocabulary (65K vs 50K) - Better tokenization coverage",
+        " Longer context (4K vs 2K tokens) - Can process longer documents",
+        " Tied embeddings - Reduces parameters while maintaining performance",
+        " Lower dropout - Optimal for large models",
+        " Pre-norm architecture - More stable training dynamics"
     ]
     
     for improvement in improvements:
         print(f"  {improvement}")
     
-    print(f"\n💾 Memory and Efficiency Benefits:")
+    print(f"\n Memory and Efficiency Benefits:")
     memory_benefits = [
-        "🔹 Grouped Query Attention reduces memory usage by ~25%",
-        "🔹 Tied embeddings save ~268M parameters",
-        "🔹 RoPE eliminates need for positional embedding table",
-        "🔹 Enhanced architecture enables better scaling",
-        "🔹 Optimized for Apple Silicon MPS training"
+        " Grouped Query Attention reduces memory usage by ~25%",
+        " Tied embeddings save ~268M parameters",
+        " RoPE eliminates need for positional embedding table",
+        " Enhanced architecture enables better scaling",
+        " Optimized for Apple Silicon MPS training"
     ]
     
     for benefit in memory_benefits:

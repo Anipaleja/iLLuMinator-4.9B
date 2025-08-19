@@ -117,7 +117,7 @@ class EnhancedModelTester:
         results = {}
         
         for category, prompts in test_categories.items():
-            print(f"\n🔍 Testing Category: {category}")
+            print(f"\n Testing Category: {category}")
             print("-" * 40)
             
             category_results = []

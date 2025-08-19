@@ -110,7 +110,7 @@ class AppleSiliconTrainer:
         
         # Device selection with Apple Silicon priority
         self.device = self._select_optimal_device()
-        print(f"🖥️  Training device: {self.device}")
+        print(f"  Training device: {self.device}")
         
         # Move model to device
         self.model = model.to(self.device)
@@ -308,7 +308,7 @@ def main():
     print("=" * 50)
     
     # System checks
-    print("\n🔍 System Check:")
+    print("\n System Check:")
     mem_info = AppleSiliconOptimizer.get_memory_info()
     print(f"   Total RAM: {mem_info['total_gb']:.1f}GB")
     print(f"   Available RAM: {mem_info['available_gb']:.1f}GB")

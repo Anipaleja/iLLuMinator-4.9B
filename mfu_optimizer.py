@@ -133,7 +133,7 @@ class MFUProfiler:
         self.is_cuda = device.startswith('cuda')
         self.is_cpu = device == 'cpu'
         
-        print(f"🔬 MFU Profiler initialized for {device}")
+        print(f" MFU Profiler initialized for {device}")
         
     def get_memory_info(self) -> Tuple[float, float]:
         """Get current and peak memory usage"""
@@ -265,32 +265,32 @@ class MFUProfiler:
     def print_summary(self):
         """Print MFU measurement summary"""
         if not self.measurements:
-            print("❌ No MFU measurements available")
+            print(" No MFU measurements available")
             return
         
         avg_mfu = self.get_average_mfu()
         peak_mfu = self.get_peak_mfu()
         latest = self.measurements[-1]
         
-        print(f"\n📊 MFU Performance Summary")
+        print(f"\n MFU Performance Summary")
         print(f"=" * 50)
-        print(f"🎯 Average MFU: {avg_mfu:.2f}%")
-        print(f"🚀 Peak MFU: {peak_mfu:.2f}%")
-        print(f"📏 Model Parameters: {latest.model_parameters:,}")
-        print(f"🖥️  Device: {latest.device}")
-        print(f"💾 Memory Efficiency: {latest.memory_efficiency:.2f}%")
-        print(f"⏱️  Last Step Time: {latest.training_time_ms:.2f}ms")
-        print(f"🔢 FLOPS: {latest.achieved_flops/1e12:.2f} TFLOPS")
+        print(f" Average MFU: {avg_mfu:.2f}%")
+        print(f" Peak MFU: {peak_mfu:.2f}%")
+        print(f" Model Parameters: {latest.model_parameters:,}")
+        print(f"  Device: {latest.device}")
+        print(f" Memory Efficiency: {latest.memory_efficiency:.2f}%")
+        print(f"⏱  Last Step Time: {latest.training_time_ms:.2f}ms")
+        print(f" FLOPS: {latest.achieved_flops/1e12:.2f} TFLOPS")
         
         # Performance analysis
         if avg_mfu > 50:
-            print("✅ Excellent MFU! Model is well optimized.")
+            print(" Excellent MFU! Model is well optimized.")
         elif avg_mfu > 30:
             print("🟡 Good MFU. Some optimization opportunities remain.")
         elif avg_mfu > 15:
             print("🟠 Moderate MFU. Consider optimization strategies.")
         else:
-            print("🔴 Low MFU. Significant optimization needed.")
+            print(" Low MFU. Significant optimization needed.")
     
     def save_measurements(self, filepath: str):
         """Save measurements to JSON file"""
@@ -323,7 +323,7 @@ class MFUProfiler:
         with open(filepath, 'w') as f:
             json.dump(data, f, indent=2)
         
-        print(f"💾 MFU measurements saved to {filepath}")
+        print(f" MFU measurements saved to {filepath}")
 
 
 class MFUOptimizer:
@@ -337,7 +337,7 @@ class MFUOptimizer:
     def find_optimal_batch_size(self, tokenizer, max_batch_size: int = 16, 
                               seq_len: int = 512) -> int:
         """Find optimal batch size for maximum MFU"""
-        print(f"🔍 Finding optimal batch size (max: {max_batch_size})")
+        print(f" Finding optimal batch size (max: {max_batch_size})")
         
         best_mfu = 0
         best_batch_size = 1
@@ -377,7 +377,7 @@ class MFUOptimizer:
                 else:
                     raise e
         
-        print(f"✅ Optimal batch size: {best_batch_size} (MFU: {best_mfu:.2f}%)")
+        print(f" Optimal batch size: {best_batch_size} (MFU: {best_mfu:.2f}%)")
         return best_batch_size
     
     def optimize_for_device(self) -> Dict[str, Any]:
@@ -390,7 +390,7 @@ class MFUOptimizer:
             os.environ['PYTORCH_MPS_HIGH_WATERMARK_RATIO'] = '0.9'
             os.environ['PYTORCH_MPS_LOW_WATERMARK_RATIO'] = '0.8'
             optimizations['mps_memory_fraction'] = 0.9
-            print("🍎 Applied Apple Silicon MPS optimizations")
+            print(" Applied Apple Silicon MPS optimizations")
             
         elif self.device.startswith('cuda'):
             # CUDA optimizations
@@ -399,7 +399,7 @@ class MFUOptimizer:
             torch.backends.cudnn.allow_tf32 = True
             optimizations['cudnn_benchmark'] = True
             optimizations['tf32_enabled'] = True
-            print("🚀 Applied CUDA optimizations")
+            print(" Applied CUDA optimizations")
             
         elif self.device == 'cpu':
             # CPU optimizations
@@ -442,7 +442,7 @@ def benchmark_mfu(model: nn.Module, tokenizer, device: str,
                   batch_sizes: List[int] = [1, 2, 4, 8],
                   seq_lengths: List[int] = [256, 512, 1024]) -> MFUProfiler:
     """Comprehensive MFU benchmark"""
-    print(f"🏁 Starting MFU benchmark on {device}")
+    print(f" Starting MFU benchmark on {device}")
     print(f"   Batch sizes: {batch_sizes}")
     print(f"   Sequence lengths: {seq_lengths}")
     
@@ -491,7 +491,7 @@ def benchmark_mfu(model: nn.Module, tokenizer, device: str,
     
     suggestions = optimizer.suggest_improvements()
     if suggestions:
-        print(f"\n💡 Optimization Suggestions:")
+        print(f"\n Optimization Suggestions:")
         for i, suggestion in enumerate(suggestions, 1):
             print(f"   {i}. {suggestion}")
     
@@ -499,7 +499,7 @@ def benchmark_mfu(model: nn.Module, tokenizer, device: str,
 
 
 if __name__ == "__main__":
-    print("🚀 MFU Optimizer Test")
+    print(" MFU Optimizer Test")
     
     # Test with a simple model
     device = 'mps' if torch.backends.mps.is_available() else 'cpu'

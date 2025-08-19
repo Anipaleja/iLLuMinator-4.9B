@@ -147,7 +147,7 @@ def main():
     
     # Summary
     print("\n" + "="*45)
-    print("🎯 Test Results Summary:")
+    print(" Test Results Summary:")
     print(f"   MPS Backend: {'Pass' if mps_ok else 'Fail'}")
     print(f"   Model Loading: {'Pass' if model_ok else 'Fail'}")
     print(f"   MPS Inference: {'Pass' if mps_inference_ok else 'Fail'}")

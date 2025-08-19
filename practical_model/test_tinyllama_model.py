@@ -61,11 +61,11 @@ class PracticalModel(nn.Module):
         return generated
 
 def test_model():
-    print("🎯 Testing TinyLlama-inspired iLLuMinator Model")
+    print(" Testing TinyLlama-inspired iLLuMinator Model")
     print("=" * 50)
     
     # Load tokenizer
-    print("📚 Loading tokenizer...")
+    print(" Loading tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained('microsoft/DialoGPT-small')
     tokenizer.pad_token = tokenizer.eos_token
     
@@ -77,12 +77,12 @@ def test_model():
         model_path = 'illuminator_tinyllama_inspired_best.pth'
         if os.path.exists(model_path):
             model.load_state_dict(torch.load(model_path, map_location='cpu'))
-            print(f"✅ Model loaded from {model_path}")
+            print(f" Model loaded from {model_path}")
         else:
-            print(f"❌ Model file not found: {model_path}")
+            print(f" Model file not found: {model_path}")
             return
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f" Error loading model: {e}")
         return
     
     # Test prompts
@@ -129,10 +129,10 @@ def test_model():
             print(f"Assistant: {response}")
             
         except Exception as e:
-            print(f"❌ Error generating response: {e}")
+            print(f" Error generating response: {e}")
     
     print("\n" + "=" * 50)
-    print("✅ Testing completed!")
+    print(" Testing completed!")
 
 if __name__ == "__main__":
     test_model()

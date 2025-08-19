@@ -127,7 +127,7 @@ class TinyLlamaInspiredTrainer:
         self.model_save_path = model_save_path
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
-        print("📚 Loading tokenizer...")
+        print(" Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
         print("🧠 Creating TinyLlama-inspired model...")
@@ -155,10 +155,10 @@ class TinyLlamaInspiredTrainer:
             label_smoothing=0.1
         )
         
-        print(f"✅ TinyLlama-inspired trainer ready")
-        print(f"📊 Model parameters: {sum(p.numel() for p in self.model.parameters()):,}")
-        print(f"🔧 Device: {self.device}")
-        print(f"⚡ Learning rate: {self.lr}")
+        print(f" TinyLlama-inspired trainer ready")
+        print(f" Model parameters: {sum(p.numel() for p in self.model.parameters()):,}")
+        print(f" Device: {self.device}")
+        print(f" Learning rate: {self.lr}")
     
     def get_cosine_schedule_with_warmup(self, num_training_steps: int, num_warmup_steps: int = 2000):
         """TinyLlama's cosine learning rate schedule with warmup"""
@@ -176,7 +176,7 @@ class TinyLlamaInspiredTrainer:
     def train(self, epochs: int = 8, batch_size: int = 2):
         """Train with TinyLlama-inspired techniques"""
         
-        print(f"🚀 Starting TinyLlama-inspired training for {epochs} epochs...")
+        print(f" Starting TinyLlama-inspired training for {epochs} epochs...")
         
         # Create dataset
         dataset = EnhancedDataset(self.tokenizer)
@@ -186,8 +186,8 @@ class TinyLlamaInspiredTrainer:
         total_steps = len(dataloader) * epochs
         scheduler = self.get_cosine_schedule_with_warmup(total_steps, num_warmup_steps=2000)
         
-        print(f"📊 Dataset size: {len(dataset)} examples")
-        print(f"📈 Total training steps: {total_steps}")
+        print(f" Dataset size: {len(dataset)} examples")
+        print(f" Total training steps: {total_steps}")
         
         self.model.train()
         best_loss = float('inf')
@@ -196,7 +196,7 @@ class TinyLlamaInspiredTrainer:
             total_loss = 0
             num_batches = 0
             
-            print(f"\n📖 Epoch {epoch + 1}/{epochs}")
+            print(f"\n Epoch {epoch + 1}/{epochs}")
             
             pbar = tqdm(dataloader, desc=f"Training Epoch {epoch + 1}")
             
@@ -235,14 +235,14 @@ class TinyLlamaInspiredTrainer:
             avg_loss = total_loss / num_batches
             current_lr = self.optimizer.param_groups[0]['lr']
             
-            print(f"  📈 Average Loss: {avg_loss:.4f}")
-            print(f"  ⚡ Learning Rate: {current_lr:.2e}")
+            print(f"   Average Loss: {avg_loss:.4f}")
+            print(f"   Learning Rate: {current_lr:.2e}")
             
             # Save best model
             if avg_loss < best_loss:
                 best_loss = avg_loss
                 self.save_model(f"{self.model_save_path.replace('.pth', '_best.pth')}")
-                print(f"  ⭐ Best model saved! Loss: {best_loss:.4f}")
+                print(f"   Best model saved! Loss: {best_loss:.4f}")
             
             # Test generation every 2 epochs
             if epoch % 2 == 0:
@@ -250,7 +250,7 @@ class TinyLlamaInspiredTrainer:
         
         # Save final model
         self.save_model()
-        print("✅ TinyLlama-inspired training completed!")
+        print(" TinyLlama-inspired training completed!")
     
     def _test_generation(self):
         """Test generation during training"""
@@ -297,7 +297,7 @@ class TinyLlamaInspiredTrainer:
         }
         
         torch.save(checkpoint, save_path)
-        print(f"💾 Model saved to {save_path}")
+        print(f" Model saved to {save_path}")
 
 def main():
     """Run enhanced training"""
@@ -319,7 +319,7 @@ def main():
         print(f"Test with: python simple_test.py")
         
     except Exception as e:
-        print(f"❌ Training failed: {e}")
+        print(f" Training failed: {e}")
         import traceback
         traceback.print_exc()
 
