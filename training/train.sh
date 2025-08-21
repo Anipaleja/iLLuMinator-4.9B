@@ -271,7 +271,7 @@ if total_memory_gb > $TOTAL_RAM:
 print_status "Pre-flight checks:"
 
 # Check if model file exists
-if [ ! -f "../enhanced_illuminator_4_9b.py" ]; then
+if [ ! -f "./enhanced_illuminator_4_9b.py" ]; then
     print_error "Enhanced model file not found: ../enhanced_illuminator_4_9b.py"
     exit 1
 fi
