@@ -144,7 +144,7 @@ fi
 
 # Parse command line arguments
 RESUME_CHECKPOINT=""
-OUTPUT_DIR="./outputs"
+OUTPUT_DIR="/workspace/outputs"
 CONFIG_FILE="training_config.json"
 DRY_RUN=false
 
