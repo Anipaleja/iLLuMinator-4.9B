@@ -11,7 +11,7 @@
     "tie_embeddings": true
   },
   "training_config": {
-    "batch_size": 3,
+    "batch_size": 2,
     "gradient_accumulation_steps": 8,
     "learning_rate": 1e-4,
     "weight_decay": 0.1,
