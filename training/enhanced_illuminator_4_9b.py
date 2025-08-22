@@ -120,8 +120,11 @@ class GroupedQueryAttention(nn.Module):
         # Scaled dot-product attention with Flash Attention optimization
         attention_scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)
         
-        if mask is not None:            
-            attention_scores = attention_scores.masked_fill(mask == 0, -1e9)
+        # Make sure we do masking in float32
+        attention_scores = attention_scores.float()
+        
+        if mask is not None:
+            attention_scores = attention_scores.masked_fill(mask == 0, torch.finfo(torch.float32).min)
         
         attention_weights = F.softmax(attention_scores, dim=-1)
         attention_weights = self.dropout(attention_weights)
