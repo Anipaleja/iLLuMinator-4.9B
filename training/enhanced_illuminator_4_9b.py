@@ -120,17 +120,7 @@ class GroupedQueryAttention(nn.Module):
         # Scaled dot-product attention with Flash Attention optimization
         attention_scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)
         
-        if mask is not None:
-            # Ensure mask shape is broadcastable to (batch, heads, seq_len, seq_len)
-            if mask.dim() == 2:  # (batch, seq_len)
-                mask = mask.unsqueeze(1).unsqueeze(2)  # turns into (batch, 1, 1, seq_len)
-            elif mask.dim() == 3:  # (batch, 1, seq_len)
-                mask = mask.unsqueeze(1)  # becomes (batch, 1, 1, seq_len)
-            
-            # Convert -1 padding values into 0/1 if needed
-            if mask.min() < 0:
-                mask = (mask != -1).int()
-            
+        if mask is not None:            
             attention_scores = attention_scores.masked_fill(mask == 0, -1e9)
         
         attention_weights = F.softmax(attention_scores, dim=-1)
@@ -286,7 +276,7 @@ class iLLuMinator4_9B(nn.Module):
             causal_mask = causal_mask * attention_mask
         
         # Token embeddings (scaled for better gradient flow)
-        x = self.token_embedding(input_ids) * math.sqrt(self.d_model)
+        x = self.token_embedding(input_ids).float() * math.sqrt(self.d_model)
         
         # Pass through transformer blocks
         for block in self.transformer_blocks:
