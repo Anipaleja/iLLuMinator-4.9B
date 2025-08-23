@@ -24,6 +24,7 @@ import psutil
 import gc
 import wandb
 from pathlib import Path
+import logging
 
 # Local imports
 try:
@@ -224,6 +225,16 @@ class EnhancedTrainer:
     
     def _setup_logging(self):
         """Setup logging and monitoring"""
+        log_dir = self.config.system_config["log_dir"]
+        os.makedirs(log_dir, exist_ok=True)
+        
+        # Python logging
+        logging.basicConfig(
+            filename=os.path.join(log_dir, f'training_{time.strftime("%Y%m%d_%H%M%S")}.log'),
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
+
         if self.config.system_config["use_wandb"]:
             wandb.init(
                 project=self.config.system_config["project_name"],
@@ -232,7 +243,8 @@ class EnhancedTrainer:
                     **self.config.model_config,
                     **self.config.training_config,
                     **self.config.data_config
-                }
+                },
+                dir=log_dir
             )
     
     def _setup_model(self) -> nn.Module:
@@ -586,6 +598,8 @@ def main():
     # Override with command line arguments
     if args.output_dir:
         config.system_config["output_dir"] = args.output_dir
+        config.system_config["log_dir"] = os.path.join(args.output_dir, "logs")
+        config.system_config["checkpoint_dir"] = os.path.join(args.output_dir, "checkpoints")
     if args.resume:
         config.system_config["resume_from_checkpoint"] = args.resume
     
