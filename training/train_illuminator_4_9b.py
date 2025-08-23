@@ -227,6 +227,8 @@ class EnhancedTrainer:
         """Setup logging and monitoring"""
         log_dir = self.config.system_config["log_dir"]
         os.makedirs(log_dir, exist_ok=True)
+
+        log_file = os.path.join(log_dir, f'training_{time.strftime("%Y%m%d_%H%M%S")}.log')
         
         # Reset existing handlers so it doesn't log to older file
         for handler in logging.root.handlers[:]:
@@ -234,7 +236,7 @@ class EnhancedTrainer:
 
          # Python logging
         logging.basicConfig(
-            filename=os.path.join(log_dir, f'training_{time.strftime("%Y%m%d_%H%M%S")}.log'),
+            filename=log_file,
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s'
         )
