@@ -1,18 +1,18 @@
 {
   "model_config": {
     "vocab_size": 65536,
-    "d_model": 3328,
+    "d_model": 4096,
     "n_layers": 32,
     "n_heads": 32,
     "n_kv_heads": 8,
-    "d_ff": 9984,
-    "max_seq_length": 1024,
+    "d_ff": 12288,
+    "max_seq_length": 2048,
     "dropout": 0.0,
     "gradient_cp": true,
     "tie_embeddings": true
   },
   "training_config": {
-    "batch_size": 1,
+    "batch_size": 2,
     "gradient_accumulation_steps": 16,
     "learning_rate": 1e-4,
     "weight_decay": 0.1,
@@ -24,7 +24,7 @@
     "max_steps": 100000,
     "eval_interval": 1000,
     "save_interval": 5000,
-    "log_interval": 100,
+    "log_interval": 10,
     "use_mixed_precision": true,
     "compile_model": false
   },
