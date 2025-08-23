@@ -227,22 +227,28 @@ class EnhancedTrainer:
         """Setup logging and monitoring"""
         log_dir = self.config.system_config["log_dir"]
         os.makedirs(log_dir, exist_ok=True)
-
+    
         log_file = os.path.join(log_dir, f'training_{time.strftime("%Y%m%d_%H%M%S")}.log')
-        
-        # Reset existing handlers so it doesn't log to older file
+    
+        # Reset existing handlers
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
-
-         # Python logging
-        logging.basicConfig(
-            filename=log_file,
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s'
-        )
-
-        print(f"[INFO] logs are being saved to: {log_file}")
-
+    
+        # File handler
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    
+        # Console handler
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    
+        # Add handlers
+        logging.basicConfig(level=logging.INFO, handlers=[file_handler, console_handler])
+    
+        print(f"[INFO] Logs are being saved to: {log_file}")
+    
         if self.config.system_config["use_wandb"]:
             wandb.init(
                 project=self.config.system_config["project_name"],
