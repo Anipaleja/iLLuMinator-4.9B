@@ -35,9 +35,9 @@
     "pin_memory": true
   },
   "system_config": {
-    "output_dir": "workspace/outputs",
-    "checkpoint_dir": "workspace/checkpoints",
-    "log_dir": "workspace/logs",
+    "output_dir": "/workspace/outputs",
+    "checkpoint_dir": "/workspace/checkpoints",
+    "log_dir": "/workspace/logs",
     "use_wandb": true,
     "project_name": "illuminator-4.9b",
     "run_name": null,
