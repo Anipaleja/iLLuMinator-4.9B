@@ -11,8 +11,8 @@
     "tie_embeddings": true
   },
   "training_config": {
-    "batch_size": 2,
-    "gradient_accumulation_steps": 8,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 16,
     "learning_rate": 1e-4,
     "weight_decay": 0.1,
     "beta1": 0.9,
@@ -25,7 +25,7 @@
     "save_interval": 5000,
     "log_interval": 100,
     "use_mixed_precision": true,
-    "compile_model": true
+    "compile_model": false
   },
   "data_config": {
     "dataset_size": "large",
