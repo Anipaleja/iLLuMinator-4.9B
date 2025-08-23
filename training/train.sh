@@ -144,7 +144,7 @@ fi
 
 # Parse command line arguments
 RESUME_CHECKPOINT=""
-OUTPUT_DIR="/workspace/outputs2"
+OUTPUT_DIR="/workspace/outputs"
 CONFIG_FILE="training_config.json"
 DRY_RUN=false
 
@@ -171,7 +171,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --resume CHECKPOINT    Resume training from checkpoint"
-            echo "  --output-dir DIR       Output directory (default: ./outputs)"
+            echo "  --output-dir DIR       Output directory (default: workspace/outputs)"
             echo "  --config FILE          Config file (default: training_config.json)"
             echo "  --dry-run              Test setup without starting training"
             echo "  --help                 Show this help message"
