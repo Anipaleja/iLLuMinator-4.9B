@@ -10,6 +10,7 @@ import torch.nn.functional as F
 import math
 from typing import Optional, Tuple
 import json
+import torch.utils.checkpoint as checkpoint
 
 class RMSNorm(nn.Module):
     """Root Mean Square Layer Normalization (more stable than LayerNorm)"""
@@ -194,6 +195,7 @@ class iLLuMinator4_9B(nn.Module):
                  d_ff: int = 9984,             # Feed-forward dimension (3x d_model for SwiGLU)
                  max_seq_length: int = 4096,   # Longer context length
                  dropout: float = 0.0,         # Lower dropout for large models
+                 gradient_cp: bool = False,    # Reduce VRAM 
                  tie_embeddings: bool = True): # Tie input/output embeddings
         super().__init__()
         
@@ -283,7 +285,13 @@ class iLLuMinator4_9B(nn.Module):
         
         # Pass through transformer blocks
         for block in self.transformer_blocks:
-            x = block(x, causal_mask)
+            if self.gradient_cp and self.training:
+                def custom_forward(*inputs):
+                    return block(*inputs)
+                x = torch.utils.checkpoint.checkpoint(custom_forward, x, causal_mask)
+            else:
+                x = block(x, causal_mask)
+
         
         # Final layer normalization
         x = self.final_norm(x)
