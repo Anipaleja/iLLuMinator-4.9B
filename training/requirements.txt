@@ -1,0 +1,33 @@
+# RunPod Training Requirements
+# Install these packages in your RunPod environment
+
+# Core PyTorch with CUDA support
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Essential training dependencies
+numpy>=1.24.0
+tqdm>=4.65.0
+psutil>=5.9.0
+transformers>=4.30.0
+
+# Monitoring and logging
+wandb>=0.15.0
+tensorboard>=2.13.0
+
+# Data processing
+datasets>=2.12.0
+tokenizers>=0.13.0
+
+# Distributed training
+accelerate>=0.20.0
+
+# Optional but recommended
+matplotlib>=3.7.0
+seaborn>=0.12.0
+jupyter>=1.0.0
+ipykernel>=6.23.0
+
+# Memory optimization
+bitsandbytes>=0.39.0
