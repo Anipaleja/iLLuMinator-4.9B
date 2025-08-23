@@ -324,12 +324,11 @@ fi
 echo "Executing: $TRAIN_CMD"
 echo ""
 
-# Create a training log
+# Create a training log in workspace directory 
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-LOG_FILE="logs/training_${TIMESTAMP}.log"
-
-# Ensure logs directory exists
-mkdir -p logs
+LOG_DIR="/workspace/logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/training_${TIMESTAMP}.log"
 
 # Execute training with logging
 exec > >(tee -a "$LOG_FILE") 2>&1
