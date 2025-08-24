@@ -6,14 +6,14 @@
     "n_heads": 32,
     "n_kv_heads": 8,
     "d_ff": 10752,
-    "max_seq_length": 2048,
+    "max_seq_length": 1024,
     "dropout": 0.0,
     "gradient_cp": true,
     "tie_embeddings": true
   },
   "training_config": {
-    "batch_size": 4,
-    "gradient_accumulation_steps": 8,
+    "batch_size": 2,
+    "gradient_accumulation_steps": 16,
     "learning_rate": 8e-5,
     "weight_decay": 0.1,
     "beta1": 0.9,
