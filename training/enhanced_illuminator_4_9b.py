@@ -37,9 +37,9 @@ class RotaryPositionalEmbedding(nn.Module):
         self.register_buffer('inv_freq', inv_freq)
 
         # Precompute max cache
-        position = torch.arange(max_seq_length)
-        freqs = position * self.inv_freq.unsqueeze(0)
-        self.register_buffer('cos_cache', torch.cos(freqs))
+        position = torch.arange(max_seq_length).unsqueeze(1)  
+        freqs = position * self.inv_freq.unsqueeze(0)        
+        self.register_buffer('cos_cache', torch.cos(freqs))  
         self.register_buffer('sin_cache', torch.sin(freqs))
 
     def apply_rope(self, x: torch.Tensor) -> torch.Tensor:
