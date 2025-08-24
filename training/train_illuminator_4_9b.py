@@ -162,6 +162,12 @@ class AdvancedTextDataset(Dataset):
         # Create input and target sequences
         input_ids = tokens[:-1]
         labels = tokens[1:]
+
+        # Apply random token masking
+        mask_prob = 0.15
+        mask_token_id = self.tokenizer.pad_token_id  # 
+        random_mask = torch.rand(input_ids.shape) < mask_prob
+        input_ids[random_mask] = mask_token_id
         
         return {
             'input_ids': input_ids,
@@ -177,6 +183,8 @@ class EnhancedTrainer:
         self.rank = rank
         self.world_size = world_size
         self.is_main_process = rank == 0
+        self.best_loss = float("inf")
+        self.patience_counter = 0
         
         # Setup device
         self.device = self._setup_device()
@@ -339,7 +347,8 @@ class EnhancedTrainer:
                 loss = F.cross_entropy(
                     logits.view(-1, logits.size(-1)), 
                     labels.view(-1), 
-                    ignore_index=self.tokenizer.pad_token_id
+                    ignore_index=self.tokenizer.pad_token_id,
+                    label_smoothing=0.1
                 )
                 loss = loss / self.config.training_config["gradient_accumulation_steps"]
         else:
@@ -347,7 +356,8 @@ class EnhancedTrainer:
             loss = F.cross_entropy(
                 logits.view(-1, logits.size(-1)), 
                 labels.view(-1), 
-                ignore_index=self.tokenizer.pad_token_id
+                ignore_index=self.tokenizer.pad_token_id,
+                label_smoothing=0.1
             )
             loss = loss / self.config.training_config["gradient_accumulation_steps"]
         
@@ -356,6 +366,11 @@ class EnhancedTrainer:
             self.scaler.scale(loss).backward()
         else:
             loss.backward()
+
+        # Adding small gradient noise to improve generalization
+        for p in self.model.parameters():
+            if p.grad is not None:
+                p.grad.add_(torch.randn_like(p.grad) * 0.01)
         
         return loss.item() * self.config.training_config["gradient_accumulation_steps"]
     
@@ -420,6 +435,16 @@ class EnhancedTrainer:
                                 })
                         
                         accumulated_loss = 0.0
+
+                        # Stopping early to prevent overfitting if needed
+                        if avg_loss < getattr(self, "best_loss", float("inf")):
+                            self.best_loss = avg_loss
+                            self.patience_counter = 0
+                        else:
+                            self.patience_counter = getattr(self, "patience_counter", 0) + 1
+                            if self.patience_counter >= 10:  # stop after 10 log intervals without improvement
+                                print("⏹️ Early stopping triggered")
+                                return
                     
                     # Save checkpoint
                     if self.global_step % self.config.training_config["save_interval"] == 0:
