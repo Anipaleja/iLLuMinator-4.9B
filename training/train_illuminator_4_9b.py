@@ -197,7 +197,7 @@ class EnhancedTrainer:
         
         # Setup mixed precision
         if config.training_config["use_mixed_precision"]:
-            self.scaler = torch.cuda.amp.GradScaler()
+            self.scaler = torch.amp.GradScaler('cuda')
         else:
             self.scaler = None
         
@@ -293,8 +293,18 @@ class EnhancedTrainer:
             {'params': decay_params, 'weight_decay': self.config.training_config["weight_decay"]},
             {'params': no_decay_params, 'weight_decay': 0.0}
         ]
-        
-        return optim.AdamW(
+
+        try:
+            return optim.AdamW(
+                optimizer_params,
+                lr=self.config.training_config["learning_rate"],
+                betas=(self.config.training_config["beta1"], self.config.training_config["beta2"]),
+                eps=self.config.training_config["eps"],
+                fused=True
+            )
+        # Fallback in case fused if pytorch does not support fused
+        except TypeError:
+            return optim.AdamW(
             optimizer_params,
             lr=self.config.training_config["learning_rate"],
             betas=(self.config.training_config["beta1"], self.config.training_config["beta2"]),
@@ -324,7 +334,7 @@ class EnhancedTrainer:
         
         # Forward pass with mixed precision
         if self.scaler:
-            with torch.cuda.amp.autocast():
+            with torch.amp.autocast('cuda'):
                 logits = self.model(input_ids, attention_mask=attention_mask)
                 loss = F.cross_entropy(
                     logits.view(-1, logits.size(-1)), 
