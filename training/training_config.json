@@ -30,7 +30,7 @@
   },
   "data_config": {
     "dataset_size": "large",
-    "max_length": 2048,
+    "max_length": 1024,
     "num_workers": 4,
     "pin_memory": true
   },
