@@ -185,6 +185,7 @@ class EnhancedTrainer:
         self.is_main_process = rank == 0
         self.best_loss = float("inf")
         self.patience_counter = 0
+        self.checkpoint_path = "/workspace/best_model.pt"
         
         # Setup device
         self.device = self._setup_device()
@@ -437,13 +438,35 @@ class EnhancedTrainer:
                         accumulated_loss = 0.0
 
                         # Stopping early to prevent overfitting if needed
-                        if avg_loss < getattr(self, "best_loss", float("inf")):
+                        if avg_loss < self.best_loss:
                             self.best_loss = avg_loss
                             self.patience_counter = 0
+
+                        # Save best model
+                        torch.save({
+                            "model_state_dict": self.model.state_dict(),
+                            "optimizer_state_dict": self.optimizer.state_dict(),
+                            "scheduler_state_dict": self.scheduler.state_dict(),
+                            "step": self.global_step,
+                            "loss": avg_loss,
+                        }, "best_model.pt")
+                    
+                        if self.is_main_process:
+                            print(f"💾 Saved new best model with loss {avg_loss:.4f}")
                         else:
-                            self.patience_counter = getattr(self, "patience_counter", 0) + 1
-                            if self.patience_counter >= 10:  # stop after 10 log intervals without improvement
-                                print("⏹️ Early stopping triggered")
+                            self.patience_counter += 1
+                            # Stop after 10 log intervals without improvement
+                            if self.patience_counter >= 10: 
+                                if self.is_main_process:
+                                    print("⏹️ Early stopping triggered")
+                                    print("🔄 Restoring best model from workspace/best_model.pt")
+
+                                # Restore best model before stopping
+                                checkpoint = torch.load("/workspace/best_model.pt", map_location="cuda")
+                                self.model.load_state_dict(checkpoint["model_state_dict"])
+                                self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+                                self.scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+        
                                 return
                     
                     # Save checkpoint
