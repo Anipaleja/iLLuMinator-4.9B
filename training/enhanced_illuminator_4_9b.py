@@ -159,7 +159,7 @@ class SwiGLU(nn.Module):
 class EnhancedTransformerBlock(nn.Module):
     """Enhanced transformer block with modern improvements"""
     
-    def __init__(self, d_model: int, n_heads: int, n_kv_heads: int, d_ff: int, dropout: float = 0.1):
+    def __init__(self, d_model: int, n_heads: int, n_kv_heads: int, d_ff: int, dropout: float = 0.1, gradient_cp: bool = False):
         super().__init__()
         self.attention = GroupedQueryAttention(d_model, n_heads, n_kv_heads, dropout)
         self.feed_forward = SwiGLU(d_model, d_ff, dropout)
@@ -172,7 +172,13 @@ class EnhancedTransformerBlock(nn.Module):
         self.pre_norm = True
         
     def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-        if self.pre_norm:
+        if self.gradient_cp and self.training:
+        def attention_forward(x_input):
+            return self.attention(self.norm1(x_input), mask)
+        
+        def ff_forward(x_input):
+            return self.feed_forward(self.norm2(x_input))
+        
             # Pre-norm: normalize before each sublayer
             x = x + self.attention(self.norm1(x), mask)
             x = x + self.feed_forward(self.norm2(x))
@@ -212,7 +218,7 @@ class iLLuMinator4_9B(nn.Module):
         
         # Transformer blocks
         self.transformer_blocks = nn.ModuleList([
-            EnhancedTransformerBlock(d_model, n_heads, n_kv_heads, d_ff, dropout)
+            EnhancedTransformerBlock(d_model, n_heads, n_kv_heads, d_ff, dropout, gradient_cp)
             for _ in range(n_layers)
         ])
         
@@ -286,13 +292,7 @@ class iLLuMinator4_9B(nn.Module):
         
         # Pass through transformer blocks
         for block in self.transformer_blocks:
-            if self.gradient_cp and self.training:
-                def custom_forward(*inputs):
-                    return block(*inputs)
-                x = torch.utils.checkpoint.checkpoint(custom_forward, x, causal_mask)
-            else:
-                x = block(x, causal_mask)
-
+            x = block(x, causal_mask)
         
         # Final layer normalization
         x = self.final_norm(x)
