@@ -161,6 +161,7 @@ class EnhancedTransformerBlock(nn.Module):
     
     def __init__(self, d_model: int, n_heads: int, n_kv_heads: int, d_ff: int, dropout: float = 0.1, gradient_cp: bool = False):
         super().__init__()
+        self.gradient_cp = gradient_cp
         self.attention = GroupedQueryAttention(d_model, n_heads, n_kv_heads, dropout)
         self.feed_forward = SwiGLU(d_model, d_ff, dropout)
         
