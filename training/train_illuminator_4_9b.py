@@ -266,9 +266,9 @@ class EnhancedTrainer:
         model = iLLuMinator4_9B(**self.config.model_config)
         model = model.to(self.device)
 
-        # Compile model if enabled to increase speed
-        if self.config.training_config.get("compile_model", False):
-            model = torch.compile(model, backend='inductor', fullgraph=True)
+        # Compile model for better performance (PyTorch 2.0+)
+        if self.config.training_config["compile_model"] and hasattr(torch, 'compile'):
+            model = torch.compile(model)
                 
         # Setup distributed training
         if self.world_size > 1:
