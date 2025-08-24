@@ -173,19 +173,17 @@ class EnhancedTransformerBlock(nn.Module):
         
     def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         if self.gradient_cp and self.training:
-        def attention_forward(x_input):
-            return self.attention(self.norm1(x_input), mask)
-        
-        def ff_forward(x_input):
-            return self.feed_forward(self.norm2(x_input))
-        
-            # Pre-norm: normalize before each sublayer
+            def attention_forward(x_input):
+                return self.attention(self.norm1(x_input), mask)
+            
+            def ff_forward(x_input):
+                return self.feed_forward(self.norm2(x_input))
+            
+            x = x + torch.utils.checkpoint.checkpoint(attention_forward, x, use_reentrant=False)
+            x = x + torch.utils.checkpoint.checkpoint(ff_forward, x, use_reentrant=False)
+        else:
             x = x + self.attention(self.norm1(x), mask)
             x = x + self.feed_forward(self.norm2(x))
-        else:
-            # Post-norm: normalize after each sublayer
-            x = self.norm1(x + self.attention(x, mask))
-            x = self.norm2(x + self.feed_forward(x))
         
         return x
 
