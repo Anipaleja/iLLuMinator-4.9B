@@ -36,22 +36,35 @@ class RotaryPositionalEmbedding(nn.Module):
         inv_freq = 1.0 / (10000 ** (torch.arange(0, d_model, 2).float() / d_model))
         self.register_buffer('inv_freq', inv_freq)
 
-        # Precompute max cache
-        position = torch.arange(max_seq_length).unsqueeze(1)  
-        freqs = position * self.inv_freq.unsqueeze(0)        
-        self.register_buffer('cos_cache', torch.cos(freqs))  
-        self.register_buffer('sin_cache', torch.sin(freqs))
+        # Cache for efficiency
+        self._cache_max_length = max_seq_length
+        self._cache_cos = None
+        self._cache_sin = None
+        
+    def _update_cache(self, seq_length: int, device: torch.device):
+        """Update cached cos/sin values"""
+        if (self._cache_cos is None or 
+            seq_length > self._cache_max_length or 
+            self._cache_cos.device != device):
+            
+            self._cache_max_length = max(seq_length, self._cache_max_length)
+            position = torch.arange(seq_length, device=device).unsqueeze(1)
+            freqs = position * self.inv_freq.unsqueeze(0)
+            
+            self._cache_cos = torch.cos(freqs)
+            self._cache_sin = torch.sin(freqs)
 
     def apply_rope(self, x: torch.Tensor) -> torch.Tensor:
         """Apply rotary position embedding to input tensor"""
         seq_length = x.size(-2)
+        self._update_cache(seq_length, x.device)
         
         # Split into even and odd dimensions
         x1, x2 = x[..., ::2], x[..., 1::2]
         
         # Apply rotation
-        cos = self.cos_cache[:seq_length].unsqueeze(0).unsqueeze(0)
-        sin = self.sin_cache[:seq_length].unsqueeze(0).unsqueeze(0)
+        cos = self._cache_cos[:seq_length].unsqueeze(0).unsqueeze(0)
+        sin = self._cache_sin[:seq_length].unsqueeze(0).unsqueeze(0)
 
         rotated = torch.stack([
             x1 * cos - x2 * sin,
