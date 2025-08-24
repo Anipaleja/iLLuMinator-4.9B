@@ -313,8 +313,11 @@ print_status "Starting training..."
 echo "Press Ctrl+C to stop training gracefully"
 echo ""
 
+# Prevent buffering
+export PYTHONUNBUFFERED=1
+
 # Build command
-TRAIN_CMD="python3 train_illuminator_4_9b.py --config $CONFIG_FILE --output-dir $OUTPUT_DIR"
+TRAIN_CMD="python3 -u train_illuminator_4_9b.py --config $CONFIG_FILE --output-dir $OUTPUT_DIR"
 
 if [ -n "$RESUME_CHECKPOINT" ]; then
     TRAIN_CMD="$TRAIN_CMD --resume $RESUME_CHECKPOINT"
