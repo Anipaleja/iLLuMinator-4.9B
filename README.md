@@ -4,9 +4,8 @@ A comprehensive, production-ready implementation for training and deploying a 4.
 
 ## Table of Contents
 
-
 <details>
-<summary>Click to expand</summary>
+<summary>Click to expand table</summary>
    
 - [Overview](#overview)
 - [Architecture](#architecture)
