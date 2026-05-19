@@ -4,6 +4,10 @@ A comprehensive, production-ready implementation for training and deploying a 4.
 
 ## Table of Contents
 
+
+<details>
+<summary>Click to expand</summary>
+   
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Installation](#installation)
@@ -19,6 +23,8 @@ A comprehensive, production-ready implementation for training and deploying a 4.
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
+
+</details>
 
 ## Overview
 
