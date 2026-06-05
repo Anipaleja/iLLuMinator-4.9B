@@ -1,4 +1,7 @@
 {
+  "comments":{
+    "//":"config for 4.9B param model"
+  },
   "model": {
     "vocab_size": 65536,
     "d_model": 4096,
