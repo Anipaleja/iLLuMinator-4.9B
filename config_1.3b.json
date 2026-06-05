@@ -13,7 +13,7 @@
     "use_swiglu": true,
     "use_rmsnorm": true,
     "rope_theta": 10000.0
-  }
+  },
   "training": {
     "learning_rate": 0.0004,
     "weight_decay": 0.1,
