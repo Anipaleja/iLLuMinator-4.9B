@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-iLLuMinator Practical AI System
-Efficient AI assistant using a 120M parameter model that can actually run
+iLLuMinator practical AI System (120M)
+Efficient AI assistant using a 120M parameter model that can actually run on your device
 """
 
 import torch
