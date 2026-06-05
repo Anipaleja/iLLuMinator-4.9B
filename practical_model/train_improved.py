@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Improved Training for Practical iLLuMinator
+Improved Training for Practical iLLuMinator (120M)
 Better anti-overfitting techniques with more data
 """
 
