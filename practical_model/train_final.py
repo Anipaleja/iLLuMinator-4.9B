@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Final Training for Practical iLLuMinator
+Final Training set for Practical iLLuMinator (120M param model)
 Ultra-conservative approach to prevent overfitting
 """
 
