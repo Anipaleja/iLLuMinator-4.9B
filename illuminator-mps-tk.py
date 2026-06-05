@@ -1,6 +1,6 @@
 """
-Enhanced iLLuMinator 4.9B Parameter Language Model
-Advanced transformer architecture with 4.9 billion parameters
+Enhanced iLLuMinator 4.9B Parameter Language Model (mps)
+Transformer architecture with 4.9 billion parameters
 Enhanced with modern techniques: RMSNorm, SwiGLU, RoPE, Grouped Query Attention
 """
 
