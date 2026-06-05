@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MFU Analysis and Optimization Tool for iLLuMinator Models
+MFU Analysis and Optimization Tool for all iLLuMinator Models
 Comprehensive analysis of Model FLOPs Utilization and optimization recommendations
 """
 
