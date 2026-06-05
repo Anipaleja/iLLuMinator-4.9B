@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple Test Script for iLLuMinator Models
+Test Script for iLLuMinator Models
 Quick testing without complex interfaces
 """
 
@@ -38,7 +38,7 @@ def test_model(model_path: str):
         "Human: Good morning\nAssistant:",
     ]
     
-    print("\n🧪 Testing Model Responses:")
+    print("\nTesting Model Responses:")
     print("=" * 50)
     
     for i, prompt in enumerate(test_prompts, 1):
