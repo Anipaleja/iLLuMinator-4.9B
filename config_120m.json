@@ -39,7 +39,7 @@
     "val_split": 0.1,
     "use_external_data": true,
     "quality_threshold": 0.8,
-    "data_format": "alpaca",
+    "data_format": "llama",
     "cache_dir": "datasets"
   },
   "system": {
