@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Training for iLLuMinator
+Enhanced Optimized Training for iLLuMinator
 Incorporating proven techniques and optimizations for better model performance
 """
 
@@ -130,7 +130,7 @@ class TinyLlamaInspiredTrainer:
         print(" Loading tokenizer...")
         self.tokenizer = iLLuMinatorTokenizer()
         
-        print("🧠 Creating TinyLlama-inspired model...")
+        print("Creating TinyLlama-inspired model...")
         self.model = iLLuMinatorPractical(vocab_size=len(self.tokenizer))
         self.model.to(self.device)
         
@@ -186,13 +186,13 @@ class TinyLlamaInspiredTrainer:
         total_steps = len(dataloader) * epochs
         scheduler = self.get_cosine_schedule_with_warmup(total_steps, num_warmup_steps=2000)
         
-        print(f" Dataset size: {len(dataset)} examples")
+        print(f" Dataset size: {len(dataset)} examples") #printind dataset sizes
         print(f" Total training steps: {total_steps}")
         
         self.model.train()
         best_loss = float('inf')
         
-        for epoch in range(epochs):
+        for epoch in range(epochs): #epochs
             total_loss = 0
             num_batches = 0
             
