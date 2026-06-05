@@ -1,6 +1,6 @@
 # iLLuMinator 4.9B - Professional Language Model Training Framework (in development)
 
-A comprehensive, production-ready implementation for training and deploying a 4.9 billion parameter transformer language model. This framework incorporates state-of-the-art architectures, optimization techniques, and training datasets used by leading AI research organizations.
+A comprehensive, production-ready implementation for training and deploying a 4.9 billion parameter transformer language model. This framework incorporates current architectures, optimization techniques, and training datasets used by leading AI research organizations.
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ A comprehensive, production-ready implementation for training and deploying a 4.
 
 ## Overview
 
-iLLuMinator 4.9B represents a cutting-edge approach to large language model training, incorporating the latest advances in transformer architectures, optimization algorithms, and training methodologies. The framework is designed for both research and production environments, with comprehensive support for various hardware configurations and deployment scenarios.
+iLLuMinator 4.9B represents an approach to large language model training, incorporating the latest advances in transformer architectures, optimization algorithms, and training methodologies. The framework is designed for both research and production environments, with comprehensive support for various hardware configurations and deployment scenarios.
 
 ### Key Features
 
