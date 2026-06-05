@@ -1,5 +1,5 @@
 """
-Enhanced iLLuMinator 4.9B Parameter Language Model
+iLLuMinator 4.9B Parameter Language Model v3.8
 Advanced transformer architecture with 4.9 billion parameters
 Enhanced with modern techniques: RMSNorm, SwiGLU, RoPE, Grouped Query Attention
 """
