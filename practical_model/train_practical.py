@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Quick Training for Practical iLLuMinator
+Quick Training for Practical iLLuMinator (120M param)
 Simple training on basic conversational data
 """
 
