@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Test Script for Practical iLLuMinator
+Test Script for Practical iLLuMinator
 Tests the enhanced trained model with comprehensive evaluation
 """
 
