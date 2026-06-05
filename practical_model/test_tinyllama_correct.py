@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for TinyLlama-inspired iLLuMinator model using correct architecture
+Test script for TinyLlama iLLuMinator model using correct architecture
 """
 
 import torch
