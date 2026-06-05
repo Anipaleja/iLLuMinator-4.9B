@@ -1,5 +1,5 @@
 """
-Professional Configuration Management for iLLuMinator 4.9B
+Config Management for iLLuMinator 4.9B
 Centralized configuration with validation and documentation
 """
 
