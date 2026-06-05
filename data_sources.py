@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Professional Training Data Sources for iLLuMinator 4.9B
-Integrates high-quality datasets used by leading AI research organizations
+Training Data Sources for iLLuMinator 4.9B
+Integrates high quality datasets used by leading AI research organizations
 """
 
 import json
